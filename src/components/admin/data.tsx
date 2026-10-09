@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { listRows, updateRow, deleteRow, addRow, type Table } from '@/lib/db'
 import type { Vehicle, Inquiry } from '@/types/vehicle'
+import type { SaleDocument } from '@/types/document'
 
-type Rows = { vehicles: Vehicle; inquiries: Inquiry }
+type Rows = { vehicles: Vehicle; inquiries: Inquiry; documents: SaleDocument }
 type State = { [T in Table]: Rows[T][] }
 
 type Ctx = {
@@ -16,7 +17,7 @@ type Ctx = {
 }
 
 const Data = createContext<Ctx | null>(null)
-const empty: State = { vehicles: [], inquiries: [] }
+const empty: State = { vehicles: [], inquiries: [], documents: [] }
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<State>(empty)
@@ -26,8 +27,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const reload = useCallback(async (silent?: boolean) => {
     if (!silent) { setLoading(true); setError('') }
     try {
-      const [vehicles, inquiries] = await Promise.all([listRows('vehicles'), listRows('inquiries').catch(() => [])])
-      setData({ vehicles, inquiries })
+      const [vehicles, inquiries, documents] = await Promise.all([listRows('vehicles'), listRows('inquiries').catch(() => []), listRows('documents').catch(() => [])])
+      setData({ vehicles, inquiries, documents })
     } catch (e) {
       if (!silent) setError(e instanceof Error ? e.message : 'Could not load data.')
     } finally {

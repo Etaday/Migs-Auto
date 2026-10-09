@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { SquaresFour, Car, ChatCircleDots, SignOut, ArrowsClockwise, ArrowUpRight, ChartLineUp, UsersThree } from '@/components/slab'
+import { SquaresFour, Car, ChatCircleDots, SignOut, ArrowsClockwise, ArrowUpRight, ChartLineUp, UsersThree, Receipt } from '@/components/slab'
 import { backendOn, getSession, onSessionChange, resetDemo, signOut } from '@/lib/db'
 import { getTheme, toggleTheme, type Theme } from '@/lib/theme'
 import ThemedImg from '@/components/ThemedImg'
@@ -11,6 +11,7 @@ import Overview from '@/components/admin/Overview'
 import VehiclesView from '@/components/admin/VehiclesView'
 import LeadsView from '@/components/admin/LeadsView'
 import SalesView from '@/components/admin/SalesView'
+import DocumentsView, { type DocRequest } from '@/components/admin/DocumentsView'
 import TeamView from '@/components/admin/TeamView'
 import TabBoundary from '@/components/admin/TabBoundary'
 import AdminAlerts from '@/components/admin/AdminAlerts'
@@ -28,6 +29,7 @@ const TABS = [
   { id: 'vehicles', label: 'Inventory', Icon: Car },
   { id: 'leads', label: 'Leads', Icon: ChatCircleDots },
   { id: 'sales', label: 'Sales', Icon: ChartLineUp },
+  { id: 'documents', label: 'Invoices & receipts', Icon: Receipt },
   { id: 'team', label: 'Team', Icon: UsersThree },
 ] as const
 type TabId = (typeof TABS)[number]['id']
@@ -39,6 +41,8 @@ function Shell({ email, demo }: { email: string; demo: boolean }) {
   })
   const { data, loading, error, reload } = useData()
   const go = (t: string) => { setTab(t as TabId) }
+  const [docRequest, setDocRequest] = useState<DocRequest>(null)
+  const makeDocument = (vehicleId: string, kind: 'invoice' | 'receipt') => { setDocRequest({ vehicleId, kind }); setTab('documents') }
   const [theme, setThemeState] = useState<Theme>('light')
   useEffect(() => setThemeState(getTheme()), [])
 
@@ -121,7 +125,8 @@ function Shell({ email, demo }: { email: string; demo: boolean }) {
           {tab === 'overview' && <Overview go={go} />}
           {tab === 'vehicles' && <VehiclesView />}
           {tab === 'leads' && <LeadsView />}
-          {tab === 'sales' && <SalesView />}
+          {tab === 'sales' && <SalesView onDocument={makeDocument} />}
+          {tab === 'documents' && <DocumentsView request={docRequest} clearRequest={() => setDocRequest(null)} />}
           {tab === 'team' && <TeamView />}
           </TabBoundary>
         </main>

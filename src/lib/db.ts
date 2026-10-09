@@ -14,10 +14,11 @@ export const backendOn = !!(SUPABASE_URL && KEY)
 
 import type { Vehicle, Inquiry } from '@/types/vehicle'
 import { withDefaults } from '@/lib/inventory'
+import type { SaleDocument } from '@/types/document'
 
-export type Table = 'vehicles' | 'inquiries'
+export type Table = 'vehicles' | 'inquiries' | 'documents'
 
-type Rows = { vehicles: Vehicle; inquiries: Inquiry }
+type Rows = { vehicles: Vehicle; inquiries: Inquiry; documents: SaleDocument }
 
 /* ---------- Session (admin) ---------- */
 
@@ -120,13 +121,13 @@ function demoVehicles(): Vehicle[] {
 }
 
 function seed(): Demo {
-  return { vehicles: demoVehicles(), inquiries: [] }
+  return { vehicles: demoVehicles(), inquiries: [], documents: [] }
 }
 
 function demoRead(): Demo {
   try {
     const raw = localStorage.getItem(DEMO_KEY)
-    if (raw) { const d = JSON.parse(raw) as Demo; d.vehicles = (d.vehicles ?? []).map(withDefaults); d.inquiries = d.inquiries ?? []; return d }
+    if (raw) { const d = JSON.parse(raw) as Demo; d.vehicles = (d.vehicles ?? []).map(withDefaults); d.inquiries = d.inquiries ?? []; d.documents = d.documents ?? []; return d }
   } catch { /* fall through */ }
   const d = seed()
   demoWrite(d)

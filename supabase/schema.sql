@@ -187,3 +187,30 @@ grant select (id, created_at, type, brand, model, year, price, mileage, transmis
 create policy "visitor adds inquiry" on public.inquiries for insert to anon with check (status = 'new');
 create index if not exists vehicles_status_idx on public.vehicles (status);
 create index if not exists inquiries_status_idx on public.inquiries (status);
+
+-- ---------- Invoices and receipts for vehicle sales (owner only) ----------
+create table if not exists public.documents (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  kind text not null check (kind in ('invoice', 'receipt')),
+  number text not null unique,
+  issued_on date not null default current_date,
+  vehicle_id uuid references public.vehicles(id) on delete set null,
+  vehicle_title text not null default '',
+  vin text not null default '',
+  color text not null default '',
+  engine text not null default '',
+  mileage int not null default 0,
+  buyer_name text not null check (char_length(buyer_name) between 1 and 120),
+  buyer_phone text not null default '',
+  buyer_email text not null default '',
+  buyer_address text not null default '',
+  price numeric not null check (price >= 0),
+  discount numeric not null default 0 check (discount >= 0),
+  paid_before numeric not null default 0 check (paid_before >= 0),
+  amount_paid numeric not null default 0 check (amount_paid >= 0),
+  method text not null default '',
+  notes text not null default ''
+);
+alter table public.documents enable row level security;
+create policy "admin all documents" on public.documents for all to authenticated using (public.is_admin()) with check (public.is_admin());
