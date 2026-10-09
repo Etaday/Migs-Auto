@@ -12,7 +12,9 @@ export const SUPABASE_URL: string = (import.meta.env.VITE_SUPABASE_URL ?? '').re
 const KEY: string = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ''
 export const backendOn = !!(SUPABASE_URL && KEY)
 
-export type Table = 'bookings' | 'invoices' | 'reviews' | 'messages' | 'quotes' | 'revenue' | 'expenses'
+import type { Vehicle, Inquiry } from '@/types/vehicle'
+
+export type Table = 'bookings' | 'invoices' | 'reviews' | 'messages' | 'quotes' | 'revenue' | 'expenses' | 'vehicles' | 'inquiries'
 
 export type BookingItem = { id: string; code: string; name: string; detail: string; price: number | null }
 export type BookingStatus = 'new' | 'confirmed' | 'completed' | 'cancelled'
@@ -130,7 +132,7 @@ export type ExpenseRow = {
   note: string
 }
 
-type Rows = { bookings: BookingRow; invoices: InvoiceRow; reviews: ReviewRow; messages: MessageRow; quotes: QuoteRow; revenue: RevenueRow; expenses: ExpenseRow }
+type Rows = { bookings: BookingRow; invoices: InvoiceRow; reviews: ReviewRow; messages: MessageRow; quotes: QuoteRow; revenue: RevenueRow; expenses: ExpenseRow; vehicles: Vehicle; inquiries: Inquiry }
 
 /* ---------- Session (admin) ---------- */
 
@@ -218,6 +220,22 @@ type Demo = { [T in Table]: Rows[T][] }
 const iso = (d: Date) => d.toISOString().slice(0, 10)
 const plusDays = (n: number) => iso(new Date(Date.now() + n * 864e5))
 
+const dv = (n: number, o: Partial<Vehicle>): Vehicle => ({
+  id: `demo-v${n}`, type: 'car', brand: '', model: '', year: 2020, price: 0, mileage: 0, transmission: 'Automatic',
+  fuel: 'Gasoline', color: '', description: 'Sample listing. Replace it from the dashboard.', photos: [], status: 'available',
+  featured: false, created_at: new Date(Date.now() - n * 864e5).toISOString(), ...o,
+})
+function demoVehicles(): Vehicle[] {
+  return [
+    dv(1, { brand: 'Toyota', model: 'Vios 1.3 E', year: 2021, price: 640000, mileage: 28000, color: 'White', featured: true }),
+    dv(2, { brand: 'Honda', model: 'City RS', year: 2022, price: 820000, mileage: 15000, color: 'Silver', featured: true }),
+    dv(3, { brand: 'Mitsubishi', model: 'Xpander GLS', year: 2020, price: 780000, mileage: 41000, color: 'Gray', transmission: 'Manual', fuel: 'Diesel', status: 'reserved' }),
+    dv(4, { type: 'motorcycle', brand: 'Honda', model: 'Click 160', year: 2023, price: 118000, mileage: 4000, color: 'Red', transmission: 'CVT', featured: true }),
+    dv(5, { type: 'motorcycle', brand: 'Yamaha', model: 'NMAX 155', year: 2022, price: 135000, mileage: 9000, color: 'Black', transmission: 'CVT' }),
+    dv(6, { type: 'motorcycle', brand: 'Kawasaki', model: 'Ninja 400', year: 2021, price: 330000, mileage: 12000, color: 'Green', transmission: 'Manual', status: 'sold' }),
+  ]
+}
+
 function seed(): Demo {
   const base = { created_at: new Date().toISOString(), guests: '80', notes: '', admin_notes: '', deposit_paid: false, payment_status: 'pending' as PaymentStatus, amount_paid: 0, has_quote_only: false, subtotal: 0, location_charge: 0 }
   const mk = (n: number, o: Partial<BookingRow>): BookingRow => ({
@@ -249,6 +267,8 @@ function seed(): Demo {
     quotes: [],
     revenue: [],
     expenses: [],
+    vehicles: demoVehicles(),
+    inquiries: [],
     messages: [{ id: 'demo-m1', created_at: new Date().toISOString(), name: 'Demo Visitor', email: 'v@example.com', message: 'Hello, do you cover Fahaheel? (demo message)', handled: false }],
   }
 }
@@ -345,7 +365,7 @@ export function resetDemo() {
 /* ---------- Public operations (no sign-in) ---------- */
 
 /** A visitor's submission. Returns true when it was stored (backend or demo). */
-export async function submitPublic<T extends 'bookings' | 'reviews' | 'messages' | 'quotes'>(table: T, row: Partial<Rows[T]>): Promise<void> {
+export async function submitPublic<T extends 'bookings' | 'reviews' | 'messages' | 'quotes' | 'inquiries'>(table: T, row: Partial<Rows[T]>): Promise<void> {
   if (backendOn) {
     await rest(table, { method: 'POST', body: row, prefer: 'return=minimal' })
     return
@@ -353,6 +373,14 @@ export async function submitPublic<T extends 'bookings' | 'reviews' | 'messages'
   const d = demoRead()
   ;(d[table] as Rows[T][]).unshift({ id: newId(), created_at: new Date().toISOString(), ...row } as Rows[T])
   demoWrite(d)
+}
+
+/** Public vehicle listing (sold vehicles are never returned to visitors). */
+export async function listVehicles(): Promise<Vehicle[]> {
+  if (backendOn) {
+    return ((await rest('vehicles?select=*&status=neq.sold&order=created_at.desc')) ?? []) as Vehicle[]
+  }
+  return demoRead().vehicles.filter((v) => v.status !== 'sold')
 }
 
 /** Dates already confirmed for a booking, so the form can warn early. */

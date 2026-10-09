@@ -1,4 +1,4 @@
--- Judeng Production Studio: database for the dashboard.
+-- Migs Auto: database for the dashboard.
 -- Run this once in Supabase: SQL Editor > New query > paste > Run.
 
 create extension if not exists pgcrypto;
@@ -73,7 +73,7 @@ alter table public.messages enable row level security;
 -- Add another owner later with: insert into public.admins values ('name@example.com');
 create table if not exists public.admins (email text primary key);
 alter table public.admins enable row level security; -- no policies: read only through is_admin()
-insert into public.admins (email) values ('angelo@judengproduction.com'), ('elvistaday@gmail.com') on conflict do nothing;
+insert into public.admins (email) values ('elvistaday@gmail.com') on conflict do nothing;
 
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
@@ -137,3 +137,43 @@ create index if not exists bookings_event_date_idx on public.bookings (event_dat
 create index if not exists bookings_status_idx on public.bookings (status);
 create index if not exists invoices_booking_id_idx on public.invoices (booking_id);
 create index if not exists reviews_status_idx on public.reviews (status);
+
+-- ---------- Migs Auto: vehicles and inquiries ----------
+create table if not exists public.vehicles (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  type text not null check (type in ('car', 'motorcycle')),
+  brand text not null,
+  model text not null,
+  year int not null,
+  price numeric not null check (price >= 0),
+  mileage int not null default 0,
+  transmission text not null default '',
+  fuel text not null default '',
+  color text not null default '',
+  description text not null default '',
+  photos text[] not null default '{}',
+  status text not null default 'available' check (status in ('available', 'reserved', 'sold')),
+  featured boolean not null default false
+);
+create table if not exists public.inquiries (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  kind text not null check (kind in ('inquiry', 'trade_in', 'financing', 'test_drive')),
+  vehicle_id uuid references public.vehicles(id) on delete set null,
+  name text not null check (char_length(name) between 1 and 100),
+  phone text not null default '' check (char_length(phone) <= 40),
+  email text not null default '' check (char_length(email) <= 254),
+  message text not null default '' check (char_length(message) <= 3000),
+  details jsonb not null default '{}',
+  status text not null default 'new' check (status in ('new', 'contacted', 'closed')),
+  check (phone <> '' or email <> '')
+);
+alter table public.vehicles enable row level security;
+alter table public.inquiries enable row level security;
+create policy "admin all vehicles" on public.vehicles for all to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "admin all inquiries" on public.inquiries for all to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "visitor reads listed vehicles" on public.vehicles for select to anon using (status <> 'sold');
+create policy "visitor adds inquiry" on public.inquiries for insert to anon with check (status = 'new');
+create index if not exists vehicles_status_idx on public.vehicles (status);
+create index if not exists inquiries_status_idx on public.inquiries (status);

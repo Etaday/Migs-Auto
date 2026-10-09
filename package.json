@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fontsource/allura": "^5.3.0",

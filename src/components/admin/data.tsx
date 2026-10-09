@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { listRows, updateRow, deleteRow, addRow, type BookingRow, type InvoiceRow, type ReviewRow, type MessageRow, type QuoteRow, type RevenueRow, type ExpenseRow, type Table } from '@/lib/db'
+import type { Vehicle, Inquiry } from '@/types/vehicle'
 
-type Rows = { bookings: BookingRow; invoices: InvoiceRow; reviews: ReviewRow; messages: MessageRow; quotes: QuoteRow; revenue: RevenueRow; expenses: ExpenseRow }
+type Rows = { bookings: BookingRow; invoices: InvoiceRow; reviews: ReviewRow; messages: MessageRow; quotes: QuoteRow; revenue: RevenueRow; expenses: ExpenseRow; vehicles: Vehicle; inquiries: Inquiry }
 type State = { [T in Table]: Rows[T][] }
 
 type Ctx = {
@@ -15,7 +16,7 @@ type Ctx = {
 }
 
 const Data = createContext<Ctx | null>(null)
-const empty: State = { bookings: [], invoices: [], reviews: [], messages: [], quotes: [], revenue: [], expenses: [] }
+const empty: State = { bookings: [], invoices: [], reviews: [], messages: [], quotes: [], revenue: [], expenses: [], vehicles: [], inquiries: [] }
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<State>(empty)
@@ -25,17 +26,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const reload = useCallback(async (silent?: boolean) => {
     if (!silent) { setLoading(true); setError('') }
     try {
-      const [bookings, invoices, reviews, messages, quotes, revenue, expenses] = await Promise.all([
+      const [bookings, invoices, reviews, messages, quotes, revenue, expenses, vehicles, inquiries] = await Promise.all([
         listRows('bookings'), listRows('invoices'), listRows('reviews'), listRows('messages'),
         // Older databases may not have the quotes table yet: show the rest rather than fail.
         listRows('quotes').catch(() => []),
         listRows('revenue').catch(() => []),
         listRows('expenses').catch(() => []),
+        listRows('vehicles').catch(() => []),
+        listRows('inquiries').catch(() => []),
       ])
       setData({
         bookings: bookings.map((b) => ({ ...b, items: Array.isArray(b.items) ? b.items : [],
           total: b.total ?? 0, subtotal: b.subtotal ?? 0, deposit: b.deposit ?? 0, balance: b.balance ?? 0, amount_paid: b.amount_paid ?? 0, location_charge: b.location_charge ?? 0, event_date: b.event_date ?? '', created_at: b.created_at ?? '' })),
-        invoices, reviews, messages, quotes, revenue, expenses,
+        invoices, reviews, messages, quotes, revenue, expenses, vehicles, inquiries,
       })
     } catch (e) {
       if (!silent) setError(e instanceof Error ? e.message : 'Could not load data.')
