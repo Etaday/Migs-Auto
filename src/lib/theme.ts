@@ -41,12 +41,10 @@ type WithViewTransition = Document & {
 }
 
 /**
- * Switch themes like a camera lens diaphragm: the old page closes down to a
- * point through a rotating six-blade aperture into black, then the new theme
- * opens out of the centre through the same aperture. View Transitions API; the
- * aperture is a CSS polygon whose radius and angle are animated in global.css,
- * and `--ap-full` (set here) is the radius that clears the screen corners.
- * Browsers without the API, and reduced-motion users, get the instant switch.
+ * Switch themes with a motorcycle: it rides across the screen and the new theme
+ * is revealed behind it (View Transitions API; the animation is in
+ * styles/global.css, the bike is components/ThemeBike). Browsers without the
+ * API, and reduced-motion users, get the instant switch.
  */
 export function setTheme(theme: Theme) {
   const doc = document as WithViewTransition
@@ -57,8 +55,6 @@ export function setTheme(theme: Theme) {
     applyTheme(theme)
     return
   }
-  // A hexagon's corners sit at the circumradius; 1.25 makes its flat sides clear the screen corners too.
-  root.style.setProperty('--ap-full', `${Math.hypot(window.innerWidth / 2, window.innerHeight / 2) * 1.25}px`)
   root.dataset.themeSweep = 'on'
   doc
     .startViewTransition(() => applyTheme(theme))

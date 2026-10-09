@@ -6,6 +6,7 @@ import Rail from '@/components/Rail'
 import IntroOverlay from '@/components/IntroOverlay'
 import CursorRing from '@/components/CursorRing'
 import RoadStreaks from '@/components/RoadStreaks'
+import ThemeBike from '@/components/ThemeBike'
 import MusicAutoplay from '@/components/MusicAutoplay'
 import BackToTop from '@/components/BackToTop'
 import ChatBot from '@/components/ChatBot'
@@ -78,6 +79,7 @@ export default function App() {
       <CursorRing />
       <a href={`#${SCROLLER_ID}`} className="skip-link">Skip to main content</a>
       <RoadStreaks />
+      <ThemeBike />
       <MusicAutoplay />
       {phone && pathname !== '/' && <QuickMenu className="qmenu--float" />}
       <div className="shell">
