@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { House, FolderOpen, CalendarCheck, Stack, User } from '@/components/slab'
+import { House, FolderOpen, CalendarCheck, User } from '@/components/slab'
 import { motionReduced } from '@/lib/a11y'
 
 /**
@@ -19,9 +19,8 @@ import { motionReduced } from '@/lib/a11y'
  */
 const TABS = [
   { label: 'Home', to: '/', Icon: House },
-  { label: 'Work', to: '/projects', Icon: FolderOpen },
-  { label: 'Book', to: '/book', Icon: CalendarCheck, primary: true },
-  { label: 'Services', to: '/services', Icon: Stack },
+  { label: 'Inventory', to: '/inventory', Icon: FolderOpen },
+  { label: 'Contact', to: '/contact', Icon: CalendarCheck, primary: true },
   { label: 'About', to: '/about', Icon: User },
 ] as const
 

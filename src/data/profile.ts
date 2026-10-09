@@ -1,9 +1,9 @@
 /**
- * Studio identity: name, handle, logo, socials, email and the Home headline.
- * Only the Facebook link is real. Add other profile URLs as needed.
+ * Migs Auto identity: name, logo, contact details and the Home headline.
+ * PLACEHOLDERS: phone, email, address and hours are not confirmed; replace them here, in one place.
  */
 
-import { Sparkle, Cake, Camera, type Icon } from '@/components/slab'
+import { Car, Motorcycle, Wrench, type Icon } from '@/components/slab'
 
 export type SocialLink = {
   label: string
@@ -30,6 +30,9 @@ export type Profile = {
   phone: string
   phoneTel: string
   location: string
+  hours: string
+  /** WhatsApp number, digits only. */
+  whatsapp: string
   /** Three short proof facts shown on phones under the Home lede. */
   stats: Stat[]
   displayName: { line1: string; line2: string }
@@ -42,33 +45,28 @@ export type Profile = {
 }
 
 export const profile: Profile = {
-  name: 'Judeng Production Studio',
-  firstName: 'Judeng',
-  handle: '@judeng_production.kw',
-  role: 'Photo booths, cake mapping and photography',
+  name: 'Migs Auto',
+  firstName: 'Migs',
+  handle: 'Cars and motorcycles',
+  role: 'Cars and motorcycles for sale',
   avatarSrc: '/avatar.png',
-  verifiedLabel: 'Photo and video studio',
-  email: 'angelo@judengproduction.com',
-  phone: '+965 9797 4135',
-  phoneTel: '+96597974135',
-  location: 'Available for projects',
-  // Pick any icon from https://phosphoricons.com and import it above.
+  verifiedLabel: 'Car and motorcycle dealer',
+  email: 'hello@migsauto.example',
+  phone: '+63 000 000 0000',
+  phoneTel: '+630000000000',
+  location: 'Address to be confirmed',
+  hours: 'Mon-Sat 9:00 AM - 6:00 PM',
+  whatsapp: '630000000000',
   stats: [
-    { value: 'Booths', label: 'Glass & 360', Icon: Sparkle },
-    { value: 'Mapping', label: 'Cake mapping', Icon: Cake },
-    { value: 'Photo', label: 'Studio, food, events', Icon: Camera },
+    { value: 'Cars', label: 'Sedans, SUVs, vans', Icon: Car },
+    { value: 'Bikes', label: 'Scooters to sport', Icon: Motorcycle },
+    { value: 'Service', label: 'Trade-in and financing', Icon: Wrench },
   ],
-  // The intro types this line, then flies it into the Home headline.
-  // Keep it short: two halves, 5-8 words total.
-  displayName: { line1: 'Moments worth sharing.', line2: 'Captured in style.' },
+  displayName: { line1: 'Drive home', line2: 'something great.' },
   hero: {
-    body: 'Judeng Production Studio runs glass and 360 photo booths, cake mapping, studio and food photography, and photo and video coverage for events and businesses.',
+    body: 'Migs Auto sells quality cars and motorcycles. Browse the inventory, trade in your ride, get financing and book a test drive.',
     portraitSrc: '/avatar.png',
-    portraitAlt: 'Judeng Production Studio logo',
+    portraitAlt: 'Migs Auto logo',
   },
-  socials: [
-    { label: 'Instagram', href: 'https://www.instagram.com/judeng_production.kw', iconPath: '/icons/instagram.svg' },
-    { label: 'TikTok', href: 'https://www.tiktok.com/@judeng_production.kw', iconPath: '/icons/tiktok.svg' },
-    { label: 'Facebook page', href: 'https://www.facebook.com/judeterciano', iconPath: '/icons/facebook.svg' },
-  ],
+  socials: [],
 }

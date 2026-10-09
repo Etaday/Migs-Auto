@@ -95,3 +95,13 @@ export async function submitLead(lead: Lead): Promise<SubmitResult> {
   window.location.href = `mailto:${encodeURIComponent(RECIPIENT)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   return { via: 'mailto' }
 }
+
+/** Shared check for the dealer's public forms: a name, and a phone or a valid email. null = fine. */
+export function validateContact(v: { name: string; phone: string; email: string }): string | null {
+  if (!v.name.trim()) return 'Please enter your name.'
+  const phone = v.phone.trim()
+  const email = v.email.trim()
+  if (!phone && !email) return 'Please give a phone or email so we can reach you.'
+  if (email && !EMAIL_RE.test(email)) return 'That email does not look right.'
+  return null
+}

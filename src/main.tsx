@@ -10,14 +10,10 @@ import { restorePerfTier } from '@/lib/perf'
 import { restorePrefs } from '@/lib/a11y'
 
 // Every route but Home is its own chunk: the first visit only pays for Home.
-const ProjectsView = lazy(() => import('@/views/ProjectsView'))
-const ServicesView = lazy(() => import('@/views/ServicesView'))
-const TestimonialsGrid = lazy(() => import('@/components/TestimonialsGrid'))
+const InventoryView = lazy(() => import('@/components/inventory/InventoryView'))
+const VehicleDetail = lazy(() => import('@/components/inventory/VehicleDetail'))
 const AboutGrid = lazy(() => import('@/components/AboutGrid'))
 const ContactGrid = lazy(() => import('@/components/ContactGrid'))
-const BookingGrid = lazy(() => import('@/components/BookingGrid'))
-const MyBooking = lazy(() => import('@/components/MyBooking'))
-const QuoteRequest = lazy(() => import('@/components/QuoteRequest'))
 const AdminApp = lazy(() => import('@/components/admin/AdminApp'))
 const SharedDocument = lazy(() => import('@/components/SharedDocument'))
 const InvoiceStudio = lazy(() => import('@/components/InvoiceStudio'))
@@ -60,6 +56,7 @@ import './styles/mobile-pass.css'
 // Last: the perf tiers only ever turn things OFF, so they must win.
 import './styles/perf.css'
 import './styles/glass.css'
+import './styles/migs.css'
 
 // Re-apply this tab's performance verdict before the first paint, so a
 // downgraded visitor never sees the expensive layers flash back on reload.
@@ -79,14 +76,10 @@ const start = () =>
             renders into its one scrolling panel. */}
         <Route element={<App />}>
           <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<ProjectsView />} />
-          <Route path="/services" element={<ServicesView />} />
-          <Route path="/testimonials" element={<TestimonialsGrid />} />
+          <Route path="/inventory" element={<InventoryView />} />
+          <Route path="/inventory/:id" element={<VehicleDetail />} />
           <Route path="/about" element={<AboutGrid />} />
           <Route path="/contact" element={<ContactGrid />} />
-          <Route path="/book" element={<BookingGrid />} />
-          <Route path="/my-booking" element={<MyBooking />} />
-          <Route path="/quote" element={<QuoteRequest />} />
         </Route>
         {/* Standalone pages: their own layout, no rail, document scroll. */}
         <Route path="/admin" element={<Suspense fallback={null}><AdminApp /></Suspense>} />

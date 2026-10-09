@@ -41,7 +41,7 @@ export default function App() {
     }
     document.title = titles[pathname] ? `${titles[pathname]} - ${name}` : `${name} - Cars and Motorcycles for Sale`
   }, [pathname])
-  const FIXED_ROUTES = ['/', '/about', '/contact']
+  const FIXED_ROUTES = ['/about', '/contact']
   const isFixed = FIXED_ROUTES.includes(pathname)
   // Below the shell breakpoint the rail is gone: a bottom tab bar navigates,
   // the QuickMenu (theme + accessibility) floats top-right on every page but
