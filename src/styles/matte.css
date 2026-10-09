@@ -59,7 +59,7 @@ html, body { background: var(--cream); }
 .rail::before, .rail::after { display: none !important; }
 
 /* Surfaces: solid fill + thin border instead of translucent glass. */
-.rail, .tabbar, .a11y__panel, .qmenu__panel, .hprofile {
+.rail, .tabbar, .qmenu__panel, .hprofile {
   background: var(--paper) !important;
   background-image: none !important;
 }
@@ -99,3 +99,31 @@ html, body { background: var(--cream); }
 /* The hairline rings that were drawn with shadows are real borders now. */
 .rail__social, .rail__theme, .adm-themebtn { border: 1px solid var(--line) !important; background: var(--white) !important; }
 .rail__link[aria-current='page'], .rail__link.active { background: var(--tint-strong) !important; }
+
+/* Accessibility panel: ordinary surface with ordinary ink. Its stylesheet was written
+   as an inverted (navy) panel, so its inner colours are re-pointed at the ink colour. */
+.a11y__panel {
+  --cream: var(--navy);
+  background: var(--paper) !important;
+  color: var(--navy) !important;
+  border: 1px solid var(--line-strong) !important;
+}
+.a11y__title, .a11y__label, .a11y__switch-label, .a11y__size, .a11y__reset, .a11y__close { color: var(--navy); }
+.a11y__label, .a11y__switch-desc { color: var(--muted) !important; }
+.a11y__size { border: 1px solid var(--line); background: transparent; }
+.a11y__size.is-on { background: var(--orange) !important; border-color: var(--orange) !important; color: #fff !important; }
+.a11y__switch.is-on .a11y__toggle::after { background: #fff !important; }
+.a11y__toggle { background: var(--line-strong) !important; }
+.a11y__switch.is-on .a11y__toggle { background: var(--orange) !important; }
+.a11y__close:hover { color: #fff; }
+.qmenu__panel { border: 1px solid var(--line) !important; }
+
+/* Legal pages: these used the "ink" token as text colour, which is near-black in dark mode. */
+.legal-page__title, .legal-page__body h2, .legal-page__body h3 { color: var(--navy) !important; }
+.legal-page__body, .legal-page__body p, .legal-page__body li { color: var(--navy) !important; }
+.legal-page__card { background: var(--paper) !important; border: 1px solid var(--line) !important; }
+.legal-page__body h2 { border-top-color: var(--line) !important; }
+.legal-page__body a { color: var(--orange-ink); }
+
+/* Disabled controls stay readable (they were dimmed to 40%). */
+.a11y__reset:disabled, .adm-btn:disabled { opacity: 0.65 !important; }
