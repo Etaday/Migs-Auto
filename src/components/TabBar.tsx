@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { House, FolderOpen, CalendarCheck, User } from '@/components/slab'
+import { House, FolderOpen, CalendarCheck, Stack, User } from '@/components/slab'
 import { motionReduced } from '@/lib/a11y'
 
 /**
@@ -20,8 +20,9 @@ import { motionReduced } from '@/lib/a11y'
 const TABS = [
   { label: 'Home', to: '/', Icon: House },
   { label: 'Inventory', to: '/inventory', Icon: FolderOpen },
-  { label: 'Contact', to: '/contact', Icon: CalendarCheck, primary: true },
-  { label: 'About', to: '/about', Icon: User },
+  { label: 'Test drive', to: '/test-drive', Icon: CalendarCheck, primary: true },
+  { label: 'Financing', to: '/financing', Icon: Stack },
+  { label: 'Contact', to: '/contact', Icon: User },
 ] as const
 
 /** Scroll distance in one direction before the bar reacts, and the band at the

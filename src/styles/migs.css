@@ -55,3 +55,4 @@
 .mswitch__card span { color: var(--muted); font-size: 14px; }
 .mfeatured { padding: 0 var(--panel-x); }
 @media (max-width: 520px) { .mswitch { grid-template-columns: 1fr; } }
+.mcontact { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }

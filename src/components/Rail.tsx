@@ -5,6 +5,9 @@ import ThemeGlyph from './ThemeGlyph'
 import {
   HomeIcon,
   FolderIcon,
+  StackIcon,
+  StarIcon,
+  BookIcon,
   UserIcon,
   MessageIcon,
 } from './RailIcons'
@@ -26,6 +29,9 @@ import { profile } from '@/data/profile'
 export const RAIL_LINKS = [
   { label: 'Home', to: '/', Icon: HomeIcon },
   { label: 'Inventory', to: '/inventory', Icon: FolderIcon },
+  { label: 'Trade-in', to: '/trade-in', Icon: StackIcon },
+  { label: 'Financing', to: '/financing', Icon: StarIcon },
+  { label: 'Test drive', to: '/test-drive', Icon: BookIcon },
   { label: 'About', to: '/about', Icon: UserIcon },
   { label: 'Contact', to: '/contact', Icon: MessageIcon },
 ] as const

@@ -12,8 +12,11 @@ import { restorePrefs } from '@/lib/a11y'
 // Every route but Home is its own chunk: the first visit only pays for Home.
 const InventoryView = lazy(() => import('@/components/inventory/InventoryView'))
 const VehicleDetail = lazy(() => import('@/components/inventory/VehicleDetail'))
-const AboutGrid = lazy(() => import('@/components/AboutGrid'))
-const ContactGrid = lazy(() => import('@/components/ContactGrid'))
+const AboutView = lazy(() => import('@/components/AboutView'))
+const TradeInView = lazy(() => import('@/components/forms/TradeInView'))
+const FinancingView = lazy(() => import('@/components/forms/FinancingView'))
+const TestDriveView = lazy(() => import('@/components/forms/TestDriveView'))
+const ContactView = lazy(() => import('@/components/ContactView'))
 const AdminApp = lazy(() => import('@/components/admin/AdminApp'))
 const SharedDocument = lazy(() => import('@/components/SharedDocument'))
 const InvoiceStudio = lazy(() => import('@/components/InvoiceStudio'))
@@ -78,8 +81,11 @@ const start = () =>
           <Route path="/" element={<Home />} />
           <Route path="/inventory" element={<InventoryView />} />
           <Route path="/inventory/:id" element={<VehicleDetail />} />
-          <Route path="/about" element={<AboutGrid />} />
-          <Route path="/contact" element={<ContactGrid />} />
+          <Route path="/trade-in" element={<TradeInView />} />
+          <Route path="/financing" element={<FinancingView />} />
+          <Route path="/test-drive" element={<TestDriveView />} />
+          <Route path="/about" element={<AboutView />} />
+          <Route path="/contact" element={<ContactView />} />
         </Route>
         {/* Standalone pages: their own layout, no rail, document scroll. */}
         <Route path="/admin" element={<Suspense fallback={null}><AdminApp /></Suspense>} />
