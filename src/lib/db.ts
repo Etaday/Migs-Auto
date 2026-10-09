@@ -17,6 +17,7 @@ import { withDefaults } from '@/lib/inventory'
 import type { SaleDocument } from '@/types/document'
 import type { Product } from '@/types/product'
 import { productWithDefaults } from '@/lib/products'
+import { SAMPLE_PRODUCTS } from '@/data/sampleProducts'
 
 export type Table = 'vehicles' | 'inquiries' | 'documents' | 'products'
 
@@ -122,16 +123,8 @@ function demoVehicles(): Vehicle[] {
   ]
 }
 
-const dp = (n: number, o: Partial<Product>): Product => productWithDefaults({
-  id: `demo-p${n}`, created_at: new Date(Date.now() - n * 864e5).toISOString(), description: 'Sample listing. Replace it from the dashboard.', ...o,
-})
 function demoProducts(): Product[] {
-  return [
-    dp(1, { category: 'mags', name: 'Enkei 17" Mags (set of 4)', brand: 'Enkei', size: '17 inch, 5x114.3', fits: 'Honda Civic, Accord', condition: 'new', price: 38000, stock: 3 }),
-    dp(2, { category: 'mags', name: 'Rays 18" Mags (set of 4)', brand: 'Rays', size: '18 inch, 5x100', fits: 'Toyota Vios, Altis', condition: 'used', price: 24000, stock: 1 }),
-    dp(3, { category: 'accessories', name: 'Dash cam 1080p', brand: 'Viofo', condition: 'new', price: 4500, stock: 12 }),
-    dp(4, { category: 'accessories', name: 'Seat covers (full set)', condition: 'new', price: 3200, stock: 0 }),
-  ]
+  return SAMPLE_PRODUCTS.map((p, i) => productWithDefaults({ ...p, id: `demo-p${i + 1}`, created_at: new Date(Date.now() - (i + 1) * 864e5).toISOString() }))
 }
 
 function seed(): Demo {
