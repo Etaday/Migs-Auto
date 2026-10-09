@@ -10,8 +10,14 @@ export default function ContactView() {
         <li><a className="mbtn" href={`tel:${profile.phoneTel}`}><Phone size={18} aria-hidden="true" />&nbsp;Call {profile.phone}</a></li>
         <li><a className="mbtn" href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noopener noreferrer"><WhatsappLogo size={18} aria-hidden="true" />&nbsp;WhatsApp</a></li>
         <li><a className="mbtn" href={`mailto:${profile.email}`}><EnvelopeSimple size={18} aria-hidden="true" />&nbsp;Email</a></li>
+        {profile.socials.map(({ label, href, Icon }) => (
+          <li key={label}><a className="mbtn" href={href} target="_blank" rel="noopener noreferrer"><Icon size={18} aria-hidden="true" />&nbsp;{label}</a></li>
+        ))}
       </ul>
-      <p className="mpage__note"><MapPin size={16} aria-hidden="true" /> {profile.location} &nbsp; <Clock size={16} aria-hidden="true" /> {profile.hours}</p>
+      <ul className="minfo" role="list">
+        <li><MapPin size={16} aria-hidden="true" /> {profile.location}</li>
+        <li><Clock size={16} aria-hidden="true" /> {profile.hours}</li>
+      </ul>
       <InquiryForm kind="inquiry" heading="Send us a message" messageRequired />
     </section>
   )

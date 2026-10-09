@@ -3,12 +3,12 @@
  * PLACEHOLDERS: phone, email, address and hours are not confirmed; replace them here, in one place.
  */
 
-import { Car, Motorcycle, Wrench, type Icon } from '@/components/slab'
+import { Car, Motorcycle, Wrench, FacebookLogo, InstagramLogo, type Icon } from '@/components/slab'
 
 export type SocialLink = {
   label: string
   href: string
-  iconPath: string
+  Icon: Icon
 }
 
 /** A proof fact on the phone's Home: a glyph, a short value, a caption. */
@@ -71,5 +71,8 @@ export const profile: Profile = {
     portraitSrc: '/avatar.png',
     portraitAlt: 'Migs Auto logo',
   },
-  socials: [],
+  socials: [
+    { label: 'Facebook', href: 'https://www.facebook.com/vingeliomiguel.maranan', Icon: FacebookLogo },
+    { label: 'Instagram', href: 'https://www.instagram.com/Miguel_maranan', Icon: InstagramLogo },
+  ],
 }
