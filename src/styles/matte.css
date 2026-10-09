@@ -1,0 +1,101 @@
+/* ============================================================
+   MATTE finish. Loaded last. No frosted glass, no glossy highlight
+   lines, no glows, no sheens: flat solid surfaces separated by thin
+   borders, and a softer, flat red. Only the logo artwork keeps its
+   own finish.
+   ============================================================ */
+
+/* ---- Palette: flat, low-sheen ---- */
+:root {
+  --orange: #C2282D;
+  --orange-hover: #D13A3F;
+  --orange-ink: #A81D22;
+  --cream: #E7E8EA;
+  --paper: #F1F2F3;
+  --white: #F7F7F8;
+  --plate: #F1F2F3;
+  --panel-dark: #17171A;
+  --line: rgba(18, 19, 22, 0.14);
+  --line-strong: rgba(18, 19, 22, 0.26);
+  --tint: rgba(18, 19, 22, 0.05);
+  --tint-strong: rgba(18, 19, 22, 0.09);
+  --glass: #F1F2F3;
+  --shadow-soft: none;
+  --shadow-card: none;
+  --shadow-btn: none;
+}
+[data-theme='dark'] {
+  --orange-ink: #E0575C;
+  --cream: #0F0F11;
+  --paper: #17171A;
+  --white: #1C1C20;
+  --plate: #17171A;
+  --panel-dark: #17171A;
+  --navy: #E4E5E8;
+  --muted: rgba(228, 229, 232, 0.62);
+  --line: rgba(255, 255, 255, 0.10);
+  --line-strong: rgba(255, 255, 255, 0.20);
+  --tint: rgba(255, 255, 255, 0.05);
+  --tint-strong: rgba(255, 255, 255, 0.08);
+  --glass: #17171A;
+  --shadow-soft: none;
+  --shadow-card: none;
+  --shadow-btn: none;
+}
+html, body { background: var(--cream); }
+
+/* ---- No glass, no glow, no gloss anywhere ---- */
+*, *::before, *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+/* Keyboard focus must stay visible now that shadow rings are gone. */
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* Background: flat colour, with only the moving road lines. */
+.hero-canvas.ambient, [data-theme='dark'] .hero-canvas.ambient { background: var(--cream) !important; }
+.rail::before, .rail::after { display: none !important; }
+
+/* Surfaces: solid fill + thin border instead of translucent glass. */
+.rail, .tabbar, .a11y__panel, .qmenu__panel, .hprofile {
+  background: var(--paper) !important;
+  background-image: none !important;
+}
+.rail { border-right: 1px solid var(--line) !important; }
+.tabbar { border: 1px solid var(--line) !important; }
+.vcard, .mswitch__card, .mform, .vdetail__specs div { background-image: none !important; }
+.home__cta, .mbtn, .adm-btn, .tabbar__tab--primary { background-image: none !important; }
+.home__cta { background: var(--orange); color: #fff; }
+.home__cta:hover { background: var(--orange-hover); }
+
+/* Glows off: intro line and dot, bike, status dots. */
+.boot__cable--live, .boot__dot, .boot__dot-core, .theme-bike, .boot__n-card { filter: none !important; }
+.theme-bike { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.7)) !important; }
+
+/* ---- Dealer dashboard: solid panels ---- */
+.adm, .adm-login {
+  --a-bg: #EBECEE;
+  --a-card: #F7F7F8;
+  --a-glass: #F7F7F8; --a-glass-soft: #F1F2F3; --a-glass-strong: #FFFFFF; --a-glass-hover: #E6E7EA; --a-glass-th: #ECEDEF;
+  --a-glass-line: rgba(18, 19, 22, 0.14); --a-glass-edge: transparent; --a-glass-hi: transparent; --a-glass-shadow: none;
+  --a-pink: #C2282D; --a-pink-ink: #A81D22; --a-focus: #C2282D;
+}
+[data-theme='dark'] .adm, [data-theme='dark'] .adm-login {
+  --a-bg: #0F0F11;
+  --a-card: #17171A;
+  --a-glass: #17171A; --a-glass-soft: #1C1C20; --a-glass-strong: #26262B; --a-glass-hover: #232327; --a-glass-th: #1C1C20;
+  --a-glass-line: rgba(255, 255, 255, 0.10); --a-glass-edge: transparent; --a-glass-hi: transparent; --a-glass-shadow: none;
+  --a-pink-ink: #E0575C; --a-focus: #E0575C;
+}
+.adm::before, .adm-login::before { display: none !important; }
+.adm-banner { background-image: none !important; }
+.paper { box-shadow: none !important; border: 1px solid #d9dbe0; }
+
+/* Logo: no red halo, no drop shadow, no edge fade. It sits flat on the panel. */
+.rail__avatar::before { display: none !important; }
+.rail__avatar img { filter: none !important; -webkit-mask-image: none !important; mask-image: none !important; }
+/* The hairline rings that were drawn with shadows are real borders now. */
+.rail__social, .rail__theme, .adm-themebtn { border: 1px solid var(--line) !important; background: var(--white) !important; }
+.rail__link[aria-current='page'], .rail__link.active { background: var(--tint-strong) !important; }

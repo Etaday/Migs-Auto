@@ -57,6 +57,8 @@ import './styles/mobile-pass.css'
 import './styles/perf.css'
 import './styles/glass.css'
 import './styles/migs.css'
+// Matte finish: always last, it removes glass, gloss and glow.
+import './styles/matte.css'
 
 // Re-apply this tab's performance verdict before the first paint, so a
 // downgraded visitor never sees the expensive layers flash back on reload.

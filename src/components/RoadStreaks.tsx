@@ -40,7 +40,7 @@ export default function RoadStreaks() {
         thick: 0.6 + depth * 2.2,
         dir,
         red,
-        alpha: 0.18 + depth * 0.5,
+        alpha: 0.12 + depth * 0.34,
       }
     }
 

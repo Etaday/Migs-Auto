@@ -443,7 +443,7 @@ code { font-size: 12.5px; }
 .adm-vcell { display: flex; gap: 12px; align-items: center; }
 .adm-vcell img { border-radius: 8px; object-fit: cover; background: #131316; flex: none; }
 .adm-vcell b { display: block; }
-.adm-card b { font-size: clamp(20px, 2.1vw, 28px); overflow-wrap: anywhere; }
+.adm-card b { font-size: clamp(18px, 1.9vw, 26px); white-space: nowrap; }
 .adm-cards { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 
 /* Invoice / receipt paper: always white, like the printed page */
