@@ -2,14 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { profile } from '@/data/profile'
 
 /**
- * IntroOverlay - "the workflow writes the line".
+ * IntroOverlay - "the road writes the line".
  *
- * The site's own pitch is "One trigger fires. Everything else runs itself.", so
- * the intro is a workflow execution, drawn the way n8n draws one: a half-pill
- * trigger node, square step nodes, thin grey connectors, and the run streaming
- * through them left to right. Each node lights as the execution reaches it and
- * earns a green check; the headline is written by the same progress, one word
- * rising per stretch of cable.
+ * The intro follows the buyer's journey on a dashed road: Browse, Test drive,
+ * Finance, Drive home. A headlight runs the road left to right; each stop lights
+ * and earns a check as it passes, the headline is written by the same progress,
+ * and the status reads "Starting engine" then "Ready to drive". (The node-and-
+ * cable layout is the template's; the story and icons are the dealership's.)
  *
  *   Ignition  0.00-0.30  nodes and cables draw in
  *   Run       0.30-1.90  the execution streams the cables; nodes succeed as it
@@ -47,12 +46,12 @@ const EASE_CAMERA = 'cubic-bezier(0.76, 0, 0.24, 1)'
 const easeInOut = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
-/** The four steps of the run. Icons are Tabler outlines, 24-unit grid. */
+/** The four steps of buying a vehicle. Icons are Tabler outlines, 24-unit grid. */
 const STEPS = [
-  { label: 'Book', trigger: true, d: 'M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4M13.5 6.5l4 4' },
-  { label: 'Setup', trigger: false, d: 'M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0' },
-  { label: 'Capture', trigger: false, d: 'M3 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M3 17a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M8.6 8.6l10.4 10.4M8.6 15.4l10.4 -10.4' },
-  { label: 'Share', trigger: false, d: 'M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0M9 12l2 2l4 -4' },
+  { label: 'Browse', trigger: true, d: 'M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2M9 17h6M3 11h15M9 6v5' },
+  { label: 'Test drive', trigger: false, d: 'M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M12 14v7M10 12l-6.75 -1M14 12l6.75 -1' },
+  { label: 'Finance', trigger: false, d: 'M6 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M16 17a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M6 18l12 -12' },
+  { label: 'Drive home', trigger: false, d: 'M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9zM5 21v-7' },
 ] as const
 
 const shouldRun =
@@ -308,7 +307,7 @@ export default function IntroOverlay() {
       succeed(n - 1)
       status.classList.add('is-done')
       const label = status.querySelector<HTMLElement>('.boot__status-text')
-      if (label) label.textContent = 'Delivered'
+      if (label) label.textContent = 'Ready to drive'
       await wait(LOCK)
       if (cancelled) return
 
@@ -395,7 +394,7 @@ export default function IntroOverlay() {
 
         <span className="boot__status" ref={statusRef}>
           <i className="boot__status-dot" />
-          <span className="boot__status-text">Rolling</span>
+          <span className="boot__status-text">Starting engine</span>
         </span>
       </div>
     </div>

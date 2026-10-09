@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChatCircleDots, X, PaperPlaneTilt, Microphone, SpeakerHigh, SpeakerSlash } from '@/components/slab'
 import { answer, STARTERS, WELCOME, type BotLink, type Lang } from '@/lib/faqBot'
-import { holdMusic, releaseMusic } from '@/lib/music'
+import { listVehicles } from '@/lib/db'
+import type { Vehicle } from '@/types/vehicle'
 import { canListen, canSpeak, checkMic, listen, onVoices, saveVoice, savedVoice, speak, stopSpeaking, voicesFor } from '@/lib/voice'
 
 /**
@@ -24,6 +25,8 @@ function LinkBtn({ l, onGo }: { l: BotLink; onGo: () => void }) {
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false)
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  useEffect(() => { if (open) listVehicles().then(setVehicles).catch(() => setVehicles([])) }, [open])
   const [msgs, setMsgs] = useState<Msg[]>([{ id: 0, from: 'bot', text: WELCOME[/^(fil|tl)\b/i.test(navigator.language) ? 'fil' : 'en'] }])
   const [text, setText] = useState('')
   const [typing, setTyping] = useState(false)
@@ -66,7 +69,6 @@ export default function ChatBot() {
   useEffect(() => { mutedRef.current = muted; if (muted) stopSpeaking() }, [muted])
 
   const stopTalking = () => {
-    releaseMusic()
     talkRef.current = false
     setTalking(false)
     setListening(false)
@@ -111,7 +113,6 @@ export default function ChatBot() {
   const toggleTalk = async () => {
     if (talkRef.current) { stopTalking(); return }
     talkRef.current = true
-    holdMusic()
     setTalking(true)
     setVoiceNote(langRef.current === 'fil' ? 'Humihingi ng pahintulot sa mikropono...' : 'Waiting for microphone permission...')
     stopSpeaking()
@@ -128,7 +129,7 @@ export default function ChatBot() {
     setMsgs((m) => [...m, { id: idRef.current++, from: 'you', text: question }])
     setText('')
     setTyping(true)
-    const reply = answer(question, lang)
+    const reply = answer(question, lang, vehicles)
     if (reply.lang) setLang(reply.lang)
     window.setTimeout(() => {
       setMsgs((m) => [...m, { id: idRef.current++, from: 'bot', ...reply }])
@@ -157,8 +158,8 @@ export default function ChatBot() {
         <section className="chat" role="dialog" aria-label="Chat assistant">
           <header className="chat__head">
             <div>
-              <b>Judeng assistant</b>
-              <small>{lang === 'fil' ? 'Awtomatikong sagot tungkol sa serbisyo namin' : 'Automated answers about our services'}</small>
+              <b>Migs Auto assistant</b>
+              <small>{lang === 'fil' ? 'Awtomatikong sagot tungkol sa mga sasakyan namin' : 'Automated answers about our vehicles'}</small>
             </div>
             {canSpeak() && voiceOk && (
               <button type="button" className="chat__close" onClick={() => setMuted((v) => !v)} aria-label={muted ? 'Turn spoken replies on' : 'Turn spoken replies off'} aria-pressed={muted} title={muted ? 'Spoken replies off' : 'Spoken replies on'}>

@@ -1,27 +1,3 @@
-import type { BookingStatus, ReviewStatus, PaymentStatus } from '@/lib/db'
-import { PAYMENT_LABEL } from '@/lib/payments'
-import { formatDate as longDate, formatTime } from '@/lib/booking'
-import { money } from '@/data/catalog'
-
-export { longDate, formatTime, money }
-
-export const STATUS_LABEL: Record<BookingStatus, string> = {
-  new: 'New',
-  confirmed: 'Confirmed',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-}
-
-export function StatusPill({ status }: { status: BookingStatus | ReviewStatus | 'handled' | 'open' }) {
-  const label =
-    status in STATUS_LABEL ? STATUS_LABEL[status as BookingStatus] : status.charAt(0).toUpperCase() + status.slice(1)
-  return <span className={`adm-pill adm-pill--${status}`}>{label}</span>
-}
-
-export function PaymentPill({ status }: { status: PaymentStatus }) {
-  return <span className={`adm-pill adm-pill--pay-${status}`}>{PAYMENT_LABEL[status]}</span>
-}
-
 export const shortDate = (iso: string) => {
   const d = new Date(`${iso.slice(0, 10)}T00:00:00`)
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })

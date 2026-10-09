@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** A Migs Auto car and motorcycle dealer site (inventory, inquiries, trade-in, financing, test drives, admin dashboard) built by cloning and re-skinning the Judeng Production Studio site.
+**Goal:** A Migs Auto car and motorcycle dealer site (inventory, inquiries, trade-in, financing, test drives, admin dashboard) built by re-skinning an existing portfolio-site template.
 
 **Architecture:** Copy `upload-B` into this repo, keep its shell (Rail/TabBar, lazy routes, admin, `lib/db.ts` demo-or-Supabase data layer, ChatBot). Add two tables, `vehicles` and `inquiries` (one table; `kind` = `inquiry | trade_in | financing | test_drive`). Pure logic (`inventory.ts`, `financing.ts`) is unit-tested with vitest; UI is verified by typecheck, build and localhost.
 
@@ -12,14 +12,14 @@
 
 ## Global Constraints
 
-- Source to clone: `/Users/elvistaday/Judeng Production Studio/upload-B` (exclude `node_modules`, `dist`, `my-portfolio`, `.git`, `.env*`).
+- Source to clone: the template folder (exclude `node_modules`, `dist`, `my-portfolio`, `.git`, `.env*`).
 - Brand: near-black background, silver text, red used only for accents and buttons. Currency ₱ (PHP). Business name "Migs Auto".
 - Logo files come from the user (images in the chat). Until files exist in `public/`, use a text wordmark "MIGS AUTO" and do not block on them.
 - Contact details (phone, WhatsApp, address, hours) live in ONE file, `src/data/profile.ts`, with obvious placeholders.
 - Supabase project creation, `git push` and Vercel deploy happen only on explicit user request. Show on localhost first.
 - Remote `origin` is `https://github.com/Etaday/Migs-Auto-Website.git` (unverified).
 - Admin sign-in is restricted to emails in the `admins` table.
-- Removed from Judeng: photo/video portfolio, price list, music autoplay.
+- Removed from the template: photo/video portfolio, price list, music autoplay.
 
 ## Review Focus
 
@@ -58,9 +58,9 @@
 
 - [ ] **Step 1:** `rsync -a --exclude node_modules --exclude dist --exclude my-portfolio --exclude .git --exclude '.env*' --exclude supabase/functions upload-B/ Migs-Auto-Website/`, then add `.gitignore` (`node_modules`, `dist`, `.env*`).
 - [ ] **Step 2:** In `package.json` set the name, run `npm install` and `npm install -D vitest`.
-- [ ] **Step 3:** In `tokens.css` replace the palette: near-black `#0B0B0D` background, silver `#D8DADF` text, red `#D7191F` accent and hover `#EF3A40`; keep existing variable names so the other stylesheets keep working. Replace Judeng strings in `index.html`, manifest and `App.tsx` titles (`Home`, `Inventory`, `Trade-in`, `Financing`, `Test drive`, `About`, `Contact`).
+- [ ] **Step 3:** In `tokens.css` replace the palette: near-black `#0B0B0D` background, silver `#D8DADF` text, red `#D7191F` accent and hover `#EF3A40`; keep existing variable names so the other stylesheets keep working. Replace the template strings in `index.html`, manifest and `App.tsx` titles (`Home`, `Inventory`, `Trade-in`, `Financing`, `Test drive`, `About`, `Contact`).
 - [ ] **Step 4:** Run `npm run build`. Expected: PASS.
-- [ ] **Step 5:** Commit `chore: clone Judeng shell and apply Migs Auto palette`.
+- [ ] **Step 5:** Commit `chore: clone template shell and apply Migs Auto palette`.
 
 ### Task 2: Vehicle and inquiry data layer
 

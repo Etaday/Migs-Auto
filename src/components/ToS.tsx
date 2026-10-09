@@ -28,12 +28,12 @@ export default function ToS() {
           <h2>Using this site</h2>
           <p>You may browse this site for personal or business research. Do not misuse it or attempt to disrupt it.</p>
 
-          <h2>Bookings and payment</h2>
-          <p>A booking request is not a confirmed booking. We check availability and then confirm your date. A 30% deposit of the total booking price is required to confirm, and the remaining 70% is paid at the venue on the event date. Any location charge for your area is added once to the total before the deposit is worked out.</p>
-          <p>We accept WAMD and cash. Photo and video coverage and food photography are quoted individually with the studio. Cancellation and rescheduling terms are agreed with the studio when your booking is confirmed.</p>
+          <h2>Listings and prices</h2>
+          <p>Vehicle details and prices on this site are shown in good faith and can change or sell out without notice. An inquiry, reservation request or test drive request is not a confirmed sale: we confirm availability, price and any financing with you directly.</p>
+          <p>Financing figures on this site are estimates only. The final rate and terms depend on the approved plan. Trade-in values are offers made after we assess the vehicle.</p>
 
           <h2>Ownership</h2>
-          <p>The content of this site belongs to Judeng Production Studio. Rights in the finished work are set out in each project agreement.</p>
+          <p>The content of this site belongs to Migs Auto.</p>
 
           <h2>Liability</h2>
           <p>This site is provided as is. To the extent the law allows, we are not liable for losses arising from using it.</p>

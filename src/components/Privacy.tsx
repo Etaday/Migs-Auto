@@ -26,27 +26,25 @@ export default function Privacy() {
 
         <div className="legal-page__body">
           <h2>Who this covers</h2>
-          <p>This site is run by Judeng Production Studio. This policy applies to this website only.</p>
+          <p>This site is run by Migs Auto, a seller of cars and motorcycles. This policy applies to this website only.</p>
 
           <h2>What is collected</h2>
           <p>
-            When you send a booking request we receive your name, email, phone number, the services you chose, the event date, time, area and venue, your guest count and any notes.
-            The contact form collects your name, email and message, and the review form collects your name, email, service and review text.
+            When you send an inquiry, trade-in, financing or test drive request we receive your name, phone number, email and message, the vehicle you asked about, and the details you enter in that form (for example a test drive date or your vehicle's year and mileage).
             We do not run advertising trackers.
           </p>
 
           <h2>How it is used</h2>
-          <p>We use it only to check availability, reply to you, prepare quotes, invoices and receipts, and to run your booking. Approved reviews are shown on this site with your first name or the name you gave; your email is never shown. We do not sell your data.</p>
+          <p>We use it only to reply to you, prepare offers and financing estimates, and arrange test drives and sales. We do not sell your data.</p>
 
           <h2>Where it is stored</h2>
           <p>
-            Requests and messages are stored in a secured online database that only the studio can read. We also use Google Calendar to keep our event schedule, and WhatsApp, email or a phone call to contact you.
-            The invoice and receipt links we send you are private: anyone with the link can view that one document, so do not share it.
+            Requests are stored in a secured online database that only the dealership can read. We may contact you by phone call, WhatsApp, SMS or email.
           </p>
           <p>Your browser keeps small settings on your own device, such as light or dark mode. The chat assistant gives automated answers and does not store your questions.</p>
 
           <h2>How long it is kept</h2>
-          <p>We keep bookings, invoices and receipts for as long as needed to serve you and for our business records. To ask us to correct or delete your data, email or message us and we will do so.</p>
+          <p>We keep inquiries and sales records for as long as needed to serve you and for our business records. To ask us to correct or delete your data, email or message us and we will do so.</p>
 
           <h2>Contact</h2>
           <p>

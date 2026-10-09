@@ -4,7 +4,7 @@
 A website for Migs Auto, a dealer selling cars and motorcycles. Visitors browse inventory and contact Migs (inquire, trade in, finance, book a test drive). Migs manages everything from an admin dashboard.
 
 ## Approach
-Clone the Judeng Production Studio site (`upload-B`: Vite, React 19, TypeScript, GSAP, Supabase) into this repo and re-skin it. Reuse routing, admin, forms, chatbot, invoices and the booking calendar. Fresh build rejected: slower, less functionality.
+Copy an existing Vite, React 19, TypeScript, GSAP and Supabase portfolio-site template into this repo and re-skin it. Reuse routing, admin, forms, chatbot, invoices and the booking calendar. Fresh build rejected: slower, less functionality.
 
 ## Brand
 - Near-black background, silver text/logo, red accents and buttons only.
@@ -17,7 +17,7 @@ Clone the Judeng Production Studio site (`upload-B`: Vite, React 19, TypeScript,
 - **Inventory:** filter by type, brand, price, year. Vehicle detail page: photo gallery, specs, Inquire/Reserve.
 - **Trade-in:** form (vehicle description, photos, asking price).
 - **Financing:** payment calculator and inquiry form.
-- **Test drive:** date/time picker for a chosen vehicle (reuse Judeng booking calendar).
+- **Test drive:** date/time picker for a chosen vehicle (reuse the template's date picker).
 - **About, Contact:** map link, WhatsApp, call, Messenger.
 - **Chatbot:** answers questions about inventory.
 
@@ -29,11 +29,11 @@ Clone the Judeng Production Studio site (`upload-B`: Vite, React 19, TypeScript,
 
 ## Data and hosting
 - New Supabase project: vehicles, inquiries, admins. Creating it needs user approval at that point.
-- Demo mode with sample vehicles until Supabase is connected (as in Judeng).
+- Demo mode with sample vehicles until Supabase is connected (as in the template).
 - Vercel deploy and any `git push` only on explicit user request; show on localhost first.
 - Remote: `https://github.com/Etaday/Migs-Auto-Website.git` (unverified).
 
-## Removed from Judeng
+## Removed from the template
 Photo/video portfolio, price list, music autoplay.
 
 ## Open inputs (placeholders until supplied)

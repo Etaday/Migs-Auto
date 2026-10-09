@@ -1,5 +1,4 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
-import { bootKnowledge } from '@/lib/knowledgeClient'
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -18,8 +17,6 @@ const FinancingView = lazy(() => import('@/components/forms/FinancingView'))
 const TestDriveView = lazy(() => import('@/components/forms/TestDriveView'))
 const ContactView = lazy(() => import('@/components/ContactView'))
 const AdminApp = lazy(() => import('@/components/admin/AdminApp'))
-const SharedDocument = lazy(() => import('@/components/SharedDocument'))
-const InvoiceStudio = lazy(() => import('@/components/InvoiceStudio'))
 const Privacy = lazy(() => import('@/components/Privacy'))
 const ToS = lazy(() => import('@/components/ToS'))
 const ThankYou = lazy(() => import('@/components/ThankYou'))
@@ -89,8 +86,6 @@ const start = () =>
         </Route>
         {/* Standalone pages: their own layout, no rail, document scroll. */}
         <Route path="/admin" element={<Suspense fallback={null}><AdminApp /></Suspense>} />
-        <Route path="/d/:token" element={<Suspense fallback={null}><SharedDocument /></Suspense>} />
-        <Route path="/invoice" element={<Suspense fallback={null}><InvoiceStudio /></Suspense>} />
         <Route path="/privacy" element={<Suspense fallback={null}><Privacy /></Suspense>} />
         <Route path="/terms" element={<Suspense fallback={null}><ToS /></Suspense>} />
         <Route path="/thank-you" element={<Suspense fallback={null}><ThankYou /></Suspense>} />
@@ -101,5 +96,4 @@ const start = () =>
   </StrictMode>,
 )
 
-// Prices and areas follow the studio's Google Doc; render once they are applied (or after 0.8s).
-void bootKnowledge().finally(start)
+start()

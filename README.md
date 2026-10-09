@@ -1,51 +1,42 @@
-# Judeng Production Studio
+# Migs Auto
 
-Website for Judeng Production Studio, a video and photo production studio.
-Built on the brewed-ops portfolio template (Vite, React 19, TypeScript, Three.js, GSAP).
-
-## Deploy (Vercel)
-
-Import the repo in Vercel, set the Root Directory to `site`, and deploy; `vercel.json` handles the build and the page routes. Or from this folder run `npx vercel --prod`.
+Website for Migs Auto, a dealer of cars and motorcycles: inventory, vehicle pages, trade-in, financing, test drives, and an owner dashboard.
+Built with Vite, React 19, TypeScript and GSAP.
 
 ## Run
 
 ```bash
 npm install
 npm run dev      # http://localhost:5173
+npm test         # unit tests (vitest)
 npm run build    # outputs dist/
 ```
 
-## Studio dashboard (/admin)
+## Public pages
 
-The owner manages everything at `/admin`: booking requests (status, deposit received, reschedule, notes, WhatsApp/call/email links, CSV export), a calendar, invoices and receipts made from a booking, reviews to approve, and contact messages.
+Home, Inventory (filter by type, brand, price, year), vehicle detail with modifications and an Inquire / Reserve form, Trade-in, Financing calculator, Test drive booking, About, Contact, and a chat assistant that answers from the live inventory.
 
-Without a database it runs in **demo mode** (sample data, saved only in the browser). To make it real, connect a free Supabase project:
+## Dealer dashboard (/admin)
 
-1. The Supabase project and tables are already set up (`supabase/schema.sql` was applied). Only the emails in the `admins` table can open the dashboard: `angelo@judengproduction.com` and `elvistaday@gmail.com`. To add another owner, run `insert into public.admins values ('name@example.com');` in the Supabase SQL Editor.
-2. In Supabase: **Authentication > Users > Add user > Create new user**. Use an email from the admins list, set a password, and tick **Auto confirm user**. Also switch off **Allow new users to sign up** (Sign In / Providers).
-3. In Vercel, **Settings > Environment Variables**, add `VITE_SUPABASE_URL` (`https://wxzjxhnlwuhczrgowvju.supabase.co`) and `VITE_SUPABASE_ANON_KEY` (Supabase **Project Settings > API > anon public key**), then redeploy. Locally these live in `.env.local`, which is not uploaded.
+- **Overview:** stock, inventory value, new leads, sales and profit this month, upcoming test drives, longest in stock.
+- **Inventory:** add, edit and delete listings; status Available / Reserved / Sold; photo links; modifications; private cost for margin; CSV export.
+  Enter a **VIN** and press **Get real specs** to fill in make, model, year, engine, fuel and transmission from the US NHTSA vehicle database (free, US-market vehicles; anything it does not know is entered by hand).
+- **Leads:** inquiries, test drives, financing and trade-in requests with status and one-tap call, WhatsApp and email.
+- **Sales:** sold vehicles, revenue and gross profit.
+- **Team:** who can sign in.
 
-Then bookings, messages and reviews sent from the website land in the dashboard, approved reviews appear on the Clients page, and dates the owner has confirmed show a warning on the booking form.
+Without a database it runs in **demo mode** (sample vehicles, saved only in the browser). To make it real:
 
-## Google Doc as the knowledge base
+1. Create a Supabase project and run `supabase/schema.sql` in its SQL editor. Add the owner's email to the `admins` table (`insert into public.admins values ('owner@example.com');`).
+2. In Supabase **Authentication > Users**, create the owner user and turn off public sign-ups.
+3. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (in `.env.local` locally, and in the host's environment variables when deployed).
 
-Prices and the location charge table follow the studio's Google Doc "Judeng Production - AI Knowledge Base" (document id `17ciFOmNEjfhKvHXq2Y-8XlQHmj25G3TJz5oLA-HXTec`, change it with the `GOOGLE_DOC_ID` variable in Vercel).
+Visitors can read listed (not sold) vehicles but never the private cost, sold price or sold date; that is enforced in the database (`schema.sql`).
 
-- `api/knowledge.ts` reads the doc, `src/lib/knowledgeParse.ts` picks out the 20 option prices, the location table and the "TBA" list, and the site applies them (`src/lib/knowledgeClient.ts`). Changes in the doc reach the site within about 5 minutes (visitors may need one more page load).
-- It reads the doc's sentences, so keep their shape when editing, for example `Wedding cake, 6 layers, with photo booth package: 120 KWD` and `Basic: 95 KWD, photo booth only`. If the doc cannot be read or looks wrong, the site keeps the built-in values in `src/data/catalog.ts`.
-- The doc must be shared as **Anyone with the link: Viewer** (not Editor).
-- New services, new packages and policy wording still need a developer change, because the site only reads prices and areas from the doc.
+## Details to fill in
 
-## Edit the content
+Phone, WhatsApp, email, address and opening hours are placeholders in `src/data/profile.ts`.
 
-- `src/data/profile.ts` - name, email, social links (still `#`), hero copy
-- `src/data/work.ts` - the Work page and Home cards. Add `href` and `imageSrc` to an item to link a real project
-- `src/data/faqs.ts` - FAQ answers
-- `src/components/BookingGrid.tsx` and `src/lib/booking.ts` - the booking form at `/book` (services come from `work.ts`; set `VITE_CONTACT_ENDPOINT` to receive submissions, otherwise it opens the visitor's mail app)
-- `src/data/catalog.ts` - ALL prices (KWD), location charges and the 30% deposit rule. Edit here and the Services page, price list, booking form and invoice maker all update
-- `src/components/ServicesGrid.tsx` - services and process
-- `src/components/TestimonialsGrid.tsx` - the Clients page
-- `src/styles/tokens.css` - brand colors
-- `public/avatar.svg`, `public/favicon.svg`, `public/placeholders/logo.svg` - logo mark (replace with the real logo)
+## Deploy
 
-Licensed under the template's MIT license (see LICENSE).
+`vercel.json` handles the build and page routes. Deploy to Vercel or any static host that serves `dist/`.

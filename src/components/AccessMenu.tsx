@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { PersonArmsSpread, X, ArrowCounterClockwise } from '@/components/slab'
 import { DEFAULT_PREFS, readPrefs, savePrefs, type A11yPrefs, type TextSize } from '@/lib/a11y'
 import { useDismiss, type DismissReason } from '@/hooks/useDismiss'
-import { musicWanted, onMusicChange, setMusicWanted } from '@/lib/music'
 
 /**
  * AccessMenu - fixed bottom-left, the mirror of the reviews widget.
@@ -30,8 +29,6 @@ export const A11Y_OPEN_EVENT = 'a11y:open'
 export default function AccessMenu() {
   const [open, setOpen] = useState(false)
   const [prefs, setPrefs] = useState<A11yPrefs>(readPrefs)
-  const [music, setMusic] = useState(musicWanted)
-  useEffect(() => onMusicChange(() => setMusic(musicWanted())), [])
   const rootRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -130,20 +127,6 @@ export default function AccessMenu() {
               </button>
             </li>
           ))}
-          <li>
-            <button
-              type="button"
-              className={`a11y__switch${music ? ' is-on' : ''}`}
-              aria-pressed={music}
-              onClick={() => setMusicWanted(!music)}
-            >
-              <span className="a11y__switch-text">
-                <span className="a11y__switch-label">Background music</span>
-                <span className="a11y__switch-desc">Plays softly after your first tap</span>
-              </span>
-              <span className="a11y__toggle" aria-hidden="true" />
-            </button>
-          </li>
         </ul>
 
         <button
