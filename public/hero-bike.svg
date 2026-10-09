@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 500" role="img" aria-label="Red sport motorcycle illustration">
+  <defs>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef2b32"/><stop offset=".55" stop-color="#c9232a"/><stop offset="1" stop-color="#8f171c"/></linearGradient>
+    <linearGradient id="redd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b81d23"/><stop offset="1" stop-color="#6e1115"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f3f7"/><stop offset="1" stop-color="#7d838f"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe8f5" stop-opacity=".7"/><stop offset="1" stop-color="#9fb0c8" stop-opacity=".35"/></linearGradient>
+  </defs>
+  <ellipse cx="415" cy="452" rx="345" ry="19" fill="#000" opacity=".6"/>
+
+  <!-- rear wheel -->
+  <g transform="translate(175 352)">
+    <circle r="98" fill="#0a0a0c"/><circle r="84" fill="none" stroke="#2a2b31" stroke-width="3"/>
+    <circle r="72" fill="url(#steel)"/><circle r="59" fill="#0a0a0c"/>
+    <g stroke="url(#steel)" stroke-width="8" stroke-linecap="round"><path d="M0 -52 V-12"/><path d="M45 -26 L11 -7"/><path d="M45 26 L11 7"/><path d="M0 52 V12"/><path d="M-45 26 L-11 7"/><path d="M-45 -26 L-11 -7"/></g>
+    <circle r="15" fill="url(#steel)"/><circle r="6" fill="#c9232a"/>
+  </g>
+  <!-- front wheel -->
+  <g transform="translate(655 352)">
+    <circle r="98" fill="#0a0a0c"/><circle r="84" fill="none" stroke="#2a2b31" stroke-width="3"/>
+    <circle r="72" fill="url(#steel)"/><circle r="59" fill="#0a0a0c"/>
+    <circle r="46" fill="none" stroke="#c3c8d2" stroke-width="5"/><circle r="36" fill="none" stroke="#6b7079" stroke-width="2" stroke-dasharray="3 6"/>
+    <g stroke="url(#steel)" stroke-width="8" stroke-linecap="round"><path d="M0 -52 V-12"/><path d="M45 -26 L11 -7"/><path d="M45 26 L11 7"/><path d="M0 52 V12"/><path d="M-45 26 L-11 7"/><path d="M-45 -26 L-11 -7"/></g>
+    <circle r="15" fill="url(#steel)"/><circle r="6" fill="#c9232a"/>
+  </g>
+
+  <!-- swingarm, engine, exhaust -->
+  <path d="M175 352 L360 318" stroke="#2c2d33" stroke-width="20" stroke-linecap="round"/>
+  <path d="M175 352 L360 318" stroke="#4a4c55" stroke-width="6" stroke-linecap="round"/>
+  <path d="M330 262 L505 256 L520 342 L350 352 Z" fill="#17181c"/>
+  <path d="M352 276 H500 M356 300 H508 M360 324 H514" stroke="#33353c" stroke-width="5"/>
+  <path d="M345 334 C262 340 186 318 108 270" stroke="url(#steel)" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M108 270 L90 259" stroke="#2c2d33" stroke-width="30" stroke-linecap="round"/>
+
+  <!-- front fork -->
+  <path d="M655 352 L578 150" stroke="url(#steel)" stroke-width="17" stroke-linecap="round"/>
+  <path d="M668 346 L590 146" stroke="#59606b" stroke-width="9" stroke-linecap="round"/>
+  <!-- front fender -->
+  <path d="M572 250 C610 232 668 232 722 262 L716 274 C664 252 612 252 578 266 Z" fill="url(#redd)"/>
+
+  <!-- body: lower fairing and belly -->
+  <path d="M672 262 C640 292 570 322 480 332 L372 330 L338 276 C300 244 250 228 196 226 L112 228 L106 212 C150 192 206 182 262 178 L376 172 L402 154 C440 138 498 138 546 150 L584 166 C626 186 656 222 672 262 Z" fill="url(#red)"/>
+  <path d="M672 262 C640 292 570 322 480 332 L372 330 L350 292 C420 300 520 296 590 262 C628 244 652 236 672 262 Z" fill="#000" opacity=".22"/>
+  <!-- upper cowl panel, stripes -->
+  <path d="M410 156 C452 142 506 142 546 152 L520 172 C480 160 440 162 400 176 Z" fill="#a91a20"/>
+  <path d="M388 196 L506 176 L520 182 L402 208 Z" fill="#f2f3f5"/><path d="M404 210 L524 186 L534 192 L416 222 Z" fill="#0a0a0c"/>
+  <!-- tank highlight -->
+  <path d="M410 150 C452 136 504 138 540 148" stroke="#ff6b70" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+  <!-- seat and tail -->
+  <path d="M376 174 L262 180 C206 184 152 196 112 214 L192 207 C260 202 326 202 376 202 Z" fill="#0f1013"/>
+  <path d="M112 216 L90 228 L140 233 Z" fill="#f2f3f5"/>
+  <rect x="82" y="214" width="28" height="9" rx="3" fill="#ff4a50" transform="rotate(-22 82 214)"/>
+
+  <!-- windscreen and mirror -->
+  <path d="M552 152 L596 104 C616 118 628 146 624 182 L588 168 Z" fill="url(#glass)"/>
+  <path d="M552 152 L596 104" stroke="#e8eefa" stroke-width="3" stroke-linecap="round"/>
+  <path d="M590 150 L566 130 L546 136" stroke="#2c2d33" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M626 132 L646 118" stroke="#2c2d33" stroke-width="7" stroke-linecap="round"/>
+  <!-- headlight -->
+  <path d="M626 184 L676 222 L664 246 L616 214 Z" fill="#0f1013"/>
+  <path d="M634 192 L670 220 L662 236 L626 210 Z" fill="#fff2cc"/>
+  <path d="M642 198 L664 218" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

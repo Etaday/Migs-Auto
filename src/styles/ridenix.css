@@ -1,0 +1,255 @@
+/* ============================================================
+   RIDENIX-STYLE PUBLIC SITE
+   Top bar, dark hero with a big red bike and diagonal stripes, square category
+   cards, spec cards, red brand footer. Sharp corners, tall condensed headings,
+   matte surfaces, strong red. Public pages only; the dashboard has its own sheet.
+   Loaded after matte.css so it can refine it.
+   ============================================================ */
+:root {
+  --rx-font: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --rx-black: #0b0b0d;
+  --rx-panel: #131316;
+  --header-h: 72px;
+  --rail-w: 0px;
+}
+
+/* ---------- Shell: top bar over a scrolling panel ---------- */
+@media (min-width: 1100px) {
+  :root { --rail-w: 0px; }
+  .shell { flex-direction: column; }
+  .shell__panel { flex: 1 1 auto; height: auto; min-height: 0; }
+}
+
+/* ---------- Top bar ---------- */
+.site-header {
+  position: relative;
+  z-index: 30;
+  flex: none;
+  height: var(--header-h);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 0 clamp(16px, 3vw, 48px);
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.site-header__logo { display: block; line-height: 0; }
+.site-header__logo img { height: 48px; width: auto; display: block; }
+.site-header__nav { display: flex; justify-content: center; gap: clamp(14px, 1.7vw, 30px); }
+.site-header__link {
+  position: relative;
+  padding: 6px 0;
+  font: 600 15px/1 var(--rx-font);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--dur-fast);
+}
+.site-header__link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; background: var(--orange); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-med) var(--ease-out); }
+.site-header__link:hover, .site-header__link.active { color: var(--navy); }
+.site-header__link.active::after, .site-header__link:hover::after { transform: scaleX(1); }
+.site-header__right { display: flex; align-items: center; gap: 12px; }
+.site-header__theme { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--navy); cursor: pointer; }
+.site-header__theme:hover { border-color: var(--orange); }
+.site-header__cta { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 3px; background: var(--navy); color: var(--cream); font: 600 14px/1 var(--rx-font); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+.site-header__cta:hover { background: var(--orange); color: #fff; }
+@media (max-width: 1099px) {
+  .site-header { position: sticky; top: 0; grid-template-columns: 1fr auto; }
+  .site-header__nav, .site-header__cta { display: none; }
+}
+@media (min-width: 1100px) and (max-width: 1280px) { .site-header__cta { display: none; } .site-header__nav { gap: 14px; } }
+
+/* ---------- Shared pieces ---------- */
+.rx-eyebrow { margin: 0 0 10px; font: 600 15px/1 var(--rx-font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); }
+.rx-eyebrow--center { text-align: center; }
+.rx-h2 { margin: 0 0 20px; font: 700 clamp(34px, 4.2vw, 56px)/1.02 var(--rx-font); letter-spacing: 0.005em; color: var(--navy); }
+.rx-h2--center { text-align: center; }
+.rx-center { text-align: center; margin: 36px 0 0; }
+.rx-empty { text-align: center; color: var(--muted); }
+.home__cta, .rx-ghost, .shell .mbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; padding: 0 28px; border-radius: 3px; border: 1px solid transparent;
+  font: 600 16px/1 var(--rx-font); letter-spacing: 0.09em; text-transform: uppercase; text-decoration: none; cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+}
+.home__cta, .shell .mbtn { background: var(--orange); color: #fff; }
+.home__cta:hover, .shell .mbtn:hover { background: var(--orange-hover); color: #fff; }
+.rx-ghost { background: transparent; color: var(--navy); border-color: var(--line-strong); }
+.rx-ghost:hover { border-color: var(--orange); color: var(--orange-ink); }
+.rx-section { max-width: 1320px; margin: 0 auto; padding: clamp(56px, 7vw, 104px) clamp(20px, 5vw, 80px); position: relative; }
+
+/* ---------- Hero ---------- */
+.rx-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  min-height: clamp(520px, 80vh, 780px);
+  padding: 48px clamp(20px, 5vw, 80px) 72px;
+  background-color: var(--rx-black);
+  color: #fff;
+  transition: background-color 600ms var(--ease-out);
+}
+.rx-hero::before {
+  content: ''; position: absolute; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(circle at 68% 55%, rgba(255, 255, 255, 0.09), transparent 42%),
+    repeating-radial-gradient(circle at 68% 55%, transparent 0 46px, rgba(255, 255, 255, 0.04) 47px 48px);
+  transition: opacity 600ms var(--ease-out);
+}
+.rx-stripe { position: absolute; z-index: -1; top: -12%; height: 135%; transform: skewX(-30deg); transform-origin: top; pointer-events: none; }
+.rx-stripe--red { right: 15%; width: 6.5%; background: var(--orange); }
+.rx-stripe--white { right: 6%; width: 7.5%; background: linear-gradient(#f4f5f7, #a3a6ae); }
+.rx-hero__copy { position: relative; z-index: 1; max-width: 560px; }
+.rx-hero .home__title {
+  display: block; margin: 0 0 18px; flex: none;
+  font: 700 clamp(46px, 6.4vw, 100px)/0.98 var(--rx-font); letter-spacing: 0.002em; color: #fff;
+}
+.rx-hero .home__line { display: block; white-space: normal; text-wrap: balance; }
+.rx-hero .home__lede { margin: 0 0 30px; max-width: 46ch; font-size: 16px; line-height: 1.6; color: #c9cbd1; }
+.rx-hero__actions { display: flex; flex-wrap: wrap; gap: 14px; }
+.rx-hero .rx-ghost, .rx-cta .rx-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+.rx-hero .rx-ghost:hover, .rx-cta .rx-ghost:hover { background: #fff; color: var(--rx-black); border-color: #fff; }
+.rx-hero__bike { position: relative; z-index: 0; justify-self: end; width: min(100%, 860px); height: auto; margin-right: -2%; }
+.rx-hero__dots { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 10px; }
+.rx-hero__dots i { width: 9px; height: 9px; transform: rotate(45deg); border: 1.5px solid #fff; opacity: 0.6; }
+.rx-hero__dots i.is-on { background: var(--orange); border-color: var(--orange); opacity: 1; }
+@media (max-width: 899px) {
+  .rx-hero { grid-template-columns: 1fr; padding-top: 36px; padding-bottom: 80px; min-height: 0; }
+  .rx-hero__bike { justify-self: center; width: 100%; margin: 12px 0 0; }
+  .rx-stripe--red { right: 24%; } .rx-stripe--white { right: 8%; }
+}
+
+/* ---------- Collection row ---------- */
+.rx-cats { list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.rx-cat { display: grid; justify-items: center; gap: 8px; padding: 34px 14px 28px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); text-decoration: none; color: var(--navy); transition: border-color var(--dur-fast), transform var(--dur-med) var(--ease-out); }
+.rx-cat:hover { border-color: var(--orange); transform: translateY(-3px); }
+.rx-cat__icon { display: grid; place-items: center; width: 68px; height: 68px; border-radius: 50%; background: var(--tint-strong); color: var(--navy); transition: color var(--dur-fast), background var(--dur-fast); }
+.rx-cat:hover .rx-cat__icon { background: var(--orange); color: #fff; }
+.rx-cat__label { margin-top: 6px; font: 700 24px/1 var(--rx-font); letter-spacing: 0.02em; }
+.rx-cat__count { font-size: 13px; color: var(--muted); }
+@media (max-width: 760px) { .rx-cats { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---------- About ---------- */
+.rx-about { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(28px, 5vw, 72px); align-items: center; overflow: hidden; }
+.rx-ghostword { position: absolute; top: 18px; left: clamp(20px, 5vw, 80px); font: 700 clamp(96px, 17vw, 260px)/0.8 var(--rx-font); text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px var(--line-strong); opacity: 0.55; pointer-events: none; user-select: none; white-space: nowrap; }
+.rx-about__copy { position: relative; z-index: 1; display: grid; gap: 14px; justify-items: start; }
+.rx-about__copy p { margin: 0; max-width: 56ch; color: var(--muted); line-height: 1.65; }
+.rx-checks { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
+.rx-checks li { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.rx-checks svg { color: var(--orange); flex: none; }
+.rx-stats { list-style: none; margin: 10px 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 14px 38px; }
+.rx-stats li { display: flex; align-items: center; gap: 12px; }
+.rx-stats b { font: 700 52px/1 var(--rx-font); color: var(--navy); }
+.rx-stats span { font-size: 13px; line-height: 1.3; color: var(--muted); }
+.rx-about__art { position: relative; z-index: 1; display: grid; place-items: center; aspect-ratio: 5 / 4; background: var(--rx-black); border-radius: 4px; overflow: hidden; }
+.rx-about__art::before { content: ''; position: absolute; top: -10%; bottom: -10%; right: 22%; width: 14%; background: var(--orange); transform: skewX(-30deg); }
+.rx-about__art::after { content: ''; position: absolute; top: -10%; bottom: -10%; right: 8%; width: 9%; background: linear-gradient(#f4f5f7, #a3a6ae); transform: skewX(-30deg); }
+.rx-about__art img { position: relative; z-index: 1; width: 62%; height: auto; }
+@media (max-width: 899px) { .rx-about { grid-template-columns: 1fr; } .rx-about__art { order: -1; } }
+
+/* ---------- Featured rides ---------- */
+.rx-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px 0 34px; }
+.rx-tabs button { padding: 11px 24px; border-radius: 2px; border: 1px solid var(--line); background: var(--paper); color: var(--navy); font: 600 15px/1 var(--rx-font); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.rx-tabs button:hover { border-color: var(--orange); }
+.rx-tabs button.is-on { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+/* ---------- Listing cards (home, inventory, mags & accessories) ---------- */
+.shell .vgrid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; }
+.shell .vcard { border-radius: 4px; background: var(--paper); border: 1px solid var(--line); transition: border-color var(--dur-fast), transform var(--dur-med) var(--ease-out); }
+.shell .vcard:hover { border-color: var(--orange); transform: translateY(-3px); }
+.shell .vcard__media { aspect-ratio: 4 / 3; background: var(--rx-black); padding: 0; margin: 14px 14px 0; border-radius: 3px; overflow: hidden; width: auto; }
+.shell .vcard__media img { object-fit: cover; }
+.shell .vcard__tag { border-radius: 2px; font-family: var(--rx-font); font-size: 13px; letter-spacing: 0.1em; }
+.shell .vcard__body { padding: 16px 18px 18px; gap: 12px; }
+.vcard__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.shell .vcard__title { font: 700 24px/1.05 var(--rx-font); letter-spacing: 0.01em; }
+.shell .vcard__price { font: 700 22px/1 var(--rx-font); color: var(--orange-ink); white-space: nowrap; }
+.vcard__specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.vcard__specs span { display: grid; gap: 2px; min-width: 0; }
+.vcard__specs i { font-style: normal; font-size: 12px; color: var(--muted); }
+.vcard__specs b { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vcard__btn { display: block; margin-top: 4px; padding: 13px; text-align: center; border-radius: 2px; background: var(--tint-strong); font: 600 15px/1 var(--rx-font); letter-spacing: 0.1em; text-transform: uppercase; transition: background var(--dur-fast), color var(--dur-fast); }
+.shell .vcard:hover .vcard__btn { background: var(--orange); color: #fff; }
+
+/* ---------- Inner pages ---------- */
+.shell .mpage__title { font: 700 clamp(40px, 5.4vw, 72px)/1 var(--rx-font); letter-spacing: 0.005em; }
+.shell .mpage__sub, .shell .mform__title { font-family: var(--rx-font); font-weight: 700; font-size: 30px; letter-spacing: 0.01em; }
+.shell .mchip { border-radius: 2px; font: 600 15px/1 var(--rx-font); letter-spacing: 0.08em; text-transform: uppercase; }
+.shell .mfilters select, .shell .mfilters input, .shell .mform input, .shell .mform textarea, .shell .mform select { border-radius: 3px; }
+.shell .vdetail__main, .shell .vvideos__frame, .shell .msoon { border-radius: 4px; }
+.shell .vdetail__price { font-family: var(--rx-font); font-size: 36px; }
+
+/* ---------- Closing call to action ---------- */
+.rx-cta { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; gap: clamp(20px, 4vw, 56px); margin: 0 clamp(20px, 5vw, 80px) clamp(48px, 6vw, 96px); max-width: none; padding: clamp(28px, 4vw, 56px); background: var(--rx-panel); color: #fff; border-radius: 4px; border-top: 3px solid var(--orange); }
+@media (min-width: 1500px) { .rx-cta { margin-inline: auto; width: min(1320px, calc(100% - 160px)); } }
+.rx-cta .rx-h2 { color: #fff; }
+.rx-cta__bike { width: 100%; height: auto; transform: scaleX(-1); }
+.rx-cta__copy { display: grid; gap: 16px; justify-items: start; }
+.rx-cta__copy p { margin: 0; color: #c9cbd1; line-height: 1.6; }
+@media (max-width: 899px) { .rx-cta { grid-template-columns: 1fr; } .rx-cta__bike { max-width: 420px; justify-self: center; } }
+
+/* ---------- Footer ---------- */
+.site-footer { display: grid; grid-template-columns: 1.35fr 1fr 1fr 1.3fr; gap: clamp(24px, 4vw, 56px); padding: clamp(40px, 5vw, 64px) clamp(20px, 5vw, 80px) 28px; background: var(--rx-black); color: #c9cbd1; border-top: 3px solid var(--orange); }
+.site-footer__brand { display: grid; gap: 14px; align-content: start; padding: 26px; background: var(--orange); color: #fff; border-radius: 3px; }
+.site-footer__brand img { width: 120px; height: auto; }
+.site-footer__brand p { margin: 0; font-size: 14px; line-height: 1.6; }
+.site-footer__social { list-style: none; margin: 4px 0 0; padding: 0; display: flex; gap: 10px; }
+.site-footer__social a { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.7); color: #fff; }
+.site-footer__social a:hover { background: #fff; color: var(--orange); }
+.site-footer__col { display: grid; gap: 11px; align-content: start; font-size: 14px; }
+.site-footer__col h2 { margin: 0 0 6px; font: 700 20px/1 var(--rx-font); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+.site-footer__col a, .site-footer__col > span { display: flex; align-items: center; gap: 8px; color: #c9cbd1; text-decoration: none; }
+.site-footer__col a:hover { color: #fff; }
+.site-footer__legal { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; color: #8c9099; }
+.site-footer__legal a { color: #c9cbd1; }
+@media (max-width: 899px) { .site-footer { grid-template-columns: 1fr 1fr; padding-bottom: 130px; } .site-footer__brand { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .site-footer { grid-template-columns: 1fr; } }
+
+/* ---------- Intro: the new parts wait for the headline to land ---------- */
+.rx-section, .site-header, .site-footer, .rx-hero__bike, .rx-stripe, .rx-hero__dots { transition: opacity 620ms var(--ease-out), transform 760ms var(--ease-out); }
+html.is-intro .rx-section, html.is-intro .site-header, html.is-intro .site-footer, html.is-intro .rx-hero__bike, html.is-intro .rx-hero__dots, html.is-intro .rx-eyebrow { opacity: 0; transform: translateY(14px); }
+html.is-intro .rx-stripe { opacity: 0; }
+html.is-intro .rx-hero { background-color: transparent; }
+html.is-intro .rx-hero::before { opacity: 0; }
+/* The intro headline must look exactly like the real one it lands on. */
+html .boot__title { font-family: var(--rx-font); font-weight: 700; font-size: clamp(46px, 6.4vw, 100px); line-height: 0.98; letter-spacing: 0.002em; color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  html.is-intro .rx-section, html.is-intro .site-header, html.is-intro .site-footer, html.is-intro .rx-hero__bike, html.is-intro .rx-hero__dots, html.is-intro .rx-eyebrow, html.is-intro .rx-stripe { opacity: 1; transform: none; }
+}
+
+/* ---------- Calmer background lines on the public site (they ran through headings) ---------- */
+.shell ~ .hero-canvas.ambient, .hero-canvas.ambient { opacity: 0.35; }
+
+/* ---------- Polish ---------- */
+html.is-intro .rx-hero__actions { opacity: 0; transform: translateY(14px); }
+.rx-hero__actions { transition: opacity 620ms var(--ease-out), transform 760ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { html.is-intro .rx-hero__actions { opacity: 1; transform: none; } }
+
+/* Cards in a row are the same height, with the button at the bottom. */
+.shell .vgrid > li { display: flex; }
+.shell .vgrid .vcard { flex: 1; display: flex; flex-direction: column; }
+.shell .vgrid .vcard__body { flex: 1; display: flex; flex-direction: column; }
+.shell .vgrid .vcard__btn { margin-top: auto; }
+.shell .vcard__specs { margin-bottom: 4px; }
+
+/* Inner pages line up with the home sections. */
+.shell .mpage { max-width: 1320px; margin: 0 auto; width: 100%; box-sizing: border-box; padding-inline: clamp(20px, 5vw, 80px); padding-block: clamp(32px, 5vw, 64px); }
+
+/* Small red labels: bright enough on the dark hero, theme-aware elsewhere. */
+.rx-eyebrow { color: var(--orange-ink); }
+.rx-hero .rx-eyebrow { color: #ff7378; }
+
+/* Phones: the stripes sit behind the bike, never behind the words. */
+@media (max-width: 899px) {
+  .rx-stripe { top: 56%; height: 80%; }
+  .rx-stripe--red { right: 30%; width: 11%; }
+  .rx-stripe--white { right: 8%; width: 13%; }
+  .rx-hero__dots { display: none; }
+  .rx-hero__bike { margin-top: 28px; }
+}

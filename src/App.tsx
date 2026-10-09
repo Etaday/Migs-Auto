@@ -1,8 +1,8 @@
 import { Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import TabBar from '@/components/TabBar'
-import QuickMenu from '@/components/QuickMenu'
-import Rail from '@/components/Rail'
+import SiteHeader from '@/components/SiteHeader'
+import SiteFooter from '@/components/SiteFooter'
 import IntroOverlay from '@/components/IntroOverlay'
 import CursorRing from '@/components/CursorRing'
 import RoadStreaks from '@/components/RoadStreaks'
@@ -78,9 +78,8 @@ export default function App() {
       <a href={`#${SCROLLER_ID}`} className="skip-link">Skip to main content</a>
       <RoadStreaks />
       <ThemeBike />
-      {phone && pathname !== '/' && <QuickMenu className="qmenu--float" />}
       <div className="shell">
-        <Rail />
+        <SiteHeader />
         <main
           ref={panelRef}
           id={SCROLLER_ID}
@@ -90,6 +89,7 @@ export default function App() {
           <Suspense fallback={null}>
             <Outlet />
           </Suspense>
+          <SiteFooter />
         </main>
       </div>
       {phone && <TabBar />}

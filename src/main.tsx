@@ -62,6 +62,10 @@ import './styles/glass.css'
 import './styles/migs.css'
 // Matte finish: always last, it removes glass, gloss and glow.
 import './styles/matte.css'
+// Ridenix-style public site: top bar, hero, cards, footer. After matte so it can refine it.
+import '@fontsource/barlow-condensed/600.css'
+import '@fontsource/barlow-condensed/700.css'
+import './styles/ridenix.css'
 
 // Re-apply this tab's performance verdict before the first paint, so a
 // downgraded visitor never sees the expensive layers flash back on reload.

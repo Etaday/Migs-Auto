@@ -8,6 +8,12 @@ import type { Product, ProductCategory } from '@/types/product'
 export const PLACEHOLDER = '/vehicle-placeholder.svg'
 
 export function ProductCard({ p }: { p: Product }) {
+  const specs: [string, string][] = [
+    ['Brand', p.brand || '—'],
+    ['Size', p.size || '—'],
+    ['Fits', p.fits || '—'],
+    ['Condition', p.condition === 'new' ? 'Brand new' : 'Used'],
+  ]
   return (
     <Link to={`/accessories/${p.id}`} className="vcard">
       <span className="vcard__media">
@@ -15,10 +21,12 @@ export function ProductCard({ p }: { p: Product }) {
         {p.stock <= 0 && <span className="vcard__tag vcard__tag--sold">Out of stock</span>}
       </span>
       <span className="vcard__body">
-        <span className="vcard__title">{p.name}</span>
-        <span className="vcard__meta">{[p.brand, p.size, p.condition === 'new' ? 'Brand new' : 'Used'].filter(Boolean).join(' · ')}</span>
-        <span className="vcard__price">{formatPeso(p.price)}</span>
+        <span className="vcard__row"><span className="vcard__title">{p.name}</span><span className="vcard__price">{formatPeso(p.price)}</span></span>
+        <span className="vcard__specs">
+          {specs.map(([k, val]) => <span key={k}><i>{k}</i><b>{val}</b></span>)}
+        </span>
         <span className="vcard__meta">{stockLabel(p.stock)}</span>
+        <span className="vcard__btn">View Details</span>
       </span>
     </Link>
   )

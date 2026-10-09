@@ -1,60 +1,136 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, Car, Motorcycle, Gear } from '@/components/slab'
+import { ArrowRight, Car, CheckCircle, Gear, Motorcycle, Tire, Wrench } from '@/components/slab'
 import { profile } from '@/data/profile'
-import { listVehicles } from '@/lib/db'
+import { listProducts, listVehicles } from '@/lib/db'
 import type { Vehicle } from '@/types/vehicle'
+import type { Product } from '@/types/product'
 import VehicleCard from '@/components/inventory/VehicleCard'
-import { HomeProfile } from './HomeMobile'
-import { useIsPhone } from '@/hooks/useMediaQuery'
+
+/** The picture on the hero. Replace public/hero-bike.svg with a photo (same name, or change this path) to use a real one. */
+const HERO_IMAGE = '/hero-bike.svg'
 
 /**
- * Home: the headline the intro writes (`.home__title` is the intro's landing
- * target), a Cars / Motorcycles switch and the featured vehicles.
+ * Home, in the Ridenix style: a dark hero with the big bike and diagonal stripes, a collection row,
+ * an About block, the featured rides, and a closing call to action. `.home__title`, `.home__lede`
+ * and `.home__cta` keep their names: the intro animation lands its headline on `.home__title`.
  */
 export default function Home() {
-  const phone = useIsPhone()
   const { displayName, hero } = profile
-  const [featured, setFeatured] = useState<Vehicle[]>([])
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [tab, setTab] = useState<'all' | 'car' | 'motorcycle'>('all')
 
   useEffect(() => {
     let live = true
-    listVehicles()
-      .then((l) => live && setFeatured(l.filter((v) => v.featured).slice(0, 6)))
-      .catch(() => undefined)
+    listVehicles().then((l) => live && setVehicles(l)).catch(() => undefined)
+    listProducts().then((l) => live && setProducts(l)).catch(() => undefined)
     return () => { live = false }
   }, [])
 
+  const count = {
+    cars: vehicles.filter((v) => v.type === 'car').length,
+    bikes: vehicles.filter((v) => v.type === 'motorcycle').length,
+    mags: products.filter((p) => p.category === 'mags').length,
+    acc: products.filter((p) => p.category === 'accessories').length,
+  }
+  const featured = useMemo(
+    () => [...vehicles].filter((v) => tab === 'all' || v.type === tab).sort((a, b) => Number(b.featured) - Number(a.featured) || b.created_at.localeCompare(a.created_at)).slice(0, 6),
+    [vehicles, tab],
+  )
+  const brands = new Set(vehicles.map((v) => v.brand)).size
+
+  const categories = [
+    { to: '/inventory?type=car', label: 'Cars', n: count.cars, Icon: Car },
+    { to: '/inventory?type=motorcycle', label: 'Motorcycles', n: count.bikes, Icon: Motorcycle },
+    { to: '/accessories?category=mags', label: 'Mags', n: count.mags, Icon: Tire },
+    { to: '/accessories?category=accessories', label: 'Accessories', n: count.acc, Icon: Wrench },
+  ]
+
   return (
-    <section className="home home--dealer" aria-labelledby="home-title">
-      {phone && <HomeProfile />}
-      <div className="home__head">
-        <div className="home__headline">
-          <h1 className="home__title" id="home-title">
-            <span className="home__line">{displayName.line1} {displayName.line2}</span>
-          </h1>
-          <Link className="home__cta" to="/inventory">
-            Browse inventory
-            <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
-          </Link>
+    <div className="rx-home">
+      <section className="rx-hero" aria-labelledby="home-title">
+        <span className="rx-stripe rx-stripe--red" aria-hidden="true" />
+        <span className="rx-stripe rx-stripe--white" aria-hidden="true" />
+        <div className="rx-hero__copy">
+          <p className="rx-eyebrow">Born to ride</p>
+          <h1 className="home__title" id="home-title"><span className="home__line">{displayName.line1} {displayName.line2}</span></h1>
+          <p className="home__lede">{hero.body}</p>
+          <div className="rx-hero__actions">
+            <Link className="home__cta" to="/inventory">Browse inventory</Link>
+            <Link className="rx-ghost" to="/test-drive">Book a test drive</Link>
+          </div>
         </div>
-        <p className="home__lede">{hero.body}</p>
-      </div>
+        <img className="rx-hero__bike" src={HERO_IMAGE} alt="" width={820} height={500} />
+        <div className="rx-hero__dots" aria-hidden="true"><i /><i className="is-on" /><i /></div>
+      </section>
 
-      <div className="mswitch">
-        <Link to="/inventory?type=car" className="mswitch__card"><Car size={40} weight="duotone" aria-hidden="true" /><b>Cars</b><span>Sedans, SUVs and vans</span></Link>
-        <Link to="/inventory?type=motorcycle" className="mswitch__card"><Motorcycle size={40} weight="duotone" aria-hidden="true" /><b>Motorcycles</b><span>Scooters to sport bikes</span></Link>
-        <Link to="/accessories" className="mswitch__card"><Gear size={40} weight="duotone" aria-hidden="true" /><b>Mags &amp; Accessories</b><span>Wheels, dash cams and more</span></Link>
-      </div>
+      <section className="rx-section" aria-labelledby="rx-cat">
+        <p className="rx-eyebrow rx-eyebrow--center">Category</p>
+        <h2 className="rx-h2 rx-h2--center" id="rx-cat">Explore Our Collection</h2>
+        <ul className="rx-cats" role="list">
+          {categories.map(({ to, label, n, Icon }) => (
+            <li key={label}>
+              <Link to={to} className="rx-cat">
+                <span className="rx-cat__icon"><Icon size={34} weight="duotone" aria-hidden="true" /></span>
+                <span className="rx-cat__label">{label}</span>
+                <span className="rx-cat__count">{n} {n === 1 ? 'listing' : 'listings'}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      {featured.length > 0 && (
-        <div className="mfeatured">
-          <h2 className="mpage__sub">Featured</h2>
-          <ul className="vgrid" role="list">
-            {featured.map((v) => <li key={v.id}><VehicleCard v={v} /></li>)}
+      <section className="rx-section rx-about" aria-labelledby="rx-about">
+        <span className="rx-ghostword" aria-hidden="true">About Us</span>
+        <div className="rx-about__copy">
+          <p className="rx-eyebrow">About Us</p>
+          <h2 className="rx-h2" id="rx-about">Honest Deals, Built to Last</h2>
+          <p>{profile.name} sells cars and motorcycles with the real specifications on every listing, plus mags and accessories to make the ride yours. Trade in what you drive now, and book a test drive before you decide.</p>
+          <ul className="rx-checks" role="list">
+            <li><CheckCircle size={18} weight="fill" aria-hidden="true" /> Real specs on every listing</li>
+            <li><CheckCircle size={18} weight="fill" aria-hidden="true" /> Trade-ins welcome</li>
+            <li><CheckCircle size={18} weight="fill" aria-hidden="true" /> Test drives by appointment</li>
           </ul>
+          <ul className="rx-stats" role="list">
+            <li><b>{vehicles.filter((v) => v.status === 'available').length}</b><span>Vehicles<br />available</span></li>
+            <li><b>{products.filter((p) => p.stock > 0).length}</b><span>Mags &amp; accessories<br />in stock</span></li>
+            <li><b>{brands}</b><span>Brands<br />to choose from</span></li>
+          </ul>
+          <Link className="home__cta" to="/about">About Migs Auto</Link>
         </div>
-      )}
-    </section>
+        <div className="rx-about__art" aria-hidden="true">
+          <img src="/logo.png" alt="" width={360} height={360} />
+        </div>
+      </section>
+
+      <section className="rx-section" aria-labelledby="rx-feat">
+        <p className="rx-eyebrow rx-eyebrow--center">Featured</p>
+        <h2 className="rx-h2 rx-h2--center" id="rx-feat">Top Features, Top Rides</h2>
+        <div className="rx-tabs" role="tablist" aria-label="Filter featured vehicles">
+          {([['all', 'All'], ['car', 'Cars'], ['motorcycle', 'Motorcycles']] as const).map(([k, label]) => (
+            <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{label}</button>
+          ))}
+        </div>
+        {featured.length === 0 ? (
+          <p className="rx-empty">New vehicles are on the way. <Link to="/contact">Ask us what is coming in</Link>.</p>
+        ) : (
+          <ul className="vgrid" role="list">{featured.map((v) => <li key={v.id}><VehicleCard v={v} /></li>)}</ul>
+        )}
+        <p className="rx-center"><Link className="rx-ghost" to="/inventory">View all inventory <ArrowRight size={16} aria-hidden="true" /></Link></p>
+      </section>
+
+      <section className="rx-section rx-cta" aria-labelledby="rx-cta">
+        <img className="rx-cta__bike" src={HERO_IMAGE} alt="" width={420} height={256} loading="lazy" />
+        <div className="rx-cta__copy">
+          <h2 className="rx-h2" id="rx-cta">Ready to Ride? Book a Test Drive</h2>
+          <p>Pick a vehicle, choose a date and time, and we will confirm. Questions first? Message us and we will help you find the right fit.</p>
+          <div className="rx-hero__actions">
+            <Link className="home__cta" to="/test-drive">Book a test drive</Link>
+            <a className="rx-ghost" href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noopener noreferrer"><Gear size={16} aria-hidden="true" /> Message on WhatsApp</a>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }
