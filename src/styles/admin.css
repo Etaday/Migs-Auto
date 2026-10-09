@@ -479,3 +479,16 @@ code { font-size: 12.5px; }
   .doc-print .paper { max-width: none; box-shadow: none; border-radius: 0; padding: 0; }
   @page { margin: 14mm; }
 }
+
+/* Listing photos */
+.adm-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 6px 0 10px; }
+.adm-photo { position: relative; margin: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--a-glass-line); background: var(--a-glass-soft); aspect-ratio: 4 / 3; }
+.adm-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.adm-photo.is-cover { border-color: var(--a-pink); box-shadow: 0 0 0 2px rgba(215,25,31,.35); }
+.adm-photo__tag { position: absolute; top: 6px; left: 6px; padding: 2px 9px; border-radius: 999px; background: var(--a-pink); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.adm-photo figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 4px; padding: 6px; background: linear-gradient(transparent, rgba(0,0,0,.75)); }
+.adm-photo figcaption button { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 0; border-radius: 8px; background: rgba(255,255,255,.9); color: #15161a; font-size: 12px; font-weight: 600; cursor: pointer; }
+.adm-photo figcaption button:last-child { margin-left: auto; }
+.adm-photo--add, .adm-photo--busy { display: grid; place-items: center; align-content: center; gap: 4px; border-style: dashed; color: var(--a-muted); cursor: pointer; font-size: 14px; text-align: center; }
+.adm-photo--add:hover { border-color: var(--a-pink); color: var(--a-ink); }
+.adm-photo--add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }

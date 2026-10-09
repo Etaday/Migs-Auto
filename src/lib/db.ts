@@ -134,7 +134,7 @@ function demoRead(): Demo {
   return d
 }
 function demoWrite(d: Demo) {
-  try { localStorage.setItem(DEMO_KEY, JSON.stringify(d)) } catch { /* storage unavailable */ }
+  try { localStorage.setItem(DEMO_KEY, JSON.stringify(d)) } catch { throw new DbError('This browser is out of storage space. Remove some photos or connect the database.') }
 }
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`)
 
@@ -208,6 +208,30 @@ export async function deleteRow(table: Table, id: string) {
     return
   }
   await rest(`${table}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', bearer: await token(), prefer: 'return=minimal' })
+}
+
+const PHOTO_BUCKET = 'vehicle-photos'
+
+/** Stores one (already resized) picture and returns the address to save on the listing.
+ *  With a database it goes to the public `vehicle-photos` bucket; in demo mode it is kept in this browser as a data address. */
+export async function uploadPhoto(blob: Blob): Promise<string> {
+  if (!getSession()) throw new DbError('Please sign in.')
+  if (!backendOn || getSession()?.demo) {
+    return await new Promise<string>((res, rej) => {
+      const r = new FileReader()
+      r.onload = () => res(String(r.result))
+      r.onerror = () => rej(new DbError('Could not read that picture.'))
+      r.readAsDataURL(blob)
+    })
+  }
+  const name = `${newId()}.jpg`
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${PHOTO_BUCKET}/${name}`, {
+    method: 'POST',
+    headers: { apikey: KEY, Authorization: `Bearer ${await token()}`, 'Content-Type': 'image/jpeg', 'x-upsert': 'false' },
+    body: blob,
+  })
+  if (!res.ok) throw new DbError('The photo could not be uploaded. Please try again.')
+  return `${SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/${name}`
 }
 
 export function resetDemo() {

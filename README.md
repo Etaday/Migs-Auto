@@ -19,7 +19,7 @@ Home, Inventory (filter by type, brand, price, year), vehicle detail with modifi
 ## Dealer dashboard (/admin)
 
 - **Overview:** stock, inventory value, new leads, sales and profit this month, upcoming test drives, longest in stock.
-- **Inventory:** add, edit and delete listings; status Available / Reserved / Sold; photo links; modifications; private cost for margin; CSV export.
+- **Inventory:** add, edit and delete listings; status Available / Reserved / Sold; photo upload (pick pictures from your device, they are resized automatically; the first is the cover) or photo links; modifications; private cost for margin; CSV export.
   Enter a **VIN** and press **Get real specs** to fill in make, model, year, engine, fuel and transmission from the US NHTSA vehicle database (free, US-market vehicles; anything it does not know is entered by hand).
 - **Leads:** inquiries, test drives, financing and trade-in requests with status and one-tap call, WhatsApp and email.
 - **Sales:** sold vehicles, revenue and gross profit, with one-tap Invoice and Receipt.

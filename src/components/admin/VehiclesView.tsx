@@ -1,25 +1,27 @@
 import { useMemo, useState } from 'react'
-import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star } from '@/components/slab'
+import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star, ImageSquare, ArrowUp } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 import { downloadCsv, todayIso } from '@/components/admin/ui'
 import { decodeVin, isValidVin } from '@/lib/specs'
+import { uploadPhoto } from '@/lib/db'
+import { MAX_PHOTOS, checkImageFile, moveToFront, resizeToJpeg } from '@/lib/images'
 import { formatPeso } from '@/lib/inventory'
 import { daysInStock } from '@/lib/dealer'
 import type { Vehicle, VehicleStatus, VehicleType } from '@/types/vehicle'
 
 type Draft = {
   id?: string; vin: string; type: VehicleType; brand: string; model: string; year: string; price: string; cost: string; mileage: string
-  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string
+  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]
   modifications: string[]; status: VehicleStatus; featured: boolean; sold_price: string; sold_at: string
 }
 
 const blank = (): Draft => ({
   vin: '', type: 'car', brand: '', model: '', year: String(new Date().getFullYear()), price: '', cost: '', mileage: '0', transmission: '', fuel: '',
-  color: '', body: '', engine: '', description: '', photos: '', modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
+  color: '', body: '', engine: '', description: '', photos: [], modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
 })
 const toDraft = (v: Vehicle): Draft => ({
   id: v.id, vin: v.vin, type: v.type, brand: v.brand, model: v.model, year: String(v.year), price: String(v.price), cost: String(v.cost), mileage: String(v.mileage),
-  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos.join('\n'),
+  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos,
   modifications: v.modifications, status: v.status, featured: v.featured, sold_price: v.sold_price == null ? '' : String(v.sold_price), sold_at: v.sold_at ?? '',
 })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
@@ -29,7 +31,7 @@ function toRow(d: Draft): Omit<Vehicle, 'id' | 'created_at'> {
   return {
     vin: d.vin.trim().toUpperCase(), type: d.type, brand: d.brand.trim(), model: d.model.trim(), year: n(d.year), price: n(d.price), cost: n(d.cost), mileage: n(d.mileage),
     transmission: d.transmission.trim(), fuel: d.fuel.trim(), color: d.color.trim(), body: d.body.trim(), engine: d.engine.trim(), description: d.description.trim(),
-    photos: d.photos.split('\n').map((s) => s.trim()).filter(Boolean), modifications: d.modifications, status: d.status, featured: d.featured,
+    photos: d.photos, modifications: d.modifications, status: d.status, featured: d.featured,
     sold_price: sold ? n(d.sold_price) || n(d.price) : null, sold_at: sold ? d.sold_at || todayIso() : null,
   }
 }
@@ -50,6 +52,8 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [mod, setMod] = useState('')
+  const [uploading, setUploading] = useState(0)
+  const [link, setLink] = useState('')
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((x) => ({ ...x, [k]: v }))
   const f = (k: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => set(k, e.target.value as never)
 
@@ -73,7 +77,32 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
     try {
       if (d.id) await patch('vehicles', d.id, toRow(d)); else await add('vehicles', toRow(d))
       onDone()
-    } catch { setErr('Could not save. Please try again.'); setBusy(false) }
+    } catch (e) { setErr(e instanceof Error && e.message ? e.message : 'Could not save. Please try again.'); setBusy(false) }
+  }
+
+  async function addPhotos(files: FileList | null) {
+    if (!files || files.length === 0) return
+    setErr('')
+    const room = MAX_PHOTOS - d.photos.length
+    const chosen = Array.from(files)
+    if (chosen.length > room) setErr(`A listing can have ${MAX_PHOTOS} photos. Only the first ${Math.max(room, 0)} were added.`)
+    const urls: string[] = []
+    for (const file of chosen.slice(0, Math.max(room, 0))) {
+      const bad = checkImageFile(file)
+      if (bad) { setErr(bad); continue }
+      setUploading((c) => c + 1)
+      try { urls.push(await uploadPhoto(await resizeToJpeg(file))) }
+      catch (e) { setErr(e instanceof Error ? e.message : 'Could not add that photo.') }
+      finally { setUploading((c) => c - 1) }
+    }
+    if (urls.length) setD((x) => ({ ...x, photos: [...x.photos, ...urls].slice(0, MAX_PHOTOS) }))
+  }
+  const addLink = () => {
+    const u = link.trim()
+    if (!u) return
+    if (!/^https?:\/\//i.test(u)) return setErr('A photo link must start with http:// or https://')
+    if (d.photos.length >= MAX_PHOTOS) return setErr(`A listing can have ${MAX_PHOTOS} photos.`)
+    setErr(''); set('photos', [...d.photos, u]); setLink('')
   }
 
   const addMod = () => { const m = mod.trim(); if (m && !d.modifications.includes(m)) set('modifications', [...d.modifications, m]); setMod('') }
@@ -106,7 +135,33 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         </>}
       </div>
       <label className="adm-field"><span>Description</span><textarea className="adm-textarea" rows={3} value={d.description} onChange={f('description')} /></label>
-      <label className="adm-field"><span>Photo links (one per line; the first is the cover)</span><textarea className="adm-textarea" rows={3} value={d.photos} onChange={f('photos')} /></label>
+      <div className="adm-field">
+        <span>Photos ({d.photos.length}/{MAX_PHOTOS}) — the first one is the cover</span>
+        <div className="adm-photos">
+          {d.photos.map((src, i) => (
+            <figure key={src.slice(-40) + i} className={`adm-photo${i === 0 ? ' is-cover' : ''}`}>
+              <img src={src} alt={`Photo ${i + 1}`} />
+              {i === 0 && <span className="adm-photo__tag">Cover</span>}
+              <figcaption>
+                {i > 0 && <button type="button" onClick={() => set('photos', moveToFront(d.photos, i))} aria-label={`Make photo ${i + 1} the cover`}><ArrowUp size={13} weight="bold" /> Cover</button>}
+                <button type="button" onClick={() => set('photos', d.photos.filter((_, k) => k !== i))} aria-label={`Remove photo ${i + 1}`}><Trash size={13} /> Remove</button>
+              </figcaption>
+            </figure>
+          ))}
+          {uploading > 0 && <div className="adm-photo adm-photo--busy" role="status">Adding...</div>}
+          {d.photos.length < MAX_PHOTOS && (
+            <label className="adm-photo adm-photo--add">
+              <ImageSquare size={26} aria-hidden="true" />
+              <span>Add photos</span>
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => { void addPhotos(e.target.files); e.target.value = '' }} />
+            </label>
+          )}
+        </div>
+        <div className="adm-vform__addmod">
+          <input value={link} onChange={(e) => setLink(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLink() } }} placeholder="Or paste a photo link (https://...)" />
+          <button type="button" className="adm-btn adm-btn--ghost" onClick={addLink}><Plus size={14} aria-hidden="true" /> Add link</button>
+        </div>
+      </div>
 
       <div className="adm-field">
         <span>Modifications</span>
@@ -124,7 +179,7 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
       <label className="adm-check"><input type="checkbox" checked={d.featured} onChange={(e) => set('featured', e.target.checked)} /> Feature on the home page</label>
       {err && <p className="adm-error" role="alert">{err}</p>}
       <div className="adm-actions">
-        <button type="submit" className="adm-btn" disabled={busy}>{d.id ? 'Save changes' : 'Add listing'}</button>
+        <button type="submit" className="adm-btn" disabled={busy || uploading > 0}>{d.id ? 'Save changes' : 'Add listing'}</button>
         <button type="button" className="adm-btn adm-btn--ghost" onClick={onDone}>Cancel</button>
       </div>
     </form>

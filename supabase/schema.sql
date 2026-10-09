@@ -214,3 +214,11 @@ create table if not exists public.documents (
 );
 alter table public.documents enable row level security;
 create policy "admin all documents" on public.documents for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- Listing photos ----------
+-- A public bucket: anyone can view a photo (they are shown on the website), only the owner can add or remove them.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('vehicle-photos', 'vehicle-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+  on conflict (id) do nothing;
+create policy "owner uploads vehicle photos" on storage.objects for insert to authenticated with check (bucket_id = 'vehicle-photos' and public.is_admin());
+create policy "owner removes vehicle photos" on storage.objects for delete to authenticated using (bucket_id = 'vehicle-photos' and public.is_admin());
