@@ -13,6 +13,7 @@ const KEY: string = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ''
 export const backendOn = !!(SUPABASE_URL && KEY)
 
 import type { Vehicle, Inquiry } from '@/types/vehicle'
+import { withDefaults } from '@/lib/inventory'
 
 export type Table = 'vehicles' | 'inquiries'
 
@@ -125,7 +126,7 @@ function seed(): Demo {
 function demoRead(): Demo {
   try {
     const raw = localStorage.getItem(DEMO_KEY)
-    if (raw) return JSON.parse(raw) as Demo
+    if (raw) { const d = JSON.parse(raw) as Demo; d.vehicles = (d.vehicles ?? []).map(withDefaults); d.inquiries = d.inquiries ?? []; return d }
   } catch { /* fall through */ }
   const d = seed()
   demoWrite(d)
@@ -164,7 +165,8 @@ export async function listRows<T extends Table>(table: T): Promise<Rows[T][]> {
   if (s.demo || !backendOn) {
     return [...demoRead()[table]].sort((a, b) => b.created_at.localeCompare(a.created_at)) as Rows[T][]
   }
-  return (await rest(`${table}?select=*&order=created_at.desc`, { bearer: await token() })) as Rows[T][]
+  const rows = (await rest(`${table}?select=*&order=created_at.desc`, { bearer: await token() })) as Rows[T][]
+  return (table === 'vehicles' ? (rows as Vehicle[]).map(withDefaults) : rows) as Rows[T][]
 }
 
 export async function addRow<T extends Table>(table: T, row: Partial<Rows[T]>): Promise<Rows[T]> {
@@ -231,7 +233,7 @@ const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileag
 export async function listVehicles(): Promise<Vehicle[]> {
   if (backendOn) {
     const rows = ((await rest(`vehicles?select=${PUBLIC_VEHICLE_COLUMNS}&status=neq.sold&order=created_at.desc`)) ?? []) as Vehicle[]
-    return rows.map((v) => ({ ...v, cost: 0, sold_price: null, sold_at: null }))
+    return rows.map((v) => ({ ...withDefaults(v), cost: 0, sold_price: null, sold_at: null }))
   }
   return demoRead().vehicles.filter((v) => v.status !== 'sold').map((v) => ({ ...v, cost: 0, sold_price: null, sold_at: null }))
 }

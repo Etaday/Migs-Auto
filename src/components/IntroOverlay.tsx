@@ -137,7 +137,7 @@ export default function IntroOverlay() {
       const sy = (window.innerHeight - h) / 2 - Math.min(96, window.innerHeight * 0.09)
 
       const restTransform = `translate(${sx}px, ${sy}px) scale(${scale})`
-      const canvasTransform = `translate(${sx}px, ${sy + h + 44 * scale}px) scale(${scale})`
+      const canvasTransform = `translate(${sx}px, ${sy + h + 76 * scale}px) scale(${scale})`
       title.style.transform = restTransform
       canvas.style.transform = canvasTransform
       title.style.opacity = '1'
@@ -316,7 +316,7 @@ export default function IntroOverlay() {
         canvas,
         [
           { transform: canvasTransform, opacity: 1 },
-          { transform: `translate(${sx}px, ${sy + h + 72 * scale}px) scale(${scale})`, opacity: 0 },
+          { transform: `translate(${sx}px, ${sy + h + 104 * scale}px) scale(${scale})`, opacity: 0 },
         ],
         { duration: 420, easing: EASE_OUT },
       )

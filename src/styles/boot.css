@@ -247,6 +247,8 @@ html.is-intro .hstats,
 html.is-intro .hsec,
 html.is-intro .htiles,
 html.is-intro .hproof,
+html.is-intro .mswitch,
+html.is-intro .mfeatured,
 html.is-intro .tabbar {
   opacity: 0;
   transform: translateY(14px);
@@ -254,6 +256,8 @@ html.is-intro .tabbar {
 /* The bar is fixed at the bottom; it rises into place instead. */
 html.is-intro .tabbar { transform: translateY(24px); }
 
+.mswitch,
+.mfeatured,
 .home__cta,
 .home__lede,
 .home__glass,
@@ -310,6 +314,8 @@ html.is-intro .rail__inner > * {
   html.is-intro .hsec,
   html.is-intro .htiles,
   html.is-intro .hproof,
+  html.is-intro .mswitch,
+  html.is-intro .mfeatured,
   html.is-intro .tabbar,
   html.is-intro .rail__inner > * {
     opacity: 1;

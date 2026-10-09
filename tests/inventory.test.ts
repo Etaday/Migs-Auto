@@ -39,3 +39,20 @@ describe('filterVehicles', () => {
     expect(filterVehicles(list, { brand: 'Ferrari' })).toEqual([])
   })
 })
+
+import { withDefaults } from '../src/lib/inventory'
+
+describe('withDefaults', () => {
+  it('fills the fields a record saved by an older version is missing', () => {
+    const old = { id: 'o', type: 'car', brand: 'Toyota', model: 'Vios', year: 2020, price: 1, mileage: 0, status: 'available', photos: [], created_at: '2026-01-01' } as unknown as Vehicle
+    const v = withDefaults(old)
+    expect(v.modifications).toEqual([])
+    expect(v.vin).toBe('')
+    expect(v.cost).toBe(0)
+    expect(v.sold_price).toBeNull()
+    expect(v.photos).toEqual([])
+  })
+  it('keeps values that are already there', () => {
+    expect(withDefaults(v({ modifications: ['Exhaust'], cost: 5 })).modifications).toEqual(['Exhaust'])
+  })
+})
