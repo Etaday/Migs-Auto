@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
-import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star, ImageSquare, ArrowUp, Sparkle } from '@/components/slab'
+import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star, Sparkle } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 import { downloadCsv, todayIso } from '@/components/admin/ui'
 import { decodeVin, isValidVin } from '@/lib/specs'
-import { uploadPhoto, getSession } from '@/lib/db'
+import { getSession } from '@/lib/db'
+import PhotoPicker from './PhotoPicker'
 import { enhanceDescriptionText, enhanceModificationList, type EnhanceVehicle } from '@/lib/enhance'
-import { MAX_PHOTOS, checkImageFile, moveToFront, resizeToJpeg } from '@/lib/images'
 import { formatPeso } from '@/lib/inventory'
 import { daysInStock } from '@/lib/dealer'
 import type { Vehicle, VehicleStatus, VehicleType } from '@/types/vehicle'
@@ -54,7 +54,6 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
   const [busy, setBusy] = useState(false)
   const [mod, setMod] = useState('')
   const [uploading, setUploading] = useState(0)
-  const [link, setLink] = useState('')
   const [enhancing, setEnhancing] = useState<'' | 'description' | 'modifications'>('')
   const [undo, setUndo] = useState<{ field: 'description' | 'modifications'; prev: string | string[] } | null>(null)
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((x) => ({ ...x, [k]: v }))
@@ -81,31 +80,6 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
       if (d.id) await patch('vehicles', d.id, toRow(d)); else await add('vehicles', toRow(d))
       onDone()
     } catch (e) { setErr(e instanceof Error && e.message ? e.message : 'Could not save. Please try again.'); setBusy(false) }
-  }
-
-  async function addPhotos(files: FileList | null) {
-    if (!files || files.length === 0) return
-    setErr('')
-    const room = MAX_PHOTOS - d.photos.length
-    const chosen = Array.from(files)
-    if (chosen.length > room) setErr(`A listing can have ${MAX_PHOTOS} photos. Only the first ${Math.max(room, 0)} were added.`)
-    const urls: string[] = []
-    for (const file of chosen.slice(0, Math.max(room, 0))) {
-      const bad = checkImageFile(file)
-      if (bad) { setErr(bad); continue }
-      setUploading((c) => c + 1)
-      try { urls.push(await uploadPhoto(await resizeToJpeg(file))) }
-      catch (e) { setErr(e instanceof Error ? e.message : 'Could not add that photo.') }
-      finally { setUploading((c) => c - 1) }
-    }
-    if (urls.length) setD((x) => ({ ...x, photos: [...x.photos, ...urls].slice(0, MAX_PHOTOS) }))
-  }
-  const addLink = () => {
-    const u = link.trim()
-    if (!u) return
-    if (!/^https?:\/\//i.test(u)) return setErr('A photo link must start with http:// or https://')
-    if (d.photos.length >= MAX_PHOTOS) return setErr(`A listing can have ${MAX_PHOTOS} photos.`)
-    setErr(''); set('photos', [...d.photos, u]); setLink('')
   }
 
   const specs = (): EnhanceVehicle => ({
@@ -171,33 +145,7 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
           {undo?.field === 'description' && <button type="button" className="adm-btn adm-btn--ghost" onClick={undoEnhance}>Undo</button>}
         </div>
       </div>
-      <div className="adm-field">
-        <span>Photos ({d.photos.length}/{MAX_PHOTOS}) — the first one is the cover</span>
-        <div className="adm-photos">
-          {d.photos.map((src, i) => (
-            <figure key={src.slice(-40) + i} className={`adm-photo${i === 0 ? ' is-cover' : ''}`}>
-              <img src={src} alt={`Photo ${i + 1}`} />
-              {i === 0 && <span className="adm-photo__tag">Cover</span>}
-              <figcaption>
-                {i > 0 && <button type="button" onClick={() => set('photos', moveToFront(d.photos, i))} aria-label={`Make photo ${i + 1} the cover`}><ArrowUp size={13} weight="bold" /> Cover</button>}
-                <button type="button" onClick={() => set('photos', d.photos.filter((_, k) => k !== i))} aria-label={`Remove photo ${i + 1}`}><Trash size={13} /> Remove</button>
-              </figcaption>
-            </figure>
-          ))}
-          {uploading > 0 && <div className="adm-photo adm-photo--busy" role="status">Adding...</div>}
-          {d.photos.length < MAX_PHOTOS && (
-            <label className="adm-photo adm-photo--add">
-              <ImageSquare size={26} aria-hidden="true" />
-              <span>Add photos</span>
-              <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => { void addPhotos(e.target.files); e.target.value = '' }} />
-            </label>
-          )}
-        </div>
-        <div className="adm-vform__addmod">
-          <input value={link} onChange={(e) => setLink(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLink() } }} placeholder="Or paste a photo link (https://...)" />
-          <button type="button" className="adm-btn adm-btn--ghost" onClick={addLink}><Plus size={14} aria-hidden="true" /> Add link</button>
-        </div>
-      </div>
+      <PhotoPicker photos={d.photos} onChange={(p) => set('photos', p)} onError={setErr} onBusy={setUploading} />
 
       <div className="adm-field">
         <span>Modifications</span>

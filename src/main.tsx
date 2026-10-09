@@ -10,6 +10,8 @@ import { restorePrefs } from '@/lib/a11y'
 
 // Every route but Home is its own chunk: the first visit only pays for Home.
 const InventoryView = lazy(() => import('@/components/inventory/InventoryView'))
+const AccessoriesView = lazy(() => import('@/components/shop/AccessoriesView'))
+const ProductDetail = lazy(() => import('@/components/shop/ProductDetail'))
 const VehicleDetail = lazy(() => import('@/components/inventory/VehicleDetail'))
 const AboutView = lazy(() => import('@/components/AboutView'))
 const TradeInView = lazy(() => import('@/components/forms/TradeInView'))
@@ -80,6 +82,8 @@ const start = () =>
           <Route path="/" element={<Home />} />
           <Route path="/inventory" element={<InventoryView />} />
           <Route path="/inventory/:id" element={<VehicleDetail />} />
+          <Route path="/accessories" element={<AccessoriesView />} />
+          <Route path="/accessories/:id" element={<ProductDetail />} />
           <Route path="/trade-in" element={<TradeInView />} />
           <Route path="/financing" element={<FinancingView />} />
           <Route path="/test-drive" element={<TestDriveView />} />

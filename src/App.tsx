@@ -32,6 +32,7 @@ export default function App() {
     const name = 'Migs Auto'
     const titles: Record<string, string> = {
       '/inventory': 'Inventory',
+      '/accessories': 'Mags and Accessories',
       '/trade-in': 'Trade-in',
       '/financing': 'Financing (coming soon)',
       '/test-drive': 'Test drive',

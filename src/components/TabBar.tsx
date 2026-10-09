@@ -22,7 +22,7 @@ const TABS = [
   { label: 'Home', to: '/', Icon: House },
   { label: 'Inventory', to: '/inventory', Icon: FolderOpen },
   { label: 'Test drive', to: '/test-drive', Icon: CalendarCheck, primary: true },
-  { label: 'Financing', to: '/financing', Icon: Stack },
+  FINANCING_AVAILABLE ? { label: 'Financing', to: '/financing', Icon: Stack } : { label: 'Mags', to: '/accessories', Icon: Stack },
   { label: 'Contact', to: '/contact', Icon: User },
 ] as const
 

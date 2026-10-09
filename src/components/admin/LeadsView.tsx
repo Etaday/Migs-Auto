@@ -13,7 +13,7 @@ function summary(i: Inquiry): string {
   if (i.kind === 'test_drive') return `${d.date ? shortDate(String(d.date)) : 'No date'}${d.time ? ` at ${String(d.time)}` : ''}`
   if (i.kind === 'financing') return `Price ${formatPeso(Number(d.price) || 0)}, down ${formatPeso(Number(d.down) || 0)}, ${String(d.months)} mo, about ${formatPeso(Number(d.monthly) || 0)}/mo`
   if (i.kind === 'trade_in') return [d.vehicle, d.year, d.mileage ? `${String(d.mileage)} km` : '', d.asking ? `asking ${formatPeso(Number(d.asking))}` : ''].filter(Boolean).join(' · ')
-  return ''
+  return d.product ? `Item: ${String(d.product)}` : ''
 }
 
 export default function LeadsView() {

@@ -43,7 +43,7 @@ export function enhanceModifications(items: string[]): string[] {
   return out
 }
 
-function cleanNotes(text: string): string[] {
+export function cleanNotes(text: string): string[] {
   const fixed = tidy(text.replace(/\s+([.,;!?])/g, '$1').replace(/([,;])(?=[A-Za-z])/g, '$1 ').replace(/([.!?])(?=[A-Z])/g, '$1 '))
   return fixed
     .split(/(?<=[.!?])\s+|\n+/)

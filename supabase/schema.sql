@@ -174,7 +174,8 @@ create table if not exists public.inquiries (
   message text not null default '' check (char_length(message) <= 3000),
   details jsonb not null default '{}',
   status text not null default 'new' check (status in ('new', 'contacted', 'closed')),
-  check (phone <> '' or email <> '')
+  check (phone <> '' or email <> ''),
+  check (char_length(details::text) <= 4000)
 );
 alter table public.vehicles enable row level security;
 alter table public.inquiries enable row level security;
@@ -222,3 +223,24 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
   on conflict (id) do nothing;
 create policy "owner uploads vehicle photos" on storage.objects for insert to authenticated with check (bucket_id = 'vehicle-photos' and public.is_admin());
 create policy "owner removes vehicle photos" on storage.objects for delete to authenticated using (bucket_id = 'vehicle-photos' and public.is_admin());
+
+-- ---------- Mags and accessories ----------
+create table if not exists public.products (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  category text not null check (category in ('mags', 'accessories')),
+  name text not null check (char_length(name) between 1 and 160),
+  brand text not null default '',
+  size text not null default '',
+  fits text not null default '',
+  condition text not null default 'new' check (condition in ('new', 'used')),
+  price numeric not null default 0 check (price >= 0),
+  stock int not null default 0 check (stock >= 0),
+  description text not null default '',
+  photos text[] not null default '{}',
+  listed boolean not null default true
+);
+alter table public.products enable row level security;
+create policy "admin all products" on public.products for all to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "visitor reads listed products" on public.products for select to anon using (listed);
+create index if not exists products_category_idx on public.products (category);

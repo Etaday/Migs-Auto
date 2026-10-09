@@ -15,10 +15,12 @@ export const backendOn = !!(SUPABASE_URL && KEY)
 import type { Vehicle, Inquiry } from '@/types/vehicle'
 import { withDefaults } from '@/lib/inventory'
 import type { SaleDocument } from '@/types/document'
+import type { Product } from '@/types/product'
+import { productWithDefaults } from '@/lib/products'
 
-export type Table = 'vehicles' | 'inquiries' | 'documents'
+export type Table = 'vehicles' | 'inquiries' | 'documents' | 'products'
 
-type Rows = { vehicles: Vehicle; inquiries: Inquiry; documents: SaleDocument }
+type Rows = { vehicles: Vehicle; inquiries: Inquiry; documents: SaleDocument; products: Product }
 
 /* ---------- Session (admin) ---------- */
 
@@ -120,14 +122,26 @@ function demoVehicles(): Vehicle[] {
   ]
 }
 
+const dp = (n: number, o: Partial<Product>): Product => productWithDefaults({
+  id: `demo-p${n}`, created_at: new Date(Date.now() - n * 864e5).toISOString(), description: 'Sample listing. Replace it from the dashboard.', ...o,
+})
+function demoProducts(): Product[] {
+  return [
+    dp(1, { category: 'mags', name: 'Enkei 17" Mags (set of 4)', brand: 'Enkei', size: '17 inch, 5x114.3', fits: 'Honda Civic, Accord', condition: 'new', price: 38000, stock: 3 }),
+    dp(2, { category: 'mags', name: 'Rays 18" Mags (set of 4)', brand: 'Rays', size: '18 inch, 5x100', fits: 'Toyota Vios, Altis', condition: 'used', price: 24000, stock: 1 }),
+    dp(3, { category: 'accessories', name: 'Dash cam 1080p', brand: 'Viofo', condition: 'new', price: 4500, stock: 12 }),
+    dp(4, { category: 'accessories', name: 'Seat covers (full set)', condition: 'new', price: 3200, stock: 0 }),
+  ]
+}
+
 function seed(): Demo {
-  return { vehicles: demoVehicles(), inquiries: [], documents: [] }
+  return { vehicles: demoVehicles(), inquiries: [], documents: [], products: demoProducts() }
 }
 
 function demoRead(): Demo {
   try {
     const raw = localStorage.getItem(DEMO_KEY)
-    if (raw) { const d = JSON.parse(raw) as Demo; d.vehicles = (d.vehicles ?? []).map(withDefaults); d.inquiries = d.inquiries ?? []; d.documents = d.documents ?? []; return d }
+    if (raw) { const d = JSON.parse(raw) as Demo; d.vehicles = (d.vehicles ?? []).map(withDefaults); d.inquiries = d.inquiries ?? []; d.documents = d.documents ?? []; d.products = (d.products ?? demoProducts()).map(productWithDefaults); return d }
   } catch { /* fall through */ }
   const d = seed()
   demoWrite(d)
@@ -253,6 +267,12 @@ export async function submitPublic<T extends 'inquiries'>(table: T, row: Partial
 
 /** The columns visitors may read (matches the grant in supabase/schema.sql). */
 const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileage,transmission,fuel,color,description,photos,status,featured,vin,engine,body,modifications'
+
+/** Mags and accessories shown on the website: listed items only. */
+export async function listProducts(): Promise<Product[]> {
+  if (backendOn) return (((await rest('products?select=*&listed=eq.true&order=created_at.desc')) ?? []) as Product[]).map(productWithDefaults)
+  return demoRead().products.filter((p) => p.listed)
+}
 
 /** Public vehicle listing (sold vehicles are never returned to visitors). */
 export async function listVehicles(): Promise<Vehicle[]> {

@@ -65,3 +65,8 @@
 
 .minfo { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; color: var(--muted); }
 .minfo li { display: inline-flex; align-items: center; gap: 8px; }
+
+.mswitch { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+
+/* Phones: keep the last items clear of the floating tab bar. */
+@media (max-width: 1099px) { .mpage, .home--dealer { padding-bottom: 130px; } }

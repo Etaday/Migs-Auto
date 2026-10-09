@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { SquaresFour, Car, ChatCircleDots, SignOut, ArrowsClockwise, ArrowUpRight, ChartLineUp, UsersThree, Receipt } from '@/components/slab'
+import { SquaresFour, Car, ChatCircleDots, SignOut, ArrowsClockwise, ArrowUpRight, ChartLineUp, UsersThree, Receipt, Gear } from '@/components/slab'
 import { backendOn, getSession, onSessionChange, resetDemo, signOut } from '@/lib/db'
 import { getTheme, toggleTheme, type Theme } from '@/lib/theme'
 import ThemedImg from '@/components/ThemedImg'
@@ -11,6 +11,7 @@ import Overview from '@/components/admin/Overview'
 import VehiclesView from '@/components/admin/VehiclesView'
 import LeadsView from '@/components/admin/LeadsView'
 import SalesView from '@/components/admin/SalesView'
+import ProductsView from '@/components/admin/ProductsView'
 import DocumentsView, { type DocRequest } from '@/components/admin/DocumentsView'
 import TeamView from '@/components/admin/TeamView'
 import TabBoundary from '@/components/admin/TabBoundary'
@@ -26,6 +27,7 @@ import AdminAlerts from '@/components/admin/AdminAlerts'
 const TABS = [
   { id: 'overview', label: 'Overview', Icon: SquaresFour },
   { id: 'vehicles', label: 'Inventory', Icon: Car },
+  { id: 'products', label: 'Mags & accessories', Icon: Gear },
   { id: 'leads', label: 'Leads', Icon: ChatCircleDots },
   { id: 'sales', label: 'Sales', Icon: ChartLineUp },
   { id: 'documents', label: 'Invoices & receipts', Icon: Receipt },
@@ -123,6 +125,7 @@ function Shell({ email, demo }: { email: string; demo: boolean }) {
           <TabBoundary resetKey={tab}>
           {tab === 'overview' && <Overview go={go} />}
           {tab === 'vehicles' && <VehiclesView />}
+          {tab === 'products' && <ProductsView />}
           {tab === 'leads' && <LeadsView />}
           {tab === 'sales' && <SalesView onDocument={makeDocument} />}
           {tab === 'documents' && <DocumentsView request={docRequest} clearRequest={() => setDocRequest(null)} />}

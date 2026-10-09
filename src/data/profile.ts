@@ -3,16 +3,13 @@
  * PLACEHOLDERS: phone, email, address and hours are not confirmed; replace them here, in one place.
  */
 
-import { Car, Motorcycle, Wrench, FacebookLogo, InstagramLogo, type Icon } from '@/components/slab'
+import { FacebookLogo, InstagramLogo, type Icon } from '@/components/slab'
 
 export type SocialLink = {
   label: string
   href: string
   Icon: Icon
 }
-
-/** A proof fact on the phone's Home: a glyph, a short value, a caption. */
-export type Stat = { value: string; label: string; Icon: Icon }
 
 export type Profile = {
   name: string
@@ -33,8 +30,6 @@ export type Profile = {
   hours: string
   /** WhatsApp number, digits only. */
   whatsapp: string
-  /** Three short proof facts shown on phones under the Home lede. */
-  stats: Stat[]
   displayName: { line1: string; line2: string }
   hero: {
     body: string
@@ -51,7 +46,7 @@ export const profile: Profile = {
   name: 'Migs Auto',
   firstName: 'Migs',
   handle: 'Cars and motorcycles',
-  role: 'Cars and motorcycles for sale',
+  role: 'Mags & accessories',
   avatarSrc: '/avatar.png',
   verifiedLabel: 'Car and motorcycle dealer',
   email: 'hello@migsauto.example',
@@ -60,14 +55,9 @@ export const profile: Profile = {
   location: 'Address to be confirmed',
   hours: 'Mon-Sat 9:00 AM - 6:00 PM',
   whatsapp: '630000000000',
-  stats: [
-    { value: 'Cars', label: 'Sedans, SUVs, vans', Icon: Car },
-    { value: 'Bikes', label: 'Scooters to sport', Icon: Motorcycle },
-    { value: 'Service', label: 'Trade-in and test drives', Icon: Wrench },
-  ],
   displayName: { line1: 'Drive home', line2: 'something great.' },
   hero: {
-    body: 'Migs Auto sells quality cars and motorcycles. Browse the inventory, trade in your ride and book a test drive.',
+    body: 'Migs Auto sells quality cars and motorcycles. Browse the inventory and our mags and accessories, trade in your ride and book a test drive.',
     portraitSrc: '/avatar.png',
     portraitAlt: 'Migs Auto logo',
   },

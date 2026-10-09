@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, Car, Motorcycle } from '@/components/slab'
+import { ArrowUpRight, Car, Motorcycle, Gear } from '@/components/slab'
 import { profile } from '@/data/profile'
 import { listVehicles } from '@/lib/db'
 import type { Vehicle } from '@/types/vehicle'
 import VehicleCard from '@/components/inventory/VehicleCard'
-import { HomeProfile, HomeStats } from './HomeMobile'
+import { HomeProfile } from './HomeMobile'
 import { useIsPhone } from '@/hooks/useMediaQuery'
 
 /**
@@ -39,12 +39,12 @@ export default function Home() {
           </Link>
         </div>
         <p className="home__lede">{hero.body}</p>
-        {phone && <HomeStats />}
       </div>
 
       <div className="mswitch">
         <Link to="/inventory?type=car" className="mswitch__card"><Car size={40} weight="duotone" aria-hidden="true" /><b>Cars</b><span>Sedans, SUVs and vans</span></Link>
         <Link to="/inventory?type=motorcycle" className="mswitch__card"><Motorcycle size={40} weight="duotone" aria-hidden="true" /><b>Motorcycles</b><span>Scooters to sport bikes</span></Link>
+        <Link to="/accessories" className="mswitch__card"><Gear size={40} weight="duotone" aria-hidden="true" /><b>Mags &amp; Accessories</b><span>Wheels, dash cams and more</span></Link>
       </div>
 
       {featured.length > 0 && (
