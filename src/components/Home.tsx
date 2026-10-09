@@ -7,8 +7,22 @@ import type { Vehicle } from '@/types/vehicle'
 import type { Product } from '@/types/product'
 import VehicleCard from '@/components/inventory/VehicleCard'
 
-/** The picture on the hero. Replace public/hero-bike.svg with a photo (same name, or change this path) to use a real one. */
-const HERO_IMAGE = '/hero-bike.svg'
+/**
+ * The picture on the hero. If a photo named public/hero-bike.png exists (a cut-out with a transparent
+ * background looks best) it is used; otherwise the drawn bike in public/hero-bike.svg.
+ */
+const HERO_PHOTO = '/hero-bike.png'
+const HERO_DRAWING = '/hero-bike.svg'
+
+function useHeroImage(): { src: string; photo: boolean } {
+  const [photo, setPhoto] = useState(false)
+  useEffect(() => {
+    const img = new Image()
+    img.onload = () => setPhoto(img.naturalWidth > 0)
+    img.src = HERO_PHOTO
+  }, [])
+  return { src: photo ? HERO_PHOTO : HERO_DRAWING, photo }
+}
 
 /**
  * Home, in the Ridenix style: a dark hero with the big bike and diagonal stripes, a collection row,
@@ -20,6 +34,7 @@ export default function Home() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [tab, setTab] = useState<'all' | 'car' | 'motorcycle'>('all')
+  const hero_ = useHeroImage()
 
   useEffect(() => {
     let live = true
@@ -61,7 +76,7 @@ export default function Home() {
             <Link className="rx-ghost" to="/test-drive">Book a test drive</Link>
           </div>
         </div>
-        <img className="rx-hero__bike" src={HERO_IMAGE} alt="" width={820} height={500} />
+        <img className={`rx-hero__bike${hero_.photo ? ' is-photo' : ''}`} src={hero_.src} alt="" width={hero_.photo ? 1024 : 820} height={hero_.photo ? 860 : 500} />
         <div className="rx-hero__dots" aria-hidden="true"><i /><i className="is-on" /><i /></div>
       </section>
 
@@ -121,7 +136,7 @@ export default function Home() {
       </section>
 
       <section className="rx-section rx-cta" aria-labelledby="rx-cta">
-        <img className="rx-cta__bike" src={HERO_IMAGE} alt="" width={420} height={256} loading="lazy" />
+        <img className={`rx-cta__bike${hero_.photo ? ' is-photo' : ''}`} src={hero_.src} alt="" width={420} height={hero_.photo ? 353 : 256} loading="lazy" />
         <div className="rx-cta__copy">
           <h2 className="rx-h2" id="rx-cta">Ready to Ride? Book a Test Drive</h2>
           <p>Pick a vehicle, choose a date and time, and we will confirm. Questions first? Message us and we will help you find the right fit.</p>

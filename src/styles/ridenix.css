@@ -253,3 +253,8 @@ html.is-intro .rx-hero__actions { opacity: 0; transform: translateY(14px); }
   .rx-hero__dots { display: none; }
   .rx-hero__bike { margin-top: 28px; }
 }
+
+/* ---------- A real photo on the hero (public/hero-bike.png) ---------- */
+.rx-hero__bike.is-photo { width: auto; max-width: 100%; max-height: min(640px, 74vh); object-fit: contain; margin-right: 0; filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.55)); }
+.rx-cta__bike.is-photo { transform: none; max-height: 340px; width: auto; max-width: 100%; justify-self: center; object-fit: contain; filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.5)); }
+@media (max-width: 899px) { .rx-hero__bike.is-photo { max-height: 420px; } }
