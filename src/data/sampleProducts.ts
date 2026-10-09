@@ -1,7 +1,7 @@
 import type { Product } from '@/types/product'
 
 /** Sample mags and accessories for the local demo and for supabase/sample-products.sql (same items). */
-export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at'>[] = [
+export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = [
   {
     "category": "mags",
     "name": "Enkei 17\" Mags (set of 4)",

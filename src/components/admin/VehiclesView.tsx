@@ -5,24 +5,26 @@ import { downloadCsv, todayIso } from '@/components/admin/ui'
 import { decodeVin, isValidVin } from '@/lib/specs'
 import { getSession } from '@/lib/db'
 import PhotoPicker from './PhotoPicker'
+import VideoPicker from './VideoPicker'
 import { enhanceDescriptionText, enhanceModificationList, type EnhanceVehicle } from '@/lib/enhance'
 import { formatPeso } from '@/lib/inventory'
 import { daysInStock } from '@/lib/dealer'
 import type { Vehicle, VehicleStatus, VehicleType } from '@/types/vehicle'
+import MoneyInput from '@/components/MoneyInput'
 
 type Draft = {
   id?: string; vin: string; type: VehicleType; brand: string; model: string; year: string; price: string; cost: string; mileage: string
-  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]
+  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]; videos: string[]
   modifications: string[]; status: VehicleStatus; featured: boolean; sold_price: string; sold_at: string
 }
 
 const blank = (): Draft => ({
   vin: '', type: 'car', brand: '', model: '', year: String(new Date().getFullYear()), price: '', cost: '', mileage: '0', transmission: '', fuel: '',
-  color: '', body: '', engine: '', description: '', photos: [], modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
+  color: '', body: '', engine: '', description: '', photos: [], videos: [], modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
 })
 const toDraft = (v: Vehicle): Draft => ({
   id: v.id, vin: v.vin, type: v.type, brand: v.brand, model: v.model, year: String(v.year), price: String(v.price), cost: String(v.cost), mileage: String(v.mileage),
-  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos,
+  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos, videos: v.videos,
   modifications: v.modifications, status: v.status, featured: v.featured, sold_price: v.sold_price == null ? '' : String(v.sold_price), sold_at: v.sold_at ?? '',
 })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
@@ -32,7 +34,7 @@ function toRow(d: Draft): Omit<Vehicle, 'id' | 'created_at'> {
   return {
     vin: d.vin.trim().toUpperCase(), type: d.type, brand: d.brand.trim(), model: d.model.trim(), year: n(d.year), price: n(d.price), cost: n(d.cost), mileage: n(d.mileage),
     transmission: d.transmission.trim(), fuel: d.fuel.trim(), color: d.color.trim(), body: d.body.trim(), engine: d.engine.trim(), description: d.description.trim(),
-    photos: d.photos, modifications: d.modifications, status: d.status, featured: d.featured,
+    photos: d.photos, videos: d.videos, modifications: d.modifications, status: d.status, featured: d.featured,
     sold_price: sold ? n(d.sold_price) || n(d.price) : null, sold_at: sold ? d.sold_at || todayIso() : null,
   }
 }
@@ -129,11 +131,11 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         <label className="adm-field"><span>Fuel</span><input value={d.fuel} onChange={f('fuel')} /></label>
         <label className="adm-field"><span>Color</span><input value={d.color} onChange={f('color')} /></label>
         <label className="adm-field"><span>Mileage (km)</span><input value={d.mileage} onChange={f('mileage')} inputMode="numeric" /></label>
-        <label className="adm-field"><span>Asking price (₱)</span><input value={d.price} onChange={f('price')} inputMode="numeric" /></label>
-        <label className="adm-field"><span>Your cost (₱, private)</span><input value={d.cost} onChange={f('cost')} inputMode="numeric" /></label>
+        <label className="adm-field"><span>Asking price (₱)</span><MoneyInput value={d.price} onChange={(v) => set('price', v)} /></label>
+        <label className="adm-field"><span>Your cost (₱, private)</span><MoneyInput value={d.cost} onChange={(v) => set('cost', v)} /></label>
         <label className="adm-field"><span>Status</span><select value={d.status} onChange={f('status')}><option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option></select></label>
         {d.status === 'sold' && <>
-          <label className="adm-field"><span>Sold price (₱)</span><input value={d.sold_price} onChange={f('sold_price')} inputMode="numeric" placeholder={d.price} /></label>
+          <label className="adm-field"><span>Sold price (₱)</span><MoneyInput value={d.sold_price} onChange={(v) => set('sold_price', v)} placeholder={d.price} /></label>
           <label className="adm-field"><span>Sold on</span><input type="date" value={d.sold_at || todayIso()} onChange={f('sold_at')} /></label>
         </>}
       </div>
@@ -146,6 +148,7 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         </div>
       </div>
       <PhotoPicker photos={d.photos} onChange={(p) => set('photos', p)} onError={setErr} onBusy={setUploading} />
+      <VideoPicker videos={d.videos} onChange={(v) => set('videos', v)} onError={setErr} onBusy={setUploading} />
 
       <div className="adm-field">
         <span>Modifications</span>

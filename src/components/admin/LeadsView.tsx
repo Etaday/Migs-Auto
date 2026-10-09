@@ -4,6 +4,7 @@ import { useData } from '@/components/admin/data'
 import { shortDate, whatsappLink, downloadCsv } from '@/components/admin/ui'
 import { formatPeso } from '@/lib/inventory'
 import { FINANCING_AVAILABLE } from '@/data/profile'
+import { parseMoneyInput } from '@/lib/money'
 import type { Inquiry, InquiryKind, InquiryStatus } from '@/types/vehicle'
 
 const KIND: Record<InquiryKind, string> = { inquiry: 'Inquiry', trade_in: 'Trade-in', financing: 'Financing', test_drive: 'Test drive' }
@@ -12,7 +13,7 @@ function summary(i: Inquiry): string {
   const d = i.details
   if (i.kind === 'test_drive') return `${d.date ? shortDate(String(d.date)) : 'No date'}${d.time ? ` at ${String(d.time)}` : ''}`
   if (i.kind === 'financing') return `Price ${formatPeso(Number(d.price) || 0)}, down ${formatPeso(Number(d.down) || 0)}, ${String(d.months)} mo, about ${formatPeso(Number(d.monthly) || 0)}/mo`
-  if (i.kind === 'trade_in') return [d.vehicle, d.year, d.mileage ? `${String(d.mileage)} km` : '', d.asking ? `asking ${formatPeso(Number(d.asking))}` : ''].filter(Boolean).join(' · ')
+  if (i.kind === 'trade_in') return [d.vehicle, d.year, d.mileage ? `${String(d.mileage)} km` : '', d.asking ? `asking ${formatPeso(parseMoneyInput(String(d.asking)))}` : ''].filter(Boolean).join(' · ')
   return d.product ? `Item: ${String(d.product)}` : ''
 }
 

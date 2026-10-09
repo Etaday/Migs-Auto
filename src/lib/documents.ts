@@ -1,4 +1,5 @@
 import type { DocKind, SaleDocument } from '@/types/document'
+import { formatPeso as peso } from './inventory'
 import type { Vehicle } from '@/types/vehicle'
 
 const num = (n: number) => (Number.isFinite(n) ? n : 0)
@@ -47,4 +48,43 @@ export function receiptDraft(d: SaleDocument, issuedOn: string): Omit<SaleDocume
   const before = paidToDate(d)
   const owed = totals(d.price, d.discount, before).balance
   return { ...rest, kind: 'receipt', issued_on: issuedOn, paid_before: before, amount_paid: owed }
+}
+
+
+/** WhatsApp wants the country code and digits only. Philippine numbers (09xx, +63 9xx, 9xx) all become 639xx. */
+export function waNumber(phone: string): string {
+  const d = phone.replace(/\D/g, '')
+  if (!d) return ''
+  if (d.startsWith('63')) return d
+  if (d.startsWith('0')) return '63' + d.slice(1)
+  if (d.length === 10 && d.startsWith('9')) return '63' + d
+  return d
+}
+
+/** The message sent with a document: who, which, how much, and where to open it. */
+export function shareMessage(d: SaleDocument, link: string): string {
+  const t = totals(d.price, d.discount, paidToDate(d))
+  const receipt = d.kind === 'receipt'
+  const lines = [
+    `Hello ${d.buyer_name.trim() || 'there'},`,
+    receipt
+      ? `Here is your receipt ${d.number} from Migs Auto for the ${d.vehicle_title}.`
+      : `Here is your invoice ${d.number} from Migs Auto for the ${d.vehicle_title}.`,
+    `Total: ${peso(t.total)}`,
+    receipt ? `Payment received: ${peso(d.amount_paid)}` : `Paid so far: ${peso(t.paid)}`,
+    `Balance: ${peso(t.balance)}`,
+  ]
+  if (link) lines.push('', `View or save it here: ${link}`)
+  lines.push('', 'Thank you for choosing Migs Auto.')
+  return lines.join('\n')
+}
+
+const subject = (d: SaleDocument) => `${d.kind === 'receipt' ? 'Receipt' : 'Invoice'} ${d.number} from Migs Auto`
+
+export function mailtoLink(d: SaleDocument, link: string): string {
+  return `mailto:${encodeURIComponent(d.buyer_email.trim())}?subject=${encodeURIComponent(subject(d))}&body=${encodeURIComponent(shareMessage(d, link))}`
+}
+
+export function whatsappShareLink(d: SaleDocument, link: string): string {
+  return `https://wa.me/${waNumber(d.buyer_phone)}?text=${encodeURIComponent(shareMessage(d, link))}`
 }

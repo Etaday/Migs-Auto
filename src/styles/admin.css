@@ -497,3 +497,15 @@ code { font-size: 12.5px; }
 
 .adm-stock { display: inline-flex; align-items: center; gap: 8px; }
 .adm-stock b { min-width: 2ch; text-align: center; }
+
+.adm-send h2 { margin: 0 0 10px; font-size: 16px; }
+
+.adm-videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 6px 0 10px; }
+.adm-video { position: relative; margin: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--a-glass-line); background: var(--a-glass-soft); aspect-ratio: 16 / 9; }
+.adm-video img, .adm-video video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+.adm-video figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 6px; padding: 6px; background: linear-gradient(transparent, rgba(0,0,0,.8)); color: #fff; font-size: 12px; }
+.adm-video figcaption button { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 0; border-radius: 8px; background: rgba(255,255,255,.9); color: #15161a; font-size: 12px; font-weight: 600; cursor: pointer; }
+.adm-video__link { display: grid; place-items: center; align-content: center; gap: 6px; height: 100%; color: var(--a-muted); font-size: 13px; padding: 8px; text-align: center; overflow-wrap: anywhere; }
+.adm-video--add, .adm-video--busy { display: grid; place-items: center; align-content: center; gap: 4px; border-style: dashed; color: var(--a-muted); cursor: pointer; font-size: 14px; text-align: center; padding: 8px; }
+.adm-video--add:hover { border-color: var(--a-pink); color: var(--a-ink); }
+.adm-video--add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }

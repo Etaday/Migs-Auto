@@ -7,6 +7,8 @@ export type SaleDocument = {
   kind: DocKind
   /** e.g. MA-INV-2026-0001 */
   number: string
+  /** Private, unguessable id for the link sent to the buyer. Empty on records made before links existed. */
+  share_token?: string
   /** YYYY-MM-DD */
   issued_on: string
   vehicle_id: string | null

@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { listVehicles } from '@/lib/db'
 import { filterVehicles } from '@/lib/inventory'
+import { parseMoneyInput } from '@/lib/money'
 import type { Vehicle, VehicleType } from '@/types/vehicle'
 import VehicleCard from './VehicleCard'
+import MoneyInput from '@/components/MoneyInput'
 
-const num = (s: string) => (s === '' ? undefined : Number(s))
+const num = (s: string) => (s === '' ? undefined : parseMoneyInput(s))
 
 export default function InventoryView() {
   const [params, setParams] = useSearchParams()
@@ -41,8 +43,8 @@ export default function InventoryView() {
           <option value="">All brands</option>
           {brands.map((b) => <option key={b}>{b}</option>)}
         </select>
-        <input aria-label="Minimum price" inputMode="numeric" placeholder="Min ₱" value={minPrice} onChange={(e) => setMinPrice(e.target.value.replace(/\D/g, ''))} />
-        <input aria-label="Maximum price" inputMode="numeric" placeholder="Max ₱" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value.replace(/\D/g, ''))} />
+        <MoneyInput aria-label="Minimum price" placeholder="Min ₱" value={minPrice} onChange={setMinPrice} />
+        <MoneyInput aria-label="Maximum price" placeholder="Max ₱" value={maxPrice} onChange={setMaxPrice} />
         <input aria-label="Minimum year" inputMode="numeric" placeholder="Year from" value={minYear} onChange={(e) => setMinYear(e.target.value.replace(/\D/g, '').slice(0, 4))} />
       </div>
       {all === null ? (

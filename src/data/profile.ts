@@ -42,6 +42,9 @@ export type Profile = {
 /** Financing is not offered yet. Set to true to turn on the calculator, the request form and the nav link. */
 export const FINANCING_AVAILABLE = false
 
+/** The public address of the live site; links sent to buyers always use it, never localhost. */
+export const SITE_URL = 'https://migs-auto.vercel.app'
+
 export const profile: Profile = {
   name: 'Migs Auto',
   firstName: 'Migs',

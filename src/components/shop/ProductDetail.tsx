@@ -5,6 +5,7 @@ import { stockLabel } from '@/lib/products'
 import { formatPeso } from '@/lib/inventory'
 import type { Product } from '@/types/product'
 import InquiryForm from '@/components/forms/InquiryForm'
+import VideoPlayer from '@/components/VideoPlayer'
 import { PLACEHOLDER } from './AccessoriesView'
 
 export default function ProductDetail() {
@@ -50,6 +51,7 @@ export default function ProductDetail() {
           <p className="vdetail__price">{formatPeso(p.price)}</p>
           <dl className="vdetail__specs">{specs.map(([k, v]) => v && <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
           {p.description && <p>{p.description}</p>}
+          <VideoPlayer videos={p.videos} title={p.name} />
           {open ? (
             <InquiryForm kind="inquiry" details={{ product: p.name, product_id: p.id }} heading={`Ask about the ${p.name}`} submitLabel="Send inquiry" />
           ) : (

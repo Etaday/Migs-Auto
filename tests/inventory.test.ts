@@ -56,3 +56,21 @@ describe('withDefaults', () => {
     expect(withDefaults(v({ modifications: ['Exhaust'], cost: 5 })).modifications).toEqual(['Exhaust'])
   })
 })
+
+import { formatPeso } from '../src/lib/inventory'
+
+describe('formatPeso', () => {
+  it('shows whole amounts without decimals and with commas', () => {
+    expect(formatPeso(640000)).toBe('₱640,000')
+    expect(formatPeso(0)).toBe('₱0')
+    expect(formatPeso(1234567)).toBe('₱1,234,567')
+  })
+  it('shows centavos when there are any, never rounding them away', () => {
+    expect(formatPeso(150000.5)).toBe('₱150,000.50')
+    expect(formatPeso(99.99)).toBe('₱99.99')
+  })
+  it('does not show float noise', () => {
+    expect(formatPeso(0.1 + 0.2)).toBe('₱0.30')
+    expect(formatPeso(19.999)).toBe('₱20')
+  })
+})

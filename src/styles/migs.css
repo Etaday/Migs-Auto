@@ -70,3 +70,12 @@
 
 /* Phones: keep the last items clear of the floating tab bar. */
 @media (max-width: 1099px) { .mpage, .home--dealer { padding-bottom: 130px; } }
+
+/* The buyer's page for an invoice or receipt */
+.shared-doc { min-height: 100dvh; padding: clamp(16px, 4vw, 48px) 16px; background: var(--cream); }
+.shared-doc__bar { max-width: 820px; margin: 0 auto 16px; display: flex; justify-content: flex-end; }
+@media print { .shared-doc { padding: 0; background: #fff; } .shared-doc .paper { max-width: none; } }
+
+/* Listing videos */
+.vvideos { display: grid; gap: 12px; }
+.vvideos__frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-card); background: #000; }

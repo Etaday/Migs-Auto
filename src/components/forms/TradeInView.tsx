@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import InquiryForm from './InquiryForm'
+import MoneyInput from '@/components/MoneyInput'
 
 export default function TradeInView() {
   const [d, setD] = useState({ vehicle: '', year: '', mileage: '', asking: '', photos: '' })
@@ -12,7 +13,7 @@ export default function TradeInView() {
         <label>Your vehicle (brand, model)<input value={d.vehicle} onChange={set('vehicle')} maxLength={120} /></label>
         <label>Year<input value={d.year} onChange={set('year')} inputMode="numeric" maxLength={4} /></label>
         <label>Mileage (km)<input value={d.mileage} onChange={set('mileage')} inputMode="numeric" maxLength={9} /></label>
-        <label>Asking price (₱, optional)<input value={d.asking} onChange={set('asking')} inputMode="numeric" maxLength={12} /></label>
+        <label>Asking price (₱, optional)<MoneyInput value={d.asking} onChange={(v) => setD((x) => ({ ...x, asking: v }))} maxLength={16} /></label>
         <label>Link to photos (optional)<input value={d.photos} onChange={set('photos')} maxLength={300} /></label>
       </InquiryForm>
     </section>

@@ -19,6 +19,7 @@ const FinancingView = lazy(() => import('@/components/forms/FinancingView'))
 const TestDriveView = lazy(() => import('@/components/forms/TestDriveView'))
 const ContactView = lazy(() => import('@/components/ContactView'))
 const AdminApp = lazy(() => import('@/components/admin/AdminApp'))
+const SharedDocument = lazy(() => import('@/components/SharedDocument'))
 const Privacy = lazy(() => import('@/components/Privacy'))
 const ToS = lazy(() => import('@/components/ToS'))
 const ThankYou = lazy(() => import('@/components/ThankYou'))
@@ -92,6 +93,7 @@ const start = () =>
         </Route>
         {/* Standalone pages: their own layout, no rail, document scroll. */}
         <Route path="/admin" element={<Suspense fallback={null}><AdminApp /></Suspense>} />
+        <Route path="/d/:token" element={<Suspense fallback={null}><SharedDocument /></Suspense>} />
         <Route path="/privacy" element={<Suspense fallback={null}><Privacy /></Suspense>} />
         <Route path="/terms" element={<Suspense fallback={null}><ToS /></Suspense>} />
         <Route path="/thank-you" element={<Suspense fallback={null}><ThankYou /></Suspense>} />

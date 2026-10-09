@@ -6,14 +6,16 @@ import { formatPeso } from '@/lib/inventory'
 import { enhanceProductDescription, filterProducts, stockLabel } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types/product'
 import PhotoPicker from './PhotoPicker'
+import VideoPicker from './VideoPicker'
+import MoneyInput from '@/components/MoneyInput'
 
 type Draft = Omit<Product, 'id' | 'created_at' | 'price' | 'stock'> & { id?: string; price: string; stock: string }
-const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', price: '', stock: '1', description: '', photos: [], listed: true })
+const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', price: '', stock: '1', description: '', photos: [], videos: [], listed: true })
 const toDraft = (p: Product): Draft => ({ ...p, price: String(p.price), stock: String(p.stock) })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 const row = (d: Draft): Omit<Product, 'id' | 'created_at'> => ({
   category: d.category, name: d.name.trim(), brand: d.brand.trim(), size: d.size.trim(), fits: d.fits.trim(), condition: d.condition, price: n(d.price),
-  stock: Math.max(0, Math.floor(n(d.stock))), description: d.description.trim(), photos: d.photos, listed: d.listed,
+  stock: Math.max(0, Math.floor(n(d.stock))), description: d.description.trim(), photos: d.photos, videos: d.videos, listed: d.listed,
 })
 
 function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }) {
@@ -55,7 +57,7 @@ function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         <label className="adm-field"><span>Size / specs</span><input value={d.size} onChange={f('size')} placeholder="e.g. 17 inch, 5x114.3" /></label>
         <label className="adm-field"><span>Fits</span><input value={d.fits} onChange={f('fits')} placeholder="e.g. Honda Civic, Accord" /></label>
         <label className="adm-field"><span>Condition</span><select value={d.condition} onChange={f('condition')}><option value="new">Brand new</option><option value="used">Used</option></select></label>
-        <label className="adm-field"><span>Price (₱)</span><input value={d.price} onChange={f('price')} inputMode="numeric" /></label>
+        <label className="adm-field"><span>Price (₱)</span><MoneyInput value={d.price} onChange={(v) => set('price', v)} /></label>
         <label className="adm-field"><span>Quantity in stock</span><input value={d.stock} onChange={f('stock')} inputMode="numeric" /></label>
       </div>
       <div className="adm-field">
@@ -68,6 +70,7 @@ function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }
       </div>
       {note && <p className="adm-note" role="status">{note}</p>}
       <PhotoPicker photos={d.photos} onChange={(p) => set('photos', p)} onError={setErr} onBusy={setUploading} />
+      <VideoPicker videos={d.videos} onChange={(v) => set('videos', v)} onError={setErr} onBusy={setUploading} />
       <label className="adm-check"><input type="checkbox" checked={d.listed} onChange={(e) => set('listed', e.target.checked)} /> Show on the website</label>
       {err && <p className="adm-error" role="alert">{err}</p>}
       <div className="adm-actions">

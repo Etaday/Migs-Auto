@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Printer, Trash, Receipt as ReceiptIcon, X } from '@/components/slab'
+import { Plus, Printer, Trash, Receipt as ReceiptIcon, X, EnvelopeSimple, WhatsappLogo, LinkSimple, Copy, Check } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 import { shortDate, todayIso, downloadCsv } from '@/components/admin/ui'
 import { formatPeso } from '@/lib/inventory'
-import { draftFromVehicle, nextNumber, paidToDate, receiptDraft, totals, validateDocument } from '@/lib/documents'
+import { draftFromVehicle, mailtoLink, nextNumber, paidToDate, receiptDraft, shareMessage, totals, validateDocument, whatsappShareLink } from '@/lib/documents'
+import { SITE_URL } from '@/data/profile'
 import { sanitize } from '@/lib/contact'
+import { parseMoneyInput } from '@/lib/money'
+import MoneyInput from '@/components/MoneyInput'
 import type { DocKind, SaleDocument } from '@/types/document'
 import DocumentPaper from './DocumentPaper'
 
 const METHODS = ['Cash', 'Bank transfer', 'GCash', 'Check']
 type Draft = Omit<SaleDocument, 'id' | 'created_at' | 'number'>
-const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
 const blank = (kind: DocKind): Draft => ({
   kind, issued_on: todayIso(), vehicle_id: null, vehicle_title: '', vin: '', color: '', engine: '', mileage: 0, buyer_name: '', buyer_phone: '', buyer_email: '',
@@ -19,6 +21,27 @@ const blank = (kind: DocKind): Draft => ({
 
 /** Where the Sales tab sends the owner: a new document for this vehicle. */
 export type DocRequest = { vehicleId: string; kind: DocKind } | null
+
+/** Send the document to the buyer: a private link by email or WhatsApp, or copy it. */
+function SendPanel({ doc }: { doc: SaleDocument }) {
+  const [copied, setCopied] = useState<'' | 'link' | 'message'>('')
+  const link = doc.share_token ? `${SITE_URL}/d/${doc.share_token}` : ''
+  const copy = async (what: 'link' | 'message') => {
+    try { await navigator.clipboard.writeText(what === 'link' ? link : shareMessage(doc, link)); setCopied(what); window.setTimeout(() => setCopied(''), 1800) } catch { /* clipboard blocked */ }
+  }
+  return (
+    <section className="adm-panel doc-noprint adm-send" aria-label="Send to the buyer">
+      <h2>Send to {doc.buyer_name || 'the buyer'}</h2>
+      <div className="adm-actions">
+        <a className="adm-btn" href={mailtoLink(doc, link)}><EnvelopeSimple size={15} aria-hidden="true" /> Email{doc.buyer_email ? '' : ' (add address)'}</a>
+        <a className="adm-btn" href={whatsappShareLink(doc, link)} target="_blank" rel="noopener noreferrer"><WhatsappLogo size={15} aria-hidden="true" /> WhatsApp{doc.buyer_phone ? '' : ' (choose contact)'}</a>
+        {link && <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void copy('link')}>{copied === 'link' ? <Check size={15} aria-hidden="true" /> : <LinkSimple size={15} aria-hidden="true" />} {copied === 'link' ? 'Link copied' : 'Copy link'}</button>}
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void copy('message')}>{copied === 'message' ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />} {copied === 'message' ? 'Message copied' : 'Copy message'}</button>
+      </div>
+      <p className="adm-note">{link ? `The buyer opens a private page with this ${doc.kind} and can print it or save it as a PDF. Only people with the link can see it.` : 'Private links are not switched on yet (the database update has not been applied). The message still has all the figures.'}</p>
+    </section>
+  )
+}
 
 export default function DocumentsView({ request, clearRequest }: { request: DocRequest; clearRequest: () => void }) {
   const { data, add, remove } = useData()
@@ -70,6 +93,7 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
           <button type="button" className="adm-btn" onClick={() => window.print()}><Printer size={15} aria-hidden="true" /> Print / save as PDF</button>
           <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setViewing(null)}><X size={15} aria-hidden="true" /> Close</button>
         </div>
+        <SendPanel doc={viewing} />
         <DocumentPaper doc={viewing} />
       </div>
     )
@@ -94,9 +118,9 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
           <label className="adm-field"><span>Phone</span><input value={draft.buyer_phone} onChange={(e) => set('buyer_phone', e.target.value)} /></label>
           <label className="adm-field"><span>Email</span><input value={draft.buyer_email} onChange={(e) => set('buyer_email', e.target.value)} /></label>
           <label className="adm-field"><span>Date</span><input type="date" value={draft.issued_on} onChange={(e) => set('issued_on', e.target.value)} /></label>
-          <label className="adm-field"><span>Vehicle price (₱)</span><input value={draft.price || ''} onChange={(e) => set('price', n(e.target.value))} inputMode="numeric" /></label>
-          <label className="adm-field"><span>Discount (₱)</span><input value={draft.discount || ''} onChange={(e) => set('discount', n(e.target.value))} inputMode="numeric" /></label>
-          <label className="adm-field"><span>{receipt ? 'Payment received (₱)' : 'Paid so far (₱)'}</span><input value={draft.amount_paid || ''} onChange={(e) => set('amount_paid', n(e.target.value))} inputMode="numeric" /></label>
+          <label className="adm-field"><span>Vehicle price (₱)</span><MoneyInput value={draft.price ? String(draft.price) : ''} onChange={(v) => set('price', parseMoneyInput(v))} /></label>
+          <label className="adm-field"><span>Discount (₱)</span><MoneyInput value={draft.discount ? String(draft.discount) : ''} onChange={(v) => set('discount', parseMoneyInput(v))} /></label>
+          <label className="adm-field"><span>{receipt ? 'Payment received (₱)' : 'Paid so far (₱)'}</span><MoneyInput value={draft.amount_paid ? String(draft.amount_paid) : ''} onChange={(v) => set('amount_paid', parseMoneyInput(v))} /></label>
           <label className="adm-field"><span>Payment method</span><select value={draft.method} onChange={(e) => set('method', e.target.value)}>{METHODS.map((m) => <option key={m}>{m}</option>)}</select></label>
         </div>
         <label className="adm-field"><span>Buyer address</span><input value={draft.buyer_address} onChange={(e) => set('buyer_address', e.target.value)} /></label>
@@ -137,7 +161,7 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
                 <td>{formatPeso(x.total)}</td>
                 <td>{x.balance === 0 ? <span className="adm-pill adm-pill--confirmed">paid</span> : formatPeso(x.balance)}</td>
                 <td className="adm-actions-cell">
-                  <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setViewing(d)}><Printer size={15} aria-hidden="true" /> Open</button>
+                  <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setViewing(d)}><Printer size={15} aria-hidden="true" /> Open / send</button>
                   {d.kind === 'invoice' && d.vehicle_id && <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setDraft(receiptDraft(d, todayIso()))}>Make receipt</button>}
                   <button type="button" className="adm-icon-btn" aria-label={`Delete ${d.number}`} onClick={() => window.confirm(`Delete ${d.number}?`) && void remove('documents', d.id)}><Trash size={16} /></button>
                 </td>

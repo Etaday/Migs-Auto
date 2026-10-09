@@ -26,6 +26,7 @@ export function productWithDefaults(p: Partial<Product>): Product {
     id: '', created_at: '', category: 'accessories', name: '', brand: '', size: '', fits: '', condition: 'new', price: 0, stock: 0, description: '', listed: true,
     ...p,
     photos: Array.isArray(p.photos) ? p.photos : [],
+    videos: Array.isArray(p.videos) ? p.videos : [],
   }
 }
 

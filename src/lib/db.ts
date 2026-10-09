@@ -108,7 +108,7 @@ type Demo = { [T in Table]: Rows[T][] }
 
 const dv = (n: number, o: Partial<Vehicle>): Vehicle => ({
   id: `demo-v${n}`, type: 'car', brand: '', model: '', year: 2020, price: 0, mileage: 0, transmission: 'Automatic',
-  fuel: 'Gasoline', color: '', description: 'Sample listing. Replace it from the dashboard.', photos: [], status: 'available',
+  fuel: 'Gasoline', color: '', description: 'Sample listing. Replace it from the dashboard.', photos: [], videos: [], status: 'available',
   featured: false, vin: '', engine: '', body: '', modifications: [], cost: 0, sold_price: null, sold_at: null,
   created_at: new Date(Date.now() - n * 864e5).toISOString(), ...o,
 })
@@ -182,7 +182,7 @@ export async function addRow<T extends Table>(table: T, row: Partial<Rows[T]>): 
   if (!s) throw new DbError('Please sign in.')
   if (s.demo || !backendOn) {
     const d = demoRead()
-    const full = { id: newId(), created_at: new Date().toISOString(), ...row } as Rows[T]
+    const full = { id: newId(), created_at: new Date().toISOString(), ...(table === 'documents' ? { share_token: newId() } : {}), ...row } as Rows[T]
     ;(d[table] as Rows[T][]).unshift(full)
     demoWrite(d)
     return full
@@ -241,6 +241,24 @@ export async function uploadPhoto(blob: Blob): Promise<string> {
   return `${SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/${name}`
 }
 
+const VIDEO_BUCKET = 'vehicle-videos'
+
+/** Stores one video file and returns its public address. Needs the database; in demo mode paste a video link instead. */
+export async function uploadVideo(file: File): Promise<string> {
+  if (!getSession()) throw new DbError('Please sign in.')
+  if (!backendOn || getSession()?.demo) throw new DbError('Uploading a video needs the database connected. For now, paste a YouTube or video link instead.')
+  const ext = (/\.(mp4|webm|mov)$/i.exec(file.name)?.[1] ?? 'mp4').toLowerCase()
+  const type = file.type || (ext === 'webm' ? 'video/webm' : ext === 'mov' ? 'video/quicktime' : 'video/mp4')
+  const name = `${newId()}.${ext}`
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${VIDEO_BUCKET}/${name}`, {
+    method: 'POST',
+    headers: { apikey: KEY, Authorization: `Bearer ${await token()}`, 'Content-Type': type, 'x-upsert': 'false' },
+    body: file,
+  })
+  if (!res.ok) throw new DbError(res.status === 413 ? 'That video is too large for the server. Trim it or paste a YouTube link.' : 'The video could not be uploaded. Please try again.')
+  return `${SUPABASE_URL}/storage/v1/object/public/${VIDEO_BUCKET}/${name}`
+}
+
 export function resetDemo() {
   try { localStorage.removeItem(DEMO_KEY) } catch { /* ignore */ }
 }
@@ -258,8 +276,22 @@ export async function submitPublic<T extends 'inquiries'>(table: T, row: Partial
   demoWrite(d)
 }
 
+/** A document opened through its private link (public: the link itself is the key). */
+export async function sharedDocument(token: string): Promise<SaleDocument | null> {
+  if (!/^[0-9a-f-]{20,40}$/i.test(token)) return null
+  try {
+    if (backendOn) {
+      const r = (await rest('rpc/get_shared_document', { method: 'POST', body: { p_token: token } })) as SaleDocument | null
+      return r && typeof r === 'object' ? ({ ...r, id: '', created_at: '' } as SaleDocument) : null
+    }
+    return demoRead().documents.find((d) => d.share_token === token) ?? null
+  } catch {
+    return null
+  }
+}
+
 /** The columns visitors may read (matches the grant in supabase/schema.sql). */
-const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileage,transmission,fuel,color,description,photos,status,featured,vin,engine,body,modifications'
+const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileage,transmission,fuel,color,description,photos,videos,status,featured,vin,engine,body,modifications'
 
 /** Mags and accessories shown on the website: listed items only. */
 export async function listProducts(): Promise<Product[]> {

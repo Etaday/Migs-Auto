@@ -127,3 +127,7 @@ html, body { background: var(--cream); }
 
 /* Disabled controls stay readable (they were dimmed to 40%). */
 .a11y__reset:disabled, .adm-btn:disabled { opacity: 0.65 !important; }
+
+/* Status labels: text dark enough to read on their tinted backgrounds (light theme). */
+:root:not([data-theme='dark']) .adm-pill--confirmed, :root:not([data-theme='dark']) .adm-pill--approved { color: #0d5233; }
+:root:not([data-theme='dark']) .adm-pill--new, :root:not([data-theme='dark']) .adm-pill--pending { color: #6b4300; }

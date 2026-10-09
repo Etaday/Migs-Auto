@@ -86,3 +86,40 @@ describe('payments across an invoice and its receipts', () => {
     expect(r.id).toBeUndefined(); expect(r.number).toBeUndefined()
   })
 })
+
+import { waNumber, shareMessage, mailtoLink, whatsappShareLink } from '../src/lib/documents'
+
+describe('waNumber (WhatsApp wants the country code, no plus or spaces)', () => {
+  it('turns a Philippine mobile number into 63...', () => {
+    expect(waNumber('0917 123 4567')).toBe('639171234567')
+    expect(waNumber('+63 917 123 4567')).toBe('639171234567')
+    expect(waNumber('917-123-4567')).toBe('639171234567')
+  })
+  it('keeps a number that already has 63', () => expect(waNumber('639171234567')).toBe('639171234567'))
+  it('is empty for nothing', () => { expect(waNumber('')).toBe(''); expect(waNumber('abc')).toBe('') })
+})
+
+describe('sending a document', () => {
+  const inv = doc({ price: 320000, discount: 20000, amount_paid: 100000, buyer_name: 'Ana Cruz', buyer_phone: '0917 123 4567', buyer_email: 'ana@example.com' })
+  const link = 'https://migs-auto.vercel.app/d/abc'
+  it('the message names the buyer, document, vehicle, total, balance and link', () => {
+    const m = shareMessage(inv, link)
+    expect(m).toContain('Ana Cruz'); expect(m).toContain('MA-INV-2026-0001'); expect(m).toContain('2021 Toyota Vios')
+    expect(m).toContain('₱300,000'); expect(m).toContain('₱200,000'); expect(m).toContain(link)
+  })
+  it('a receipt message talks about the payment received', () => {
+    expect(shareMessage(doc({ kind: 'receipt', number: 'MA-REC-2026-0001', amount_paid: 50000 }), link)).toMatch(/receipt/i)
+  })
+  it('works without a link and never prints undefined', () => {
+    const m = shareMessage(inv, '')
+    expect(m).not.toMatch(/undefined|null|NaN/); expect(m).not.toContain('http')
+  })
+  it('builds an email link addressed to the buyer, safely encoded', () => {
+    const l = mailtoLink(inv, link)
+    expect(l.startsWith('mailto:ana%40example.com?subject=')).toBe(true); expect(l).toContain('MA-INV-2026-0001'); expect(l).not.toContain(' ')
+  })
+  it('builds a WhatsApp link to the buyer number', () => {
+    expect(whatsappShareLink(inv, link).startsWith('https://wa.me/639171234567?text=')).toBe(true)
+    expect(whatsappShareLink(doc({ buyer_phone: '' }), link).startsWith('https://wa.me/?text=')).toBe(true)
+  })
+})

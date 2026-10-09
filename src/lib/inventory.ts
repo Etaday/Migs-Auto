@@ -21,7 +21,11 @@ export function filterVehicles(list: Vehicle[], f: VehicleFilter): Vehicle[] {
   )
 }
 
-export const formatPeso = (n: number) => '₱' + Math.round(n).toLocaleString('en-PH')
+/** ₱640,000 for whole amounts; centavos are shown only when there are some (₱150,000.50). */
+export function formatPeso(n: number): string {
+  const v = Math.round((Number.isFinite(n) ? n : 0) * 100) / 100
+  return '₱' + v.toLocaleString('en-PH', { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 })
+}
 
 /** Gives a stored or fetched vehicle every field, so records saved by an older version never crash a screen. */
 export function withDefaults(v: Partial<Vehicle>): Vehicle {
@@ -30,6 +34,7 @@ export function withDefaults(v: Partial<Vehicle>): Vehicle {
     description: '', status: 'available', featured: false, vin: '', engine: '', body: '', cost: 0, sold_price: null, sold_at: null, created_at: '',
     ...v,
     photos: Array.isArray(v.photos) ? v.photos : [],
+    videos: Array.isArray(v.videos) ? v.videos : [],
     modifications: Array.isArray(v.modifications) ? v.modifications : [],
   }
 }

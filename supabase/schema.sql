@@ -45,6 +45,8 @@ create table if not exists public.vehicles (
   sold_price numeric,
   sold_at date
 );
+-- Walk-around videos (uploaded files or links).
+alter table public.vehicles add column if not exists videos text[] not null default '{}';
 alter table public.vehicles enable row level security;
 drop policy if exists "admin all vehicles" on public.vehicles;
 create policy "admin all vehicles" on public.vehicles for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -52,7 +54,7 @@ drop policy if exists "visitor reads listed vehicles" on public.vehicles;
 create policy "visitor reads listed vehicles" on public.vehicles for select to anon using (status <> 'sold');
 -- Visitors may read only the public columns: never cost, sold_price or sold_at.
 revoke select on public.vehicles from anon;
-grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, status, featured, vin, engine, body, modifications) on public.vehicles to anon;
+grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, videos, status, featured, vin, engine, body, modifications) on public.vehicles to anon;
 create index if not exists vehicles_status_idx on public.vehicles (status);
 
 -- ---------- Inquiries (inquiry, trade-in, financing, test drive) ----------
@@ -122,6 +124,7 @@ create table if not exists public.products (
   photos text[] not null default '{}',
   listed boolean not null default true
 );
+alter table public.products add column if not exists videos text[] not null default '{}';
 alter table public.products enable row level security;
 drop policy if exists "admin all products" on public.products;
 create policy "admin all products" on public.products for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -148,3 +151,24 @@ grant select, insert, update, delete on public.vehicles, public.inquiries, publi
 -- Visitors: add an inquiry, read the list of mags and accessories. (Vehicles are limited to public columns above.)
 grant insert on public.inquiries to anon;
 grant select on public.products to anon;
+
+-- ---------- Send an invoice or receipt: a private link for the buyer ----------
+-- Each document gets an unguessable token. Whoever holds the link can open THAT one document and nothing else.
+alter table public.documents add column if not exists share_token uuid not null default gen_random_uuid();
+create unique index if not exists documents_share_token_idx on public.documents (share_token);
+create or replace function public.get_shared_document(p_token uuid)
+returns jsonb language sql stable security definer set search_path = public as $$
+  select to_jsonb(d) - 'id' - 'share_token' - 'vehicle_id' - 'created_at' from public.documents d where d.share_token = p_token limit 1;
+$$;
+revoke execute on function public.get_shared_document(uuid) from public;
+grant execute on function public.get_shared_document(uuid) to anon, authenticated;
+
+-- ---------- Listing videos ----------
+-- A public bucket, like the photos: anyone can watch, only the owner can add or remove. 50 MB per file is the free-plan ceiling.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('vehicle-videos', 'vehicle-videos', true, 52428800, array['video/mp4', 'video/webm', 'video/quicktime'])
+  on conflict (id) do nothing;
+drop policy if exists "owner uploads vehicle videos" on storage.objects;
+create policy "owner uploads vehicle videos" on storage.objects for insert to authenticated with check (bucket_id = 'vehicle-videos' and public.is_admin());
+drop policy if exists "owner removes vehicle videos" on storage.objects;
+create policy "owner removes vehicle videos" on storage.objects for delete to authenticated using (bucket_id = 'vehicle-videos' and public.is_admin());

@@ -16,6 +16,8 @@ export type Vehicle = {
   color: string
   description: string
   photos: string[]
+  /** Walk-around videos: uploaded files or YouTube / other links. */
+  videos: string[]
   status: VehicleStatus
   featured: boolean
   /** 17-character VIN, empty when unknown. */

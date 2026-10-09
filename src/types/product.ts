@@ -17,6 +17,7 @@ export type Product = {
   stock: number
   description: string
   photos: string[]
+  videos: string[]
   /** Hidden from the website when false. */
   listed: boolean
 }

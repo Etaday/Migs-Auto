@@ -5,6 +5,7 @@ import { formatPeso } from '@/lib/inventory'
 import type { Vehicle } from '@/types/vehicle'
 import { PLACEHOLDER } from './VehicleCard'
 import InquiryForm from '@/components/forms/InquiryForm'
+import VideoPlayer from '@/components/VideoPlayer'
 import { FINANCING_AVAILABLE } from '@/data/profile'
 
 export default function VehicleDetail() {
@@ -55,6 +56,7 @@ export default function VehicleDetail() {
             {specs.map(([k, val]) => val && <div key={k}><dt>{k}</dt><dd>{val}</dd></div>)}
           </dl>
           {v.description && <p>{v.description}</p>}
+          <VideoPlayer videos={v.videos} title={`${v.year} ${v.brand} ${v.model}`} />
           {v.modifications.length > 0 && (
             <div>
               <h2 className="mpage__sub">Modifications</h2>
