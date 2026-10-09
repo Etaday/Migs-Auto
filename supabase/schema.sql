@@ -138,3 +138,13 @@ drop policy if exists "owner uploads vehicle photos" on storage.objects;
 create policy "owner uploads vehicle photos" on storage.objects for insert to authenticated with check (bucket_id = 'vehicle-photos' and public.is_admin());
 drop policy if exists "owner removes vehicle photos" on storage.objects;
 create policy "owner removes vehicle photos" on storage.objects for delete to authenticated using (bucket_id = 'vehicle-photos' and public.is_admin());
+
+-- ---------- Permissions ----------
+-- New Supabase projects do not grant table access automatically, so it is spelled out here.
+-- Row level security above still decides WHICH rows each role may touch.
+grant usage on schema public to anon, authenticated;
+-- The owner (signed in): everything, on the tables the dashboard manages.
+grant select, insert, update, delete on public.vehicles, public.inquiries, public.documents, public.products to authenticated;
+-- Visitors: add an inquiry, read the list of mags and accessories. (Vehicles are limited to public columns above.)
+grant insert on public.inquiries to anon;
+grant select on public.products to anon;
