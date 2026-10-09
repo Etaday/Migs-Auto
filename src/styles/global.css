@@ -369,7 +369,7 @@ main > * {
   height: 220vmax;
   margin: -110vmax 0 0 -110vmax;
   border-radius: 50%;
-  /* Burnt orange, not the bright accent: a full-viewport flash of #D60078 is
+  /* Burnt orange, not the bright accent: a full-viewport flash of #D7191F is
      an eye-strain / photosensitivity risk, so the flood uses the darker ink
      tone and lets the accents stay bright at small sizes only. */
   background: var(--orange-ink);

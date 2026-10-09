@@ -124,7 +124,7 @@
 .bgrid__terms { display: grid; gap: 8px; padding: 12px 14px; border-radius: 12px; background: var(--tint-strong, rgba(215, 25, 31, 0.06)); font-size: 13px; line-height: 1.55; color: var(--muted); }
 .bgrid__terms p { margin: 0; }
 .bgrid__agree { display: flex !important; flex-direction: row !important; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; color: var(--navy); cursor: pointer; }
-.bgrid__agree input { width: 18px; height: 18px; accent-color: #D60078; }
+.bgrid__agree input { width: 18px; height: 18px; accent-color: #D7191F; }
 .bgrid__sum-lines { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
 .bgrid__sum-lines li { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
 .bgrid__sum-lines li span:first-child { display: flex; flex-direction: column; min-width: 0; }
@@ -152,8 +152,8 @@
 .bgrid__time-row select { flex: 1 1 0; min-width: 0; padding: 11px 14px; font: inherit; font-size: clamp(13.5px, 0.95vw, 15.5px); color: var(--navy); background: var(--white); border: 1px solid var(--line-strong); border-radius: 12px; }
 .bgrid__time-row select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(215, 25, 31, 0.18); }
 .bgrid__time-row span { font-weight: 700; color: var(--muted); }
-.bgrid__avail--warn { color: #C20070; font-weight: 600; }
-.bgrid__avail--warn svg { color: #D60078; }
+.bgrid__avail--warn { color: #B3121A; font-weight: 600; }
+.bgrid__avail--warn svg { color: #D7191F; }
 [data-theme='dark'] .bgrid__avail--warn { color: #FFB08A; }
 
 /* ---------- Large date picker ---------- */

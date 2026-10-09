@@ -18,6 +18,16 @@ export type Vehicle = {
   photos: string[]
   status: VehicleStatus
   featured: boolean
+  /** 17-character VIN, empty when unknown. */
+  vin: string
+  engine: string
+  body: string
+  /** Aftermarket or dealer modifications, one per entry. */
+  modifications: string[]
+  /** What Migs paid for it; admin only. */
+  cost: number
+  sold_price: number | null
+  sold_at: string | null
   created_at: string
 }
 

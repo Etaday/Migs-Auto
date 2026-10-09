@@ -35,7 +35,7 @@ export const WORK: WorkItem[] = [
     title: '360 Photo Booth',
     desc: 'Guests step on the platform and a rotating camera captures slow-motion spins they can share on the spot.',
     Icon: ArrowsClockwise,
-    tone: ['#D60078', '#4A4742'],
+    tone: ['#D7191F', '#4A4742'],
     imageSrc: '/portfolio/tb02.jpg',
   },
   {
@@ -73,6 +73,6 @@ export const WORK: WorkItem[] = [
     desc: 'Menu, packaging and social images that make the dish look as good as it tastes.',
     Icon: ForkKnife,
     imageSrc: '/portfolio/t11.jpg',
-    tone: ['#D60078', '#201D22'],
+    tone: ['#D7191F', '#201D22'],
   },
 ]

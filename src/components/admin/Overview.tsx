@@ -1,51 +1,60 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { useData } from '@/components/admin/data'
-import BookingDrawer from '@/components/admin/BookingDrawer'
-import { StatusPill, shortDate, formatTime, money, todayIso } from '@/components/admin/ui'
+import { shortDate } from '@/components/admin/ui'
+import { formatPeso } from '@/lib/inventory'
+import { dealerStats, daysInStock } from '@/lib/dealer'
 
 export default function Overview({ go }: { go: (tab: string) => void }) {
   const { data } = useData()
-  const [open, setOpen] = useState<string | null>(null)
-  const today = todayIso()
-  const live = data.bookings.filter((b) => b.status !== 'cancelled')
-  const upcoming = live.filter((b) => b.event_date >= today && b.status !== 'completed').sort((a, b) => a.event_date.localeCompare(b.event_date))
-  const newCount = data.bookings.filter((b) => b.status === 'new').length
-  const depositsDue = upcoming.filter((b) => b.status === 'confirmed' && b.payment_status === 'pending')
-  const pendingRev = data.reviews.filter((r) => r.status === 'pending').length
-  const unread = data.messages.filter((m) => !m.handled).length
-  const booked = live.reduce((s, b) => s + b.total, 0)
-  const row = data.bookings.find((b) => b.id === open)
+  const now = useMemo(() => new Date(), [])
+  const s = dealerStats(data.vehicles, data.inquiries, now)
+  const aging = data.vehicles.filter((v) => v.status === 'available').sort((a, b) => daysInStock(b, now) - daysInStock(a, now)).slice(0, 5)
+  const latest = data.inquiries.filter((i) => i.status === 'new').slice(0, 6)
+  const title = (id: string | null) => { const v = data.vehicles.find((x) => x.id === id); return v ? `${v.year} ${v.brand} ${v.model}` : 'General' }
 
   return (
     <div className="adm-stack">
       <div className="adm-cards">
-        <button type="button" className="adm-card" onClick={() => go('bookings')}><b>{newCount}</b><span>New booking requests</span></button>
-        <button type="button" className="adm-card" onClick={() => go('calendar')}><b>{upcoming.length}</b><span>Upcoming events</span></button>
-        <button type="button" className="adm-card" onClick={() => go('bookings')}><b>{depositsDue.length}</b><span>Deposits to collect</span></button>
-        <button type="button" className="adm-card" onClick={() => go('reviews')}><b>{pendingRev}</b><span>Reviews to approve</span></button>
-        <button type="button" className="adm-card" onClick={() => go('messages')}><b>{unread}</b><span>Unread messages</span></button>
-        <div className="adm-card adm-card--static"><b>{money(booked)}</b><span>Total of active bookings</span></div>
+        <button type="button" className="adm-card" onClick={() => go('vehicles')}><b>{s.available}</b><span>Available</span></button>
+        <button type="button" className="adm-card" onClick={() => go('vehicles')}><b>{s.reserved}</b><span>Reserved</span></button>
+        <button type="button" className="adm-card" onClick={() => go('vehicles')}><b>{formatPeso(s.inventoryValue)}</b><span>Inventory value</span></button>
+        <button type="button" className="adm-card" onClick={() => go('leads')}><b>{s.newLeads}</b><span>New leads</span></button>
+        <button type="button" className="adm-card" onClick={() => go('sales')}><b>{s.soldThisMonth}</b><span>Sold this month</span></button>
+        <button type="button" className="adm-card" onClick={() => go('sales')}><b>{formatPeso(s.profitThisMonth)}</b><span>Profit this month</span></button>
       </div>
 
       <section className="adm-panel">
-        <h2>Next events</h2>
-        {upcoming.length === 0 ? (
-          <p className="adm-empty">No upcoming events yet. New requests from the booking page appear here.</p>
-        ) : (
-          <ul className="adm-list">
-            {upcoming.slice(0, 8).map((b) => (
-              <li key={b.id}>
-                <button type="button" onClick={() => setOpen(b.id)}>
-                  <span className="adm-list__main"><b>{b.name}</b><small>{b.event_type || 'Event'} · {b.area || 'Area not set'}</small></span>
-                  <span className="adm-list__when">{shortDate(b.event_date)}<small>{formatTime(b.start_time)}</small></span>
-                  <StatusPill status={b.status} />
-                </button>
-              </li>
-            ))}
-          </ul>
+        <h2>Upcoming test drives</h2>
+        {s.upcomingTestDrives.length === 0 ? <p className="adm-empty">No test drives booked. Bookings from the website appear here.</p> : (
+          <ul className="adm-list">{s.upcomingTestDrives.slice(0, 6).map((i) => (
+            <li key={i.id}><button type="button" onClick={() => go('leads')}>
+              <span className="adm-list__main"><b>{i.name}</b><small>{title(i.vehicle_id)} · {i.phone || i.email}</small></span>
+              <span className="adm-list__when">{shortDate(String(i.details.date))}<small>{String(i.details.time ?? '')}</small></span>
+            </button></li>))}</ul>
         )}
       </section>
-      {row && <BookingDrawer row={row} onClose={() => setOpen(null)} />}
+
+      <section className="adm-panel">
+        <h2>Newest leads</h2>
+        {latest.length === 0 ? <p className="adm-empty">No new leads.</p> : (
+          <ul className="adm-list">{latest.map((i) => (
+            <li key={i.id}><button type="button" onClick={() => go('leads')}>
+              <span className="adm-list__main"><b>{i.name}</b><small>{title(i.vehicle_id)}</small></span>
+              <span className="adm-list__when">{shortDate(i.created_at)}<small>{i.kind.replace('_', ' ')}</small></span>
+            </button></li>))}</ul>
+        )}
+      </section>
+
+      <section className="adm-panel">
+        <h2>Longest in stock</h2>
+        {aging.length === 0 ? <p className="adm-empty">No vehicles in stock.</p> : (
+          <ul className="adm-list">{aging.map((v) => (
+            <li key={v.id}><button type="button" onClick={() => go('vehicles')}>
+              <span className="adm-list__main"><b>{v.year} {v.brand} {v.model}</b><small>{formatPeso(v.price)}</small></span>
+              <span className="adm-list__when">{daysInStock(v, now)} days</span>
+            </button></li>))}</ul>
+        )}
+      </section>
     </div>
   )
 }

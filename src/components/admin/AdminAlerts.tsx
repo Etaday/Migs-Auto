@@ -3,7 +3,7 @@ import { Bell, BellSlash, X } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 
 /**
- * AdminAlerts - tells the studio the moment something new arrives while the
+ * AdminAlerts - tells the dealer the moment something new arrives while the
  * dashboard is open: a booking request, a change or cancel request from a
  * customer, a quote request, a message or a review to approve.
  *
@@ -16,9 +16,9 @@ import { useData } from '@/components/admin/data'
 type Note = { key: string; tab: string; title: string; body: string }
 
 const POLL_MS = 30_000
-const PREF = 'jd-admin-alerts'
-const SEEN = 'jd-admin-seen-v1'
-const TITLE = 'Dashboard - Judeng Production Studio'
+const PREF = 'migs-admin-alerts'
+const SEEN = 'migs-admin-seen-v1'
+const TITLE = 'Dashboard - Migs Auto'
 
 const read = (k: string) => { try { return localStorage.getItem(k) } catch { return null } }
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v) } catch { /* storage unavailable */ } }
@@ -48,16 +48,12 @@ export default function AdminAlerts({ go }: { go: (tab: string) => void }) {
   const seen = useRef<Set<string> | null>(null)
   const unread = useRef(0)
 
-  // Every pending thing the studio should know about, as a stable key per item.
+  // Every pending thing the dealer should know about, as a stable key per item.
   const current = useCallback((): Note[] => {
     const out: Note[] = []
-    for (const b of data.bookings) {
-      if (b.status === 'new') out.push({ key: `b:${b.id}`, tab: 'bookings', title: 'New booking request', body: `${b.name}${b.event_date ? `, ${b.event_date}` : ''}` })
-      if (b.change_request?.status === 'pending') out.push({ key: `c:${b.id}:${b.change_request.at}`, tab: 'bookings', title: 'Change or cancel request', body: b.name })
+    for (const i of data.inquiries) {
+      if (i.status === 'new') out.push({ key: `i:${i.id}`, tab: 'leads', title: i.kind === 'test_drive' ? 'New test drive' : i.kind === 'trade_in' ? 'New trade-in request' : i.kind === 'financing' ? 'New financing request' : 'New inquiry', body: i.name })
     }
-    for (const q of data.quotes) if (q.status === 'new') out.push({ key: `q:${q.id}`, tab: 'quotes', title: 'New quote request', body: `${q.name}${q.service ? `, ${q.service}` : ''}` })
-    for (const m of data.messages) if (!m.handled) out.push({ key: `m:${m.id}`, tab: 'messages', title: 'New message', body: m.name })
-    for (const r of data.reviews) if (r.status === 'pending') out.push({ key: `r:${r.id}`, tab: 'reviews', title: 'Review to approve', body: r.name })
     return out
   }, [data])
 
@@ -85,7 +81,7 @@ export default function AdminAlerts({ go }: { go: (tab: string) => void }) {
     if (perm === 'granted' && document.hidden) {
       const top = fresh[0]
       try {
-        const n = new Notification(fresh.length > 1 ? `${fresh.length} new items` : top.title, { body: fresh.length > 1 ? fresh.map((f) => f.title).slice(0, 3).join(', ') : top.body, tag: 'jd-admin', icon: '/favicon.png' })
+        const n = new Notification(fresh.length > 1 ? `${fresh.length} new items` : top.title, { body: fresh.length > 1 ? fresh.map((f) => f.title).slice(0, 3).join(', ') : top.body, tag: 'migs-admin', icon: '/favicon.png' })
         n.onclick = () => { window.focus(); go(top.tab); n.close() }
       } catch { /* notifications blocked */ }
     }

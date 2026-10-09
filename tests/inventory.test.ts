@@ -5,7 +5,8 @@ import type { Vehicle } from '../src/types/vehicle'
 const v = (o: Partial<Vehicle>): Vehicle => ({
   id: 'x', type: 'car', brand: 'Toyota', model: 'Vios', year: 2020, price: 600000, mileage: 30000,
   transmission: 'Automatic', fuel: 'Gasoline', color: 'White', description: '', photos: [],
-  status: 'available', featured: false, created_at: '2026-01-01', ...o,
+  status: 'available', featured: false, vin: '', engine: '', body: '', modifications: [], cost: 0,
+  sold_price: null, sold_at: null, created_at: '2026-01-01', ...o,
 })
 const list = [
   v({ id: 'a' }),

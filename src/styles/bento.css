@@ -429,6 +429,6 @@
 }
 
 /* Booking form: the field that still needs filling */
-.is-missing { outline: 2px solid var(--orange, #d60078); outline-offset: 6px; border-radius: 14px; animation: missing-pulse 700ms ease-out 2; }
+.is-missing { outline: 2px solid var(--orange, #D7191F); outline-offset: 6px; border-radius: 14px; animation: missing-pulse 700ms ease-out 2; }
 @keyframes missing-pulse { 50% { outline-offset: 10px; outline-color: transparent; } }
 @media (prefers-reduced-motion: reduce) { .is-missing { animation: none; } }

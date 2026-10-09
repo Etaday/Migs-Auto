@@ -37,11 +37,11 @@ type Tool = {
 }
 
 export const tools: Tool[] = [
-  { name: 'Booths and Prints',        iconPath: '/icons/sparkle.svg',   color: '#D60078' },
+  { name: 'Booths and Prints',        iconPath: '/icons/sparkle.svg',   color: '#D7191F' },
   { name: '360 Photo Booth',          iconPath: '/icons/rotate360.svg', color: '#201D22' },
-  { name: 'Cake Mapping',             iconPath: '/icons/cake.svg',      color: '#D60078' },
+  { name: 'Cake Mapping',             iconPath: '/icons/cake.svg',      color: '#D7191F' },
   { name: 'Studio shots',             iconPath: '/icons/camera.svg',    color: '#201D22' },
-  { name: 'Photo and video coverage', iconPath: '/icons/video.svg',     color: '#D60078' },
+  { name: 'Photo and video coverage', iconPath: '/icons/video.svg',     color: '#D7191F' },
   { name: 'Food photography',         iconPath: '/icons/fork.svg',      color: '#201D22' },
 ]
 

@@ -30,7 +30,7 @@ export default function VehicleDetail() {
   }
   const photos = v.photos.length ? v.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
-    ['Year', String(v.year)], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
+    ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
     ['Fuel', v.fuel], ['Color', v.color], ['Status', v.status],
   ]
   return (
@@ -54,6 +54,12 @@ export default function VehicleDetail() {
             {specs.map(([k, val]) => val && <div key={k}><dt>{k}</dt><dd>{val}</dd></div>)}
           </dl>
           {v.description && <p>{v.description}</p>}
+          {v.modifications.length > 0 && (
+            <div>
+              <h2 className="mpage__sub">Modifications</h2>
+              <ul className="vdetail__mods">{v.modifications.map((m) => <li key={m}>{m}</li>)}</ul>
+            </div>
+          )}
           {open ? (
             <InquiryForm vehicleId={v.id} kind="inquiry" heading={`Inquire about the ${v.brand} ${v.model}`} />
           ) : (

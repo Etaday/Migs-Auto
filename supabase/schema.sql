@@ -154,7 +154,14 @@ create table if not exists public.vehicles (
   description text not null default '',
   photos text[] not null default '{}',
   status text not null default 'available' check (status in ('available', 'reserved', 'sold')),
-  featured boolean not null default false
+  featured boolean not null default false,
+  vin text not null default '' check (char_length(vin) <= 17),
+  engine text not null default '',
+  body text not null default '',
+  modifications text[] not null default '{}',
+  cost numeric not null default 0,
+  sold_price numeric,
+  sold_at date
 );
 create table if not exists public.inquiries (
   id uuid primary key default gen_random_uuid(),
@@ -174,6 +181,9 @@ alter table public.inquiries enable row level security;
 create policy "admin all vehicles" on public.vehicles for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "admin all inquiries" on public.inquiries for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "visitor reads listed vehicles" on public.vehicles for select to anon using (status <> 'sold');
+-- Visitors may read only the public columns: never cost, sold_price or sold_at.
+revoke select on public.vehicles from anon;
+grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, status, featured, vin, engine, body, modifications) on public.vehicles to anon;
 create policy "visitor adds inquiry" on public.inquiries for insert to anon with check (status = 'new');
 create index if not exists vehicles_status_idx on public.vehicles (status);
 create index if not exists inquiries_status_idx on public.inquiries (status);

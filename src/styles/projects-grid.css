@@ -454,7 +454,7 @@
   color: #FAF7F2;
 }
 .aig__head-text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.aig__eyebrow { font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: #FF6FB8; }
+.aig__eyebrow { font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: #FF5A5F; }
 .aig__title { font-size: clamp(18px, 1.5vw, 26px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; max-width: 34ch; }
 .aig__harness { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .aig__harness-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(244, 241, 234, 0.6); margin-right: 4px; }

@@ -30,8 +30,8 @@ export default function Login() {
   return (
     <main className="adm-login">
       <div className="adm-login__card">
-        <img src="/logo.png" alt="Judeng Production Studio" width={140} />
-        <h1>Studio dashboard</h1>
+        <img src="/logo.png" alt="Migs Auto" width={140} />
+        <h1>Dealer dashboard</h1>
         <form onSubmit={submit} noValidate>
           {first && <p className="adm-note">Create the owner account for this dashboard. You can add more people later from the Team tab.</p>}
           <label className="adm-field"><span>Email</span><input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
