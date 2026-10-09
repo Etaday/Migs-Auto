@@ -1,0 +1,215 @@
+/* ============================================
+   BOOKING - the form on paper, a live summary on a dark plate.
+   Reuses the cgrid__* field, button and done-state styles.
+   ============================================ */
+
+.bgrid__glass { display: grid; gap: clamp(16px, 1.6vw, 28px); align-items: start; }
+@media (min-width: 1100px) {
+  .bgrid__glass { grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.7fr); }
+}
+.bgrid__glass--done { display: flex; min-height: 420px; align-items: center; justify-content: center; }
+
+.bgrid__form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2vh, 24px);
+  min-width: 0;
+  padding: clamp(18px, 2.4vh, 28px) clamp(18px, 1.6vw, 28px);
+  border-radius: 20px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 24px 50px -36px rgba(21, 21, 21, 0.45);
+}
+.bgrid__set { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.bgrid__set legend { padding: 0; margin-bottom: 10px; color: var(--orange-ink); }
+
+.bgrid__chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.bgrid__chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--white);
+  color: var(--navy);
+  font-size: clamp(13px, 0.9vw, 14.5px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 180ms var(--ease-out), background 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.bgrid__chip svg { color: var(--orange); flex: 0 0 auto; }
+.bgrid__chip:hover { transform: translateY(-1px); border-color: var(--orange); }
+.bgrid__chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.bgrid__chip.is-on { background: rgba(215, 25, 31, 0.08); border-color: var(--orange); }
+.bgrid__chip:has(input:focus-visible) { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.bgrid__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1vw, 16px); }
+.bgrid__wide { grid-column: span 1; }
+.bgrid__full { grid-column: 1 / -1; }
+.bgrid__form .cgrid__field select,
+.bgrid__form .cgrid__field input[type='date'],
+.bgrid__form .cgrid__field input[type='time'] {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: clamp(13.5px, 0.95vw, 15.5px);
+  color: var(--navy);
+  background: var(--white);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+}
+.bgrid__form .cgrid__field select:focus,
+.bgrid__form .cgrid__field input:focus,
+.bgrid__form .cgrid__field textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(215, 25, 31, 0.18);
+}
+.bgrid__form .cgrid__field textarea { min-height: 96px; flex: none; resize: vertical; }
+.bgrid__form .cgrid__hint a { color: var(--orange-ink); text-decoration: underline; }
+
+.bgrid__summary {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(18px, 2vw, 26px);
+  border-radius: 20px;
+  color: #FAF7F2;
+  background: linear-gradient(160deg, #2E2E2E, var(--navy-ink));
+  min-width: 0;
+}
+.bgrid__sum-title { margin: 0; font-size: clamp(17px, 1.3vw, 21px); font-weight: 700; line-height: 1.2; }
+.bgrid__sum-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.bgrid__sum-list li { padding: 5px 10px; border-radius: 999px; background: rgba(215, 25, 31, 0.25); font-size: 12.5px; font-weight: 600; }
+.bgrid__sum-meta { margin: 0; display: grid; gap: 10px; }
+.bgrid__sum-meta dt { display: flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(244, 241, 234, 0.6); }
+.bgrid__sum-meta dt svg { color: var(--orange); }
+.bgrid__sum-meta dd { margin: 2px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+.bgrid__sum-note { margin: 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 12.5px; line-height: 1.5; color: rgba(244, 241, 234, 0.7); }
+
+@media (max-width: 1099px) {
+  .bgrid__summary { position: static; }
+}
+@media (max-width: 560px) {
+  .bgrid__grid { grid-template-columns: minmax(0, 1fr); }
+  .bgrid__chips { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Service picker and price summary ---------- */
+.bgrid__help { margin: 0 0 4px; font-size: 12.5px; color: var(--muted); }
+.bgrid__services { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.bgrid__svc { margin: 0; padding: 12px; min-width: 0; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--white); display: flex; flex-direction: column; gap: 8px; transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out); }
+.bgrid__svc legend { display: flex; align-items: center; gap: 8px; padding: 0 6px; font-size: 14px; font-weight: 700; color: var(--navy); }
+.bgrid__svc legend svg { color: var(--orange); }
+.bgrid__svc.is-on { border-color: var(--orange); }
+.bgrid__svc.is-focus { box-shadow: 0 0 0 3px rgba(215, 25, 31, 0.25); }
+.bgrid__svc-blurb { margin: 0; font-size: 12.5px; color: var(--muted); }
+.bgrid__opts { display: grid; gap: 6px; }
+.bgrid__opt { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; border: 1px solid var(--line-strong); border-radius: 10px; cursor: pointer; transition: border-color 160ms, background 160ms; }
+.bgrid__opt:hover { border-color: var(--orange); }
+.bgrid__opt.is-on { background: rgba(215, 25, 31, 0.08); border-color: var(--orange); }
+.bgrid__opt input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
+.bgrid__opt:has(input:focus-visible) { outline: 2px solid var(--orange); outline-offset: 2px; }
+.bgrid__opt-main { display: flex; flex-direction: column; min-width: 0; }
+.bgrid__opt-main b { font-size: 13.5px; color: var(--navy); }
+.bgrid__opt-main small { font-size: 12px; color: var(--muted); font-weight: 400; }
+.bgrid__opt-price { font-size: 13.5px; font-weight: 700; color: var(--orange-ink); white-space: nowrap; }
+.bgrid__avail { display: flex; align-items: center; gap: 8px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.bgrid__avail svg { color: var(--orange); flex: 0 0 auto; }
+.bgrid__terms { display: grid; gap: 8px; padding: 12px 14px; border-radius: 12px; background: var(--tint-strong, rgba(215, 25, 31, 0.06)); font-size: 13px; line-height: 1.55; color: var(--muted); }
+.bgrid__terms p { margin: 0; }
+.bgrid__agree { display: flex !important; flex-direction: row !important; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; color: var(--navy); cursor: pointer; }
+.bgrid__agree input { width: 18px; height: 18px; accent-color: #D60078; }
+.bgrid__sum-lines { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.bgrid__sum-lines li { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
+.bgrid__sum-lines li span:first-child { display: flex; flex-direction: column; min-width: 0; }
+.bgrid__sum-lines small { font-size: 11.5px; color: rgba(244, 241, 234, 0.6); }
+.bgrid__sum-lines li span:last-child { white-space: nowrap; font-weight: 700; }
+.bgrid__sum-lines .is-empty { color: rgba(244, 241, 234, 0.6); }
+.bgrid__totals { margin: 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.12); display: grid; gap: 6px; }
+.bgrid__totals div { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
+.bgrid__totals dt { color: rgba(244, 241, 234, 0.75); }
+.bgrid__totals dd { margin: 0; font-weight: 700; }
+.bgrid__totals .is-total { font-size: 17px; }
+.bgrid__totals .is-total dd { color: #FFB08A; }
+.bgrid__sum-note svg { color: var(--orange); vertical-align: -2px; }
+
+/* The page is taller than the viewport, so the panel must scroll: opt out of
+   the fixed-height layout the other grids use on desktop. */
+@media (min-width: 1100px) {
+  .bgrid { height: auto; grid-template-rows: auto auto; }
+  .bgrid__glass { height: auto; grid-template-rows: auto; }
+}
+
+.bgrid__time { border: 0; padding: 0; margin: 0; min-width: 0; }
+.bgrid__time legend { padding: 0; margin-bottom: 6px; }
+.bgrid__time-row { display: flex; align-items: center; gap: 8px; }
+.bgrid__time-row select { flex: 1 1 0; min-width: 0; padding: 11px 14px; font: inherit; font-size: clamp(13.5px, 0.95vw, 15.5px); color: var(--navy); background: var(--white); border: 1px solid var(--line-strong); border-radius: 12px; }
+.bgrid__time-row select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(215, 25, 31, 0.18); }
+.bgrid__time-row span { font-weight: 700; color: var(--muted); }
+.bgrid__avail--warn { color: #C20070; font-weight: 600; }
+.bgrid__avail--warn svg { color: #D60078; }
+[data-theme='dark'] .bgrid__avail--warn { color: #FFB08A; }
+
+/* ---------- Large date picker ---------- */
+.dp { position: relative; }
+.dp__field { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; font: inherit; font-size: clamp(14px, 1vw, 15.5px); text-align: left; color: var(--navy); background: rgba(255,255,255,.72); border: 1px solid rgba(36,36,36,.12); border-radius: 12px; cursor: pointer; }
+.dp__field svg { color: var(--orange); flex: none; }
+.dp__field.is-empty { color: var(--muted); }
+.dp__field:focus-visible, .dp__field[aria-expanded='true'] { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(244,106,53,.18); }
+.dp__backdrop { position: fixed; inset: 0; z-index: 940; background: rgba(21,21,21,.45); }
+.dp__pop { position: fixed; z-index: 950; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(460px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow-y: auto; padding: 20px; border-radius: 22px; background: #fff; color: #201D22; box-shadow: 0 40px 90px -20px rgba(21,21,21,.6); }
+.dp__head { display: grid; grid-template-columns: 44px 1fr 44px 44px; align-items: center; gap: 6px; margin-bottom: 14px; }
+.dp__head h3 { margin: 0; text-align: center; font-size: 19px; }
+.dp__nav, .dp__close { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgba(36,36,36,.14); border-radius: 12px; background: #fff; color: #201D22; cursor: pointer; }
+.dp__nav:hover:not(:disabled), .dp__close:hover { background: #FDE6D8; }
+.dp__nav:disabled { opacity: .3; cursor: not-allowed; }
+.dp__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.dp__dow { padding-bottom: 4px; text-align: center; font-size: 12.5px; font-weight: 700; color: #5F5B54; }
+.dp__day { position: relative; aspect-ratio: 1; min-height: 46px; border: 1px solid transparent; border-radius: 14px; background: #F5F1EA; font: inherit; font-size: 17px; font-weight: 600; color: #201D22; cursor: pointer; }
+.dp__day:hover:not(:disabled) { border-color: var(--orange); background: #FDE6D8; }
+.dp__day:disabled { background: transparent; color: #B7A9C0; cursor: not-allowed; }
+.dp__day.is-today { box-shadow: inset 0 0 0 2px #201D22; }
+.dp__day.is-sel { background: var(--orange); color: #1A1A1A; }
+.dp__day.is-booked::after { content: ''; position: absolute; bottom: 6px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #F5A300; }
+.dp__day:focus-visible, .dp__nav:focus-visible, .dp__close:focus-visible { outline: 3px solid #201D22; outline-offset: 2px; }
+.dp__legend { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; font-size: 13px; color: #5F5B54; }
+.dp__legend i { width: 8px; height: 8px; border-radius: 50%; background: #F5A300; flex: none; }
+[data-theme='dark'] .dp__field { color: #FAF7F0; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.28); }
+[data-theme='dark'] .dp__field.is-empty { color: rgba(237,240,246,.7); }
+@media (max-width: 420px) { .dp__pop { padding: 14px; } .dp__day { min-height: 42px; font-size: 16px; } }
+
+/* Booth style sub-headings inside "Booths and Prints" */
+.bgrid__group { margin: 10px 0 2px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--orange-ink, var(--orange)); }
+.bgrid__group:first-child { margin-top: 0; }
+.plist__group th { padding-top: 14px; font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--orange-ink, var(--orange)); text-align: left; }
+
+/* Booth style picker above the packages */
+.bgrid__styles { display: flex; flex-wrap: wrap; gap: 8px; }
+.bgrid__styles button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--white); color: var(--navy); font: inherit; font-weight: 600; cursor: pointer; }
+.bgrid__styles button.is-on { border-color: var(--orange); background: rgba(215, 25, 31, 0.09); color: var(--orange-ink, var(--orange)); }
+.bgrid__pkg { margin-top: 4px; }
+
+/* Services as collapsible dropdowns */
+.bgrid__svc { padding-top: 0; }
+.bgrid__svc legend { width: 100%; padding: 0; float: left; }
+.bgrid__svc legend + * { clear: both; }
+.bgrid__svc-toggle { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 8px 4px; border: 0; background: none; color: inherit; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.bgrid__svc-name { flex: 0 1 auto; }
+.bgrid__svc-chosen { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: var(--orange-ink, var(--orange)); }
+.bgrid__svc-caret { margin-left: auto; width: 9px; height: 9px; flex: none; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 180ms var(--ease-out); }
+.bgrid__svc-toggle[aria-expanded='true'] .bgrid__svc-caret { transform: rotate(-135deg); }
+.bgrid__svc-body { display: flex; flex-direction: column; gap: 8px; padding-bottom: 6px; }
+.bgrid__svc-body[hidden] { display: none; }
+.bgrid__svc { padding: 0 12px; gap: 0; }
+.bgrid__svc-toggle svg { flex: none; }
+.bgrid__svc-text { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; gap: 2px; }
+.bgrid__svc-chosen { flex: none; }
+.bgrid__svc-body { padding-bottom: 12px; }
+.bgrid__fixed { display: flex; align-items: center; gap: 8px; margin: 0; min-height: 44px; font-weight: 600; color: var(--navy); }
+.bgrid__fixed svg { color: var(--orange); flex: none; }

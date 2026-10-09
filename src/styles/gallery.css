@@ -1,0 +1,153 @@
+.gallery { margin-top: clamp(20px, 3vh, 32px); }
+/* Justified rows: every photo keeps its shape, rows fill the width, no gaps. */
+.gallery__grid { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.gallery__grid::after { content: ""; flex-grow: 1000; }
+.gallery__grid li { min-width: 0; }
+.gallery__grid li .gallery__item { height: 100%; }
+.gallery__item { display: block; width: 100%; padding: 0; border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; overflow: hidden; background: #201D22; cursor: zoom-in; box-shadow: 0 14px 30px -18px rgba(21, 21, 21, 0.55); transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out); }
+.gallery__item:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -18px rgba(215, 25, 31, 0.5); }
+.gallery__item:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.gallery__item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.lightbox { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; background: rgba(12, 6, 18, 0.9); padding: 24px; }
+.lightbox__img { max-width: min(92vw, 1100px); max-height: 88vh; width: auto; height: auto; border-radius: 12px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+.lightbox__btn { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.12); color: #fff; cursor: pointer; }
+.lightbox__btn:hover { background: rgba(215, 25, 31, 0.7); }
+.lightbox__btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lightbox__close { top: 18px; right: 18px; }
+.lightbox__prev { left: 14px; top: 50%; transform: translateY(-50%); }
+.lightbox__next { right: 14px; top: 50%; transform: translateY(-50%); }
+.lightbox__count { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 13px; color: rgba(255, 255, 255, 0.75); }
+
+@media (min-width: 1100px) {
+  .wgrid { height: auto; }
+  .wgrid .pgrid__glass { height: auto; }
+  .wgrid .bento--projects { height: auto; min-height: 560px; }
+}
+
+/* 3D photo barrel */
+/* ---- Barrel gallery ---- */
+.pbarrel {
+  position: relative;
+  width: 100%;
+  height: clamp(380px, 62vh, 620px);
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Soft warm halo behind the drum + a grounding shadow under it, so the spiral
+   reads as a lit object floating on the cream rather than a flat canvas. */
+.pbarrel::before {
+  content: '';
+  position: absolute;
+  inset: 6% 4% 10%;
+  z-index: -1;
+  background:
+    radial-gradient(60% 42% at 50% 38%, rgba(255, 122, 26, 0.1), transparent 70%),
+    radial-gradient(72% 56% at 50% 44%, rgba(11, 30, 63, 0.07), transparent 72%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+.pbarrel::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  width: 56%;
+  height: 46px;
+  transform: translateX(-50%);
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(11, 30, 63, 0.22), transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+.pbarrel__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y; /* let vertical page scroll pass through; horizontal drag spins */
+}
+.pbarrel__label {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  transform: translate(-50%, -135%);
+  background: var(--orange);
+  color: #ffffff;
+  border-radius: 9px;
+  padding: 6px 11px;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+  white-space: nowrap;
+  box-shadow: 0 12px 26px -10px rgba(255, 122, 26, 0.6);
+}
+.pbarrel__label.is-on {
+  opacity: 1;
+}
+.pbarrel__label-cat {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.pbarrel__label-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.pbarrel__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted, rgba(11, 30, 63, 0.55));
+}
+
+[data-theme='dark'] .pbarrel__hint { color: rgba(255, 255, 255, 0.6); }
+.pbarrel__hint { white-space: nowrap; }
+@media (max-width: 820px) { .pbarrel__hint { font-size: 10px; letter-spacing: 0.08em; bottom: 8px; } }
+
+/* Gallery switcher: one portfolio at a time keeps the page short, especially on a phone. */
+.gtabs { display: flex; gap: 6px; margin: clamp(20px, 3vh, 32px) 0 0; padding: 5px; border-radius: 999px; border: 1px solid var(--line-strong); background: rgba(255, 255, 255, 0.5); overflow: hidden; }
+.gtabs button { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--navy); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background 160ms var(--ease-out), color 160ms var(--ease-out); }
+.gtabs button small { margin-left: 6px; font-weight: 500; opacity: 0.6; }
+.gtabs button[aria-selected='true'] { background: var(--orange); color: #fff; }
+.gtabs button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+[data-theme='dark'] .gtabs { background: rgba(255, 255, 255, 0.08); }
+[data-theme='dark'] .gtabs button { color: rgba(255, 255, 255, 0.85); }
+[data-theme='dark'] .gtabs button[aria-selected='true'] { color: #fff; }
+@media (max-width: 520px) { .gtabs button small { display: none; } .gtabs button { font-size: 12.5px; padding: 0 4px; } }
+
+.gallery__grid:has(> li:only-child) { justify-content: center; } .gallery__grid:has(> li:only-child) li { flex-grow: 0 !important; }
+
+@media (max-width: 820px) { .pbarrel { height: clamp(300px, 46vh, 400px); } }
+.lightbox__img { object-fit: contain; }
+
+.pbarrel__label { max-width: min(78%, 280px); white-space: normal; }
+.pbarrel__label-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Phones: the portfolio tabs wrap onto rows, each one a full pill, so no label is squeezed or overlaps. */
+@media (max-width: 820px) {
+  .gtabs { flex-wrap: wrap; justify-content: center; border-radius: 22px; padding: 7px; gap: 6px; overflow: visible; }
+  .gtabs button { flex: 0 0 auto; padding: 0 13px; white-space: nowrap; min-height: 38px; font-size: 13.5px; border: 1px solid var(--line-strong); background: rgba(255, 255, 255, 0.55); }
+  .gtabs button small { display: inline; margin-left: 6px; }
+  .gtabs button[aria-selected='true'] { border-color: transparent; }
+  [data-theme='dark'] .gtabs button { background: rgba(255, 255, 255, 0.06); }
+  [data-theme='dark'] .gtabs button[aria-selected='true'] { background: var(--orange); }
+}
+
+/* Phones: smaller justified rows, so a long portfolio is a short scroll instead of one photo per screen */
+@media (max-width: 820px) {
+  .gallery__grid { gap: 6px; }
+  .gallery__grid li { flex-basis: calc(var(--ar) * 118px) !important; max-width: none !important; }
+  .gallery__item { border-radius: 10px; }
+}
