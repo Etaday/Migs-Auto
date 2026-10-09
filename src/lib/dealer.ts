@@ -1,6 +1,7 @@
 import type { Vehicle, Inquiry } from '@/types/vehicle'
 
-export const profitOf = (v: Vehicle) => (v.sold_price == null ? 0 : v.sold_price - v.cost)
+/** Profit on a sale. 0 until the cost is entered, so a missing cost is never counted as 100% profit. */
+export const profitOf = (v: Vehicle) => (v.sold_price == null || !(v.cost > 0) ? 0 : v.sold_price - v.cost)
 
 const monthKey = (iso: string) => iso.slice(0, 7)
 

@@ -175,7 +175,7 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
 }
 
 export default function VehiclesView() {
-  const { data, patch, remove } = useData()
+  const { data, remove } = useData()
   const [q, setQ] = useState('')
   const [status, setStatus] = useState<'all' | VehicleStatus>('all')
   const [editing, setEditing] = useState<Draft | null>(null)
@@ -184,9 +184,6 @@ export default function VehiclesView() {
   const list = data.vehicles.filter((v) => (status === 'all' || v.status === status) &&
     `${v.year} ${v.brand} ${v.model} ${v.vin} ${v.color}`.toLowerCase().includes(q.trim().toLowerCase()))
   const count = (s: VehicleStatus) => data.vehicles.filter((v) => v.status === s).length
-
-  const setStatusOf = (v: Vehicle, s: VehicleStatus) =>
-    patch('vehicles', v.id, s === 'sold' ? { status: s, sold_price: v.sold_price ?? v.price, sold_at: v.sold_at ?? todayIso() } : { status: s, sold_price: null, sold_at: null })
 
   if (editing) return <VehicleForm key={editing.id ?? 'new'} initial={editing} onDone={() => setEditing(null)} />
 
@@ -222,8 +219,7 @@ export default function VehiclesView() {
                   <td>{formatPeso(v.sold_price ?? v.price)}</td>
                   <td>{v.cost ? formatPeso((v.sold_price ?? v.price) - v.cost) : <small>cost not set</small>}</td>
                   <td>{v.status === 'sold' ? <small>sold</small> : daysInStock(v, now)}</td>
-                  <td><select aria-label={`Status of ${v.brand} ${v.model}`} value={v.status} onChange={(e) => void setStatusOf(v, e.target.value as VehicleStatus)}>
-                    <option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option></select></td>
+                  <td><span className={`adm-pill adm-pill--${v.status === 'available' ? 'confirmed' : v.status === 'reserved' ? 'new' : 'completed'}`} title="To change the status, press Edit">{v.status === 'available' ? 'Available' : v.status === 'reserved' ? 'Reserved' : 'Sold'}</span></td>
                   <td className="adm-actions-cell">
                     <button type="button" className="adm-icon-btn" aria-label={`Edit ${v.brand} ${v.model}`} onClick={() => setEditing(toDraft(v))}><PencilSimple size={16} /></button>
                     <button type="button" className="adm-icon-btn" aria-label={`Delete ${v.brand} ${v.model}`} onClick={() => window.confirm(`Delete the ${v.year} ${v.brand} ${v.model}?`) && void remove('vehicles', v.id)}><Trash size={16} /></button>

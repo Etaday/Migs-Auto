@@ -15,6 +15,9 @@ const NOW = new Date('2026-10-09T12:00:00Z')
 describe('profitOf', () => {
   it('is sold price minus cost', () => expect(profitOf(v({ sold_price: 650000, cost: 580000 }))).toBe(70000))
   it('is 0 for an unsold vehicle', () => expect(profitOf(v({}))).toBe(0))
+  it('is 0 when the cost was never entered, instead of counting the whole price as profit', () => {
+    expect(profitOf(v({ sold_price: 250000, cost: 0 }))).toBe(0)
+  })
 })
 
 describe('dealerStats', () => {
@@ -37,6 +40,10 @@ describe('dealerStats', () => {
   it('counts only this month for sales and profit', () => { expect(s.soldThisMonth).toBe(1); expect(s.profitThisMonth).toBe(70000) })
   it('counts every inquiry still marked new', () => expect(s.newLeads).toBe(3))
   it('lists only open future test drives, soonest first', () => expect(s.upcomingTestDrives.map((x) => x.id)).toEqual(['3']))
+  it('does not count a sale with no cost entered as profit', () => {
+    const noCost = [v({ id: 'z', status: 'sold', sold_price: 250000, cost: 0, sold_at: '2026-10-05' })]
+    expect(dealerStats(noCost, [], NOW)).toMatchObject({ soldThisMonth: 1, profitThisMonth: 0 })
+  })
   it('handles an empty dealership', () => {
     const e = dealerStats([], [], NOW)
     expect(e).toMatchObject({ available: 0, inventoryValue: 0, soldThisMonth: 0, profitThisMonth: 0, newLeads: 0 })
