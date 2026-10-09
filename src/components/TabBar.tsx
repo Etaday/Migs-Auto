@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { House, FolderOpen, CalendarCheck, Stack, User } from '@/components/slab'
 import { motionReduced } from '@/lib/a11y'
+import { FINANCING_AVAILABLE } from '@/data/profile'
 
 /**
  * The phone navigation: a bottom tab bar with Contact as the raised action
@@ -158,7 +159,7 @@ export default function TabBar() {
               ) : (
                 <>
                   <Icon size={22} weight={isActive ? 'fill' : 'regular'} aria-hidden="true" />
-                  <span className="tabbar__label">{label}</span>
+                  <span className="tabbar__label">{label}{to === '/financing' && !FINANCING_AVAILABLE ? ' (soon)' : ''}</span>
                 </>
               )
             }

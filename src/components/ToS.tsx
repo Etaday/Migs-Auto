@@ -30,7 +30,7 @@ export default function ToS() {
 
           <h2>Listings and prices</h2>
           <p>Vehicle details and prices on this site are shown in good faith and can change or sell out without notice. An inquiry, reservation request or test drive request is not a confirmed sale: we confirm availability, price and any financing with you directly.</p>
-          <p>Financing figures on this site are estimates only. The final rate and terms depend on the approved plan. Trade-in values are offers made after we assess the vehicle.</p>
+          <p>Trade-in values are offers made after we assess the vehicle.</p>
 
           <h2>Ownership</h2>
           <p>The content of this site belongs to Migs Auto.</p>

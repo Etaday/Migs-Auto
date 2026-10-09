@@ -1,6 +1,6 @@
 # Migs Auto
 
-Website for Migs Auto, a dealer of cars and motorcycles: inventory, vehicle pages, trade-in, financing, test drives, and an owner dashboard.
+Website for Migs Auto, a dealer of cars and motorcycles: inventory, vehicle pages, trade-in, test drives, and an owner dashboard. Financing is switched off for now ("Coming soon"); turn it on with `FINANCING_AVAILABLE` in `src/data/profile.ts`.
 Built with Vite, React 19, TypeScript and GSAP.
 
 ## Run
@@ -14,7 +14,7 @@ npm run build    # outputs dist/
 
 ## Public pages
 
-Home, Inventory (filter by type, brand, price, year), vehicle detail with modifications and an Inquire / Reserve form, Trade-in, Financing calculator, Test drive booking, About, Contact.
+Home, Inventory (filter by type, brand, price, year), vehicle detail with modifications and an Inquire / Reserve form, Trade-in, Test drive booking, Financing (a "Coming soon" page until switched on), About, Contact.
 
 ## Dealer dashboard (/admin)
 
@@ -31,6 +31,8 @@ Without a database it runs in **demo mode** (sample vehicles, saved only in the 
 1. Create a Supabase project and run `supabase/schema.sql` in its SQL editor. Add the owner's email to the `admins` table (`insert into public.admins values ('owner@example.com');`).
 2. In Supabase **Authentication > Users**, create the owner user and turn off public sign-ups.
 3. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (in `.env.local` locally, and in the host's environment variables when deployed).
+
+**Enhance** buttons on the listing form tidy the description and the modifications (spelling, capitals, acronyms, duplicates) and write the factual parts from the specs; they never invent details, and Undo restores your text. For AI rewriting, set `ANTHROPIC_API_KEY`, `SUPABASE_URL` and `SUPABASE_ANON_KEY` on the host (see `api/enhance.ts`); only the signed-in owner can use it, and without a key the built-in enhancer is used.
 
 Visitors can read listed (not sold) vehicles but never the private cost, sold price or sold date; that is enforced in the database (`schema.sql`).
 

@@ -1,4 +1,4 @@
-import type { Vehicle, VehicleType } from '@/types/vehicle'
+import type { Vehicle, VehicleType } from '../types/vehicle'
 
 export type VehicleFilter = {
   type?: VehicleType

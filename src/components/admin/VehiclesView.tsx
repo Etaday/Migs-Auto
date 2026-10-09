@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star, ImageSquare, ArrowUp } from '@/components/slab'
+import { MagnifyingGlass, Plus, Trash, PencilSimple, X, Star, ImageSquare, ArrowUp, Sparkle } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 import { downloadCsv, todayIso } from '@/components/admin/ui'
 import { decodeVin, isValidVin } from '@/lib/specs'
-import { uploadPhoto } from '@/lib/db'
+import { uploadPhoto, getSession } from '@/lib/db'
+import { enhanceDescriptionText, enhanceModificationList, type EnhanceVehicle } from '@/lib/enhance'
 import { MAX_PHOTOS, checkImageFile, moveToFront, resizeToJpeg } from '@/lib/images'
 import { formatPeso } from '@/lib/inventory'
 import { daysInStock } from '@/lib/dealer'
@@ -54,6 +55,8 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
   const [mod, setMod] = useState('')
   const [uploading, setUploading] = useState(0)
   const [link, setLink] = useState('')
+  const [enhancing, setEnhancing] = useState<'' | 'description' | 'modifications'>('')
+  const [undo, setUndo] = useState<{ field: 'description' | 'modifications'; prev: string | string[] } | null>(null)
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((x) => ({ ...x, [k]: v }))
   const f = (k: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => set(k, e.target.value as never)
 
@@ -105,6 +108,32 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
     setErr(''); set('photos', [...d.photos, u]); setLink('')
   }
 
+  const specs = (): EnhanceVehicle => ({
+    year: n(d.year), brand: d.brand.trim(), model: d.model.trim(), type: d.type, body: d.body.trim(), engine: d.engine.trim(),
+    transmission: d.transmission.trim(), fuel: d.fuel.trim(), color: d.color.trim(), mileage: n(d.mileage), price: n(d.price),
+  })
+  async function enhance(field: 'description' | 'modifications') {
+    if (!d.brand.trim() || !d.model.trim()) return setErr('Enter the brand and model first, so the enhancer knows which vehicle this is.')
+    setErr(''); setNote(''); setEnhancing(field)
+    const token = getSession()?.access_token ?? ''
+    try {
+      if (field === 'description') {
+        const r = await enhanceDescriptionText(specs(), d.description, d.modifications, token)
+        setUndo({ field, prev: d.description }); set('description', r.value)
+        setNote(r.source === 'ai' ? `Description improved by AI. Read it and fix anything that is not right.` : `Description tidied and completed from the specs, written for a ${d.type === 'car' ? 'car' : 'motorcycle'} (change Type above if that is wrong). Read it and edit freely.`)
+      } else {
+        const r = await enhanceModificationList(specs(), [...d.modifications, mod], token)
+        setUndo({ field, prev: d.modifications }); set('modifications', r.value); setMod('')
+        setNote(r.source === 'ai' ? 'Modifications improved by AI.' : 'Modifications tidied: spelling, capitals, acronyms and duplicates.')
+      }
+    } finally { setEnhancing('') }
+  }
+  const undoEnhance = () => {
+    if (!undo) return
+    if (undo.field === 'description') set('description', undo.prev as string); else set('modifications', undo.prev as string[])
+    setUndo(null); setNote('')
+  }
+
   const addMod = () => { const m = mod.trim(); if (m && !d.modifications.includes(m)) set('modifications', [...d.modifications, m]); setMod('') }
 
   return (
@@ -134,7 +163,14 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
           <label className="adm-field"><span>Sold on</span><input type="date" value={d.sold_at || todayIso()} onChange={f('sold_at')} /></label>
         </>}
       </div>
-      <label className="adm-field"><span>Description</span><textarea className="adm-textarea" rows={3} value={d.description} onChange={f('description')} /></label>
+      <div className="adm-field">
+        <span>Description</span>
+        <textarea className="adm-textarea" rows={4} value={d.description} onChange={(e) => { set('description', e.target.value); setUndo(null) }} placeholder="Write a few rough notes, then press Enhance" />
+        <div className="adm-actions">
+          <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void enhance('description')} disabled={!!enhancing}><Sparkle size={15} aria-hidden="true" /> {enhancing === 'description' ? 'Enhancing...' : 'Enhance description'}</button>
+          {undo?.field === 'description' && <button type="button" className="adm-btn adm-btn--ghost" onClick={undoEnhance}>Undo</button>}
+        </div>
+      </div>
       <div className="adm-field">
         <span>Photos ({d.photos.length}/{MAX_PHOTOS}) — the first one is the cover</span>
         <div className="adm-photos">
@@ -173,6 +209,10 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         <div className="adm-vform__addmod">
           <input value={mod} onChange={(e) => setMod(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMod() } }} placeholder="e.g. Akrapovic exhaust, lowered suspension, new tires" />
           <button type="button" className="adm-btn adm-btn--ghost" onClick={addMod}><Plus size={14} aria-hidden="true" /> Add</button>
+        </div>
+        <div className="adm-actions">
+          <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void enhance('modifications')} disabled={!!enhancing || (d.modifications.length === 0 && !mod.trim())}><Sparkle size={15} aria-hidden="true" /> {enhancing === 'modifications' ? 'Enhancing...' : 'Enhance modifications'}</button>
+          {undo?.field === 'modifications' && <button type="button" className="adm-btn adm-btn--ghost" onClick={undoEnhance}>Undo</button>}
         </div>
       </div>
 

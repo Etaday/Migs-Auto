@@ -1,11 +1,34 @@
 import { useState } from 'react'
 import { monthlyPayment } from '@/lib/financing'
 import { formatPeso } from '@/lib/inventory'
+import { Link } from 'react-router-dom'
+import { FINANCING_AVAILABLE } from '@/data/profile'
 import InquiryForm from './InquiryForm'
 
 const num = (s: string) => Number(s.replace(/\D/g, '')) || 0
 
+/** Shown while financing is not offered. */
+function ComingSoon() {
+  return (
+    <section className="mpage">
+      <h1 className="mpage__title">Financing</h1>
+      <p className="msoon" role="status"><span className="msoon__tag">Coming soon</span> We are not offering financing yet, and we will announce it here when it starts.</p>
+      <p className="mpage__note">For now, vehicles are sold for cash or bank transfer. Message us and we will help you with a purchase or a trade-in.</p>
+      <div className="mcontact">
+        <Link className="mbtn" to="/inventory">Browse inventory</Link>
+        <Link className="mbtn" to="/trade-in">Trade-in</Link>
+        <Link className="mbtn" to="/contact">Contact us</Link>
+      </div>
+    </section>
+  )
+}
+
 export default function FinancingView() {
+  if (!FINANCING_AVAILABLE) return <ComingSoon />
+  return <FinancingCalculator />
+}
+
+function FinancingCalculator() {
   const [price, setPrice] = useState('600000')
   const [down, setDown] = useState('120000')
   const [rate, setRate] = useState('12')

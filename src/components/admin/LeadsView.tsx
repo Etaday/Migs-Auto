@@ -3,6 +3,7 @@ import { Phone, WhatsappLogo, EnvelopeSimple, Trash } from '@/components/slab'
 import { useData } from '@/components/admin/data'
 import { shortDate, whatsappLink, downloadCsv } from '@/components/admin/ui'
 import { formatPeso } from '@/lib/inventory'
+import { FINANCING_AVAILABLE } from '@/data/profile'
 import type { Inquiry, InquiryKind, InquiryStatus } from '@/types/vehicle'
 
 const KIND: Record<InquiryKind, string> = { inquiry: 'Inquiry', trade_in: 'Trade-in', financing: 'Financing', test_drive: 'Test drive' }
@@ -26,7 +27,7 @@ export default function LeadsView() {
     <div className="adm-stack">
       <div className="adm-toolbar">
         <div className="adm-chips">
-          {(['all', 'inquiry', 'test_drive', 'financing', 'trade_in'] as const).map((k) => (
+          {(['all', 'inquiry', 'test_drive', 'financing', 'trade_in'] as const).filter((k) => k !== 'financing' || FINANCING_AVAILABLE || data.inquiries.some((i) => i.kind === 'financing')).map((k) => (
             <button key={k} type="button" className={kind === k ? 'is-on' : ''} onClick={() => setKind(k)}>{k === 'all' ? 'All' : KIND[k]} <small>{k === 'all' ? data.inquiries.length : data.inquiries.filter((i) => i.kind === k).length}</small></button>
           ))}
         </div>

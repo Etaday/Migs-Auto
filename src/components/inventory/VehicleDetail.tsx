@@ -5,6 +5,7 @@ import { formatPeso } from '@/lib/inventory'
 import type { Vehicle } from '@/types/vehicle'
 import { PLACEHOLDER } from './VehicleCard'
 import InquiryForm from '@/components/forms/InquiryForm'
+import { FINANCING_AVAILABLE } from '@/data/profile'
 
 export default function VehicleDetail() {
   const { id } = useParams()
@@ -66,7 +67,7 @@ export default function VehicleDetail() {
             <button type="button" className="mbtn" onClick={() => setOpen(true)}>{v.status === 'reserved' ? 'Ask about this vehicle' : 'Inquire / Reserve'}</button>
           )}
           <p className="vdetail__more">
-            <Link className="mlink" to={`/test-drive?vehicle=${v.id}`}>Book a test drive</Link> · <Link className="mlink" to="/financing">Financing</Link>
+            <Link className="mlink" to={`/test-drive?vehicle=${v.id}`}>Book a test drive</Link>{FINANCING_AVAILABLE && <> · <Link className="mlink" to="/financing">Financing</Link></>}
           </p>
         </div>
       </div>

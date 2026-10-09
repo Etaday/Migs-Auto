@@ -58,3 +58,7 @@
 .mcontact { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .vdetail__mods { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .vdetail__mods li { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: 14px; }
+
+.msoon { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 16px 18px; border: 1px solid var(--line-strong); border-radius: var(--radius-card); background: var(--paper); font-size: 16px; }
+.msoon__tag { padding: 3px 12px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.soon-pill { margin-left: auto; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }

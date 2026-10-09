@@ -33,7 +33,7 @@ export default function App() {
     const titles: Record<string, string> = {
       '/inventory': 'Inventory',
       '/trade-in': 'Trade-in',
-      '/financing': 'Financing',
+      '/financing': 'Financing (coming soon)',
       '/test-drive': 'Test drive',
       '/about': 'About',
       '/contact': 'Contact',

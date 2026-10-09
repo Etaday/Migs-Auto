@@ -8,7 +8,7 @@ import { sanitize } from '@/lib/contact'
 import type { DocKind, SaleDocument } from '@/types/document'
 import DocumentPaper from './DocumentPaper'
 
-const METHODS = ['Cash', 'Bank transfer', 'GCash', 'Check', 'Financing']
+const METHODS = ['Cash', 'Bank transfer', 'GCash', 'Check']
 type Draft = Omit<SaleDocument, 'id' | 'created_at' | 'number'>
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 

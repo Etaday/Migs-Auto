@@ -492,3 +492,5 @@ code { font-size: 12.5px; }
 .adm-photo--add, .adm-photo--busy { display: grid; place-items: center; align-content: center; gap: 4px; border-style: dashed; color: var(--a-muted); cursor: pointer; font-size: 14px; text-align: center; }
 .adm-photo--add:hover { border-color: var(--a-pink); color: var(--a-ink); }
 .adm-photo--add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.adm-modchip { text-transform: none; letter-spacing: 0; }

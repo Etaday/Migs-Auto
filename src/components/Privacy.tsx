@@ -30,12 +30,12 @@ export default function Privacy() {
 
           <h2>What is collected</h2>
           <p>
-            When you send an inquiry, trade-in, financing or test drive request we receive your name, phone number, email and message, the vehicle you asked about, and the details you enter in that form (for example a test drive date or your vehicle's year and mileage).
+            When you send an inquiry, trade-in or test drive request we receive your name, phone number, email and message, the vehicle you asked about, and the details you enter in that form (for example a test drive date or your vehicle's year and mileage).
             We do not run advertising trackers.
           </p>
 
           <h2>How it is used</h2>
-          <p>We use it only to reply to you, prepare offers and financing estimates, and arrange test drives and sales. We do not sell your data.</p>
+          <p>We use it only to reply to you, prepare offers, and arrange test drives and sales. We do not sell your data.</p>
 
           <h2>Where it is stored</h2>
           <p>

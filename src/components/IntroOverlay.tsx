@@ -5,7 +5,7 @@ import { profile } from '@/data/profile'
  * IntroOverlay - "the road writes the line".
  *
  * The intro follows the buyer's journey on a dashed road: Browse, Test drive,
- * Finance, Drive home. A headlight runs the road left to right; each stop lights
+ * Paperwork, Drive home. A headlight runs the road left to right; each stop lights
  * and earns a check as it passes, the headline is written by the same progress,
  * and the status reads "Starting engine" then "Ready to drive". (The node-and-
  * cable layout is the template's; the story and icons are the dealership's.)
@@ -50,7 +50,7 @@ const easeInOut = (t: number) =>
 const STEPS = [
   { label: 'Browse', trigger: true, d: 'M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2M9 17h6M3 11h15M9 6v5' },
   { label: 'Test drive', trigger: false, d: 'M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M12 14v7M10 12l-6.75 -1M14 12l6.75 -1' },
-  { label: 'Finance', trigger: false, d: 'M6 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M16 17a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M6 18l12 -12' },
+  { label: 'Paperwork', trigger: false, d: 'M14 3v4a1 1 0 0 0 1 1h4M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2zM9 9h1M9 13h6M9 17h6' },
   { label: 'Drive home', trigger: false, d: 'M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9zM5 21v-7' },
 ] as const
 

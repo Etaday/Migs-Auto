@@ -13,7 +13,7 @@ import {
 } from './RailIcons'
 import ThemedImg from '@/components/ThemedImg'
 import { getTheme, toggleTheme, type Theme } from '@/lib/theme'
-import { profile } from '@/data/profile'
+import { profile, FINANCING_AVAILABLE } from '@/data/profile'
 
 /**
  * The profile rail: the fixed left column of the shell. It carries identity,
@@ -124,7 +124,7 @@ export default function Rail() {
               <li key={to}>
                 <NavLink to={to} end={to === '/'} className="rail__link" title={label}>
                   <Icon size={21} />
-                  <span className="rail__label">{label}</span>
+                  <span className="rail__label">{label}</span>{to === '/financing' && !FINANCING_AVAILABLE && <span className="soon-pill">Soon</span>}
                 </NavLink>
               </li>
             ))}

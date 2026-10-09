@@ -44,6 +44,9 @@ export type Profile = {
   socials: SocialLink[]
 }
 
+/** Financing is not offered yet. Set to true to turn on the calculator, the request form and the nav link. */
+export const FINANCING_AVAILABLE = false
+
 export const profile: Profile = {
   name: 'Migs Auto',
   firstName: 'Migs',
@@ -60,11 +63,11 @@ export const profile: Profile = {
   stats: [
     { value: 'Cars', label: 'Sedans, SUVs, vans', Icon: Car },
     { value: 'Bikes', label: 'Scooters to sport', Icon: Motorcycle },
-    { value: 'Service', label: 'Trade-in and financing', Icon: Wrench },
+    { value: 'Service', label: 'Trade-in and test drives', Icon: Wrench },
   ],
   displayName: { line1: 'Drive home', line2: 'something great.' },
   hero: {
-    body: 'Migs Auto sells quality cars and motorcycles. Browse the inventory, trade in your ride, get financing and book a test drive.',
+    body: 'Migs Auto sells quality cars and motorcycles. Browse the inventory, trade in your ride and book a test drive.',
     portraitSrc: '/avatar.png',
     portraitAlt: 'Migs Auto logo',
   },
