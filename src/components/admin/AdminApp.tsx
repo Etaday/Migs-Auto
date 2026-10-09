@@ -18,10 +18,9 @@ import AdminAlerts from '@/components/admin/AdminAlerts'
 
 
 /**
- * The studio dashboard at /admin: bookings, a calendar, invoices and
- * receipts, reviews to approve and messages. Data lives in Supabase when
- * VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are set, otherwise in this
- * browser (demo mode). See src/lib/db.ts and supabase/schema.sql.
+ * The dealer dashboard at /admin: inventory, leads, sales, invoices and receipts.
+ * Data lives in Supabase when VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are set,
+ * otherwise in this browser (demo mode). See src/lib/db.ts and supabase/schema.sql.
  */
 
 const TABS = [

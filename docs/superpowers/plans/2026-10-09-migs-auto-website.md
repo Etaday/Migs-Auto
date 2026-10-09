@@ -133,7 +133,7 @@
 - [ ] **Step 4:** `npm run typecheck && npm run build`. Expected: PASS. In demo mode on `/admin`: add a vehicle, mark it sold, confirm it leaves `/inventory` but stays in admin; change an inquiry status.
 - [ ] **Step 5:** Commit `feat: admin vehicles and inquiries`.
 
-### Task 6: Chatbot, cleanup and docs
+### Task 6: Cleanup and docs (the chat assistant was later dropped at the owner's request)
 
 **Files:**
 - Modify: `src/lib/faqBot.ts`, `src/data/faqs.ts`, `api/knowledge.ts`, `src/components/ChatBot.tsx`, `README.md`

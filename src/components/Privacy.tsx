@@ -41,7 +41,7 @@ export default function Privacy() {
           <p>
             Requests are stored in a secured online database that only the dealership can read. We may contact you by phone call, WhatsApp, SMS or email.
           </p>
-          <p>Your browser keeps small settings on your own device, such as light or dark mode. The chat assistant gives automated answers and does not store your questions.</p>
+          <p>Your browser keeps small settings on your own device, such as light or dark mode.</p>
 
           <h2>How long it is kept</h2>
           <p>We keep inquiries and sales records for as long as needed to serve you and for our business records. To ask us to correct or delete your data, email or message us and we will do so.</p>

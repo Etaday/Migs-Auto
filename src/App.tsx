@@ -8,7 +8,6 @@ import CursorRing from '@/components/CursorRing'
 import RoadStreaks from '@/components/RoadStreaks'
 import ThemeBike from '@/components/ThemeBike'
 import BackToTop from '@/components/BackToTop'
-import ChatBot from '@/components/ChatBot'
 import AccessMenu from '@/components/AccessMenu'
 import { useLenis, SCROLLER_ID } from '@/hooks/useLenis'
 import { useIsPhone } from '@/hooks/useMediaQuery'
@@ -94,7 +93,6 @@ export default function App() {
       </div>
       {phone && <TabBar />}
       <BackToTop />
-      <ChatBot />
       <AccessMenu />
     </>
   )

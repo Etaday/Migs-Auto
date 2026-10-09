@@ -14,7 +14,7 @@ npm run build    # outputs dist/
 
 ## Public pages
 
-Home, Inventory (filter by type, brand, price, year), vehicle detail with modifications and an Inquire / Reserve form, Trade-in, Financing calculator, Test drive booking, About, Contact, and a chat assistant that answers from the live inventory.
+Home, Inventory (filter by type, brand, price, year), vehicle detail with modifications and an Inquire / Reserve form, Trade-in, Financing calculator, Test drive booking, About, Contact.
 
 ## Dealer dashboard (/admin)
 
@@ -22,7 +22,8 @@ Home, Inventory (filter by type, brand, price, year), vehicle detail with modifi
 - **Inventory:** add, edit and delete listings; status Available / Reserved / Sold; photo links; modifications; private cost for margin; CSV export.
   Enter a **VIN** and press **Get real specs** to fill in make, model, year, engine, fuel and transmission from the US NHTSA vehicle database (free, US-market vehicles; anything it does not know is entered by hand).
 - **Leads:** inquiries, test drives, financing and trade-in requests with status and one-tap call, WhatsApp and email.
-- **Sales:** sold vehicles, revenue and gross profit.
+- **Sales:** sold vehicles, revenue and gross profit, with one-tap Invoice and Receipt.
+- **Invoices & receipts:** numbered documents (MA-INV-2026-0001, MA-REC-2026-0001) with discounts and partial payments; a receipt carries earlier payments forward. Print or save as PDF.
 - **Team:** who can sign in.
 
 Without a database it runs in **demo mode** (sample vehicles, saved only in the browser). To make it real:

@@ -19,7 +19,6 @@ Copy an existing Vite, React 19, TypeScript, GSAP and Supabase portfolio-site te
 - **Financing:** payment calculator and inquiry form.
 - **Test drive:** date/time picker for a chosen vehicle (reuse the template's date picker).
 - **About, Contact:** map link, WhatsApp, call, Messenger.
-- **Chatbot:** answers questions about inventory.
 
 ## Admin (`/admin`)
 - Add/edit vehicles; mark sold or reserved; photo upload.
