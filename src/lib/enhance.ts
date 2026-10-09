@@ -1,4 +1,4 @@
-import { formatPeso } from './inventory'
+import { formatPeso } from './inventory.js'
 import type { Vehicle } from '../types/vehicle'
 
 /**

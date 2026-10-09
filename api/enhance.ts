@@ -1,4 +1,4 @@
-import { handleEnhance } from '../src/lib/enhanceServer'
+import { handleEnhance } from '../src/lib/enhanceServer.js'
 
 /**
  * POST /api/enhance: the optional AI layer of the listing enhancer (Vercel function).

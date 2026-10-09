@@ -1,4 +1,4 @@
-import { buildPrompt, type EnhanceVehicle } from './enhance'
+import { buildPrompt, type EnhanceVehicle } from './enhance.js'
 
 /** The server side of the optional AI enhancer. No framework code here, so it can be tested; api/enhance.ts just feeds it a request. */
 
