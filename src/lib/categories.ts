@@ -62,7 +62,7 @@ export function suggestVehicleCategory(type: VehicleType, body: string): string 
   }
   if (/scooter|moped/.test(b)) return 'scooter'
   if (/underbone|\bcub\b|step-through/.test(b)) return 'underbone'
-  if (/cruiser|chopper/.test(b)) return 'cruiser'
+  if (/cruiser|chopper|custom/.test(b)) return 'cruiser'
   if (/dual|adventure|touring/.test(b)) return 'adventure'
   if (/off.?road|motocross|enduro|trail/.test(b)) return 'offroad'
   if (/naked|standard|street|roadster/.test(b)) return 'naked'

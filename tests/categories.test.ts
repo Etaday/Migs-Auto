@@ -43,7 +43,7 @@ describe('suggestVehicleCategory (from the body style the VIN lookup returns)', 
     expect(suggestVehicleCategory('car', 'Minivan')).toBe('van'); expect(suggestVehicleCategory('car', 'Coupe')).toBe('coupe')
   })
   it('maps motorcycle styles', () => {
-    expect(suggestVehicleCategory('motorcycle', 'Cruiser')).toBe('cruiser'); expect(suggestVehicleCategory('motorcycle', 'Sport Bike')).toBe('sport'); expect(suggestVehicleCategory('motorcycle', 'Scooter')).toBe('scooter')
+    expect(suggestVehicleCategory('motorcycle', 'Cruiser')).toBe('cruiser'); expect(suggestVehicleCategory('motorcycle', 'Motorcycle - Custom')).toBe('cruiser'); expect(suggestVehicleCategory('motorcycle', 'Sport Bike')).toBe('sport'); expect(suggestVehicleCategory('motorcycle', 'Scooter')).toBe('scooter')
     expect(suggestVehicleCategory('motorcycle', 'Dual Sport')).toBe('adventure'); expect(suggestVehicleCategory('motorcycle', 'Off-road')).toBe('offroad')
   })
   it('suggests nothing rather than guess', () => {
