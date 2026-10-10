@@ -5,6 +5,7 @@ import { shortDate, whatsappLink, downloadCsv } from '@/components/admin/ui'
 import { formatPeso } from '@/lib/inventory'
 import { FINANCING_AVAILABLE } from '@/data/profile'
 import { parseMoneyInput } from '@/lib/money'
+import { categoryLabel } from '@/lib/categories'
 import type { Inquiry, InquiryKind, InquiryStatus } from '@/types/vehicle'
 
 const KIND: Record<InquiryKind, string> = { inquiry: 'Inquiry', trade_in: 'Trade-in', financing: 'Financing', test_drive: 'Test drive' }
@@ -21,8 +22,10 @@ export default function LeadsView() {
   const { data, patch, remove } = useData()
   const [kind, setKind] = useState<'all' | InquiryKind>('all')
   const [status, setStatus] = useState<'all' | InquiryStatus>('all')
+  const [category, setCategory] = useState('')
   const title = (id: string | null) => { const v = data.vehicles.find((x) => x.id === id); return v ? `${v.year} ${v.brand} ${v.model}` : '' }
-  const list = data.inquiries.filter((i) => (kind === 'all' || i.kind === kind) && (status === 'all' || i.status === status))
+  const cats = [...new Set(data.inquiries.map((i) => i.category).filter(Boolean))]
+  const list = data.inquiries.filter((i) => (kind === 'all' || i.kind === kind) && (status === 'all' || i.status === status) && (!category || (category === '__none' ? !i.category : i.category === category)))
 
   return (
     <div className="adm-stack">
@@ -37,7 +40,12 @@ export default function LeadsView() {
             <button key={s} type="button" className={status === s ? 'is-on' : ''} onClick={() => setStatus(s)}>{s === 'all' ? 'Any status' : s[0].toUpperCase() + s.slice(1)}</button>
           ))}
         </div>
-        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-leads.csv', [['Date', 'Type', 'Name', 'Phone', 'Email', 'Vehicle', 'Details', 'Message', 'Status'], ...data.inquiries.map((i) => [i.created_at.slice(0, 10), KIND[i.kind], i.name, i.phone, i.email, title(i.vehicle_id), summary(i), i.message, i.status])])}>Export CSV</button>
+        <select className="adm-select" aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {cats.map((c) => <option key={c} value={c}>{categoryLabel(c)} ({data.inquiries.filter((i) => i.category === c).length})</option>)}
+          <option value="__none">General / uncategorized ({data.inquiries.filter((i) => !i.category).length})</option>
+        </select>
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-leads.csv', [['Date', 'Type', 'Category', 'Name', 'Phone', 'Email', 'Vehicle', 'Details', 'Message', 'Status'], ...data.inquiries.map((i) => [i.created_at.slice(0, 10), KIND[i.kind], categoryLabel(i.category), i.name, i.phone, i.email, title(i.vehicle_id), summary(i), i.message, i.status])])}>Export CSV</button>
       </div>
       {list.length === 0 ? <p className="adm-empty">No leads here yet. Inquiries, test drives, trade-ins and financing requests from the website appear here.</p> : (
         <ul className="adm-reviews">
@@ -45,7 +53,7 @@ export default function LeadsView() {
             <li key={i.id} className={`adm-panel${i.status === 'closed' ? ' is-done' : ''}`}>
               <div className="adm-reviews__top">
                 <b>{i.name} <span className={`adm-pill adm-pill--${i.status === 'new' ? 'new' : i.status === 'contacted' ? 'confirmed' : 'completed'}`}>{i.status}</span></b>
-                <span className="adm-note">{KIND[i.kind]} · {shortDate(i.created_at)}</span>
+                <span className="adm-note">{KIND[i.kind]}{i.category ? ` · ${categoryLabel(i.category)}` : ''} · {shortDate(i.created_at)}</span>
               </div>
               {title(i.vehicle_id) && <p><b>{title(i.vehicle_id)}</b></p>}
               {summary(i) && <p>{summary(i)}</p>}

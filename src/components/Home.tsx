@@ -6,6 +6,7 @@ import { listProducts, listVehicles } from '@/lib/db'
 import type { Vehicle } from '@/types/vehicle'
 import type { Product } from '@/types/product'
 import VehicleCard from '@/components/inventory/VehicleCard'
+import { PRODUCT_GROUPS, VEHICLE_CATEGORIES } from '@/lib/categories'
 
 /**
  * The picture on the hero: the Migs Auto logo on the stripes. To feature a motorcycle photo instead
@@ -54,6 +55,10 @@ export default function Home() {
     [vehicles, tab],
   )
   const brands = new Set(vehicles.map((v) => v.brand)).size
+  const styleChips = [
+    ...[...VEHICLE_CATEGORIES.car, ...VEHICLE_CATEGORIES.motorcycle].map((c) => ({ ...c, n: vehicles.filter((v) => v.category === c.id).length, to: `/inventory?category=${c.id}` })),
+    ...[...PRODUCT_GROUPS.mags, ...PRODUCT_GROUPS.accessories].map((g) => ({ ...g, n: products.filter((p) => p.subcategory === g.id).length, to: `/accessories?group=${g.id}` })),
+  ].filter((c) => c.n > 0)
 
   const categories = [
     { to: '/inventory?type=car', label: 'Cars', n: count.cars, Icon: Car },
@@ -94,6 +99,11 @@ export default function Home() {
             </li>
           ))}
         </ul>
+        {styleChips.length > 0 && (
+          <ul className="rx-styles" role="list" aria-label="Browse by style">
+            {styleChips.map((c) => <li key={c.id}><Link to={c.to}>{c.label} <small>{c.n}</small></Link></li>)}
+          </ul>
+        )}
       </section>
 
       <section className="rx-section rx-about" aria-labelledby="rx-about">

@@ -6,6 +6,7 @@ import type { Vehicle } from '@/types/vehicle'
 import { PLACEHOLDER } from './VehicleCard'
 import InquiryForm from '@/components/forms/InquiryForm'
 import VideoPlayer from '@/components/VideoPlayer'
+import { categoryLabel } from '@/lib/categories'
 import { FINANCING_AVAILABLE } from '@/data/profile'
 
 export default function VehicleDetail() {
@@ -32,7 +33,7 @@ export default function VehicleDetail() {
   }
   const photos = v.photos.length ? v.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
-    ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
+    ['Category', v.category ? categoryLabel(v.category) : ''], ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
     ['Fuel', v.fuel], ['Color', v.color], ['Status', v.status],
   ]
   return (
@@ -64,7 +65,7 @@ export default function VehicleDetail() {
             </div>
           )}
           {open ? (
-            <InquiryForm vehicleId={v.id} kind="inquiry" heading={`Inquire about the ${v.brand} ${v.model}`} />
+            <InquiryForm vehicleId={v.id} category={v.category} kind="inquiry" heading={`Inquire about the ${v.brand} ${v.model}`} />
           ) : (
             <button type="button" className="mbtn" onClick={() => setOpen(true)}>{v.status === 'reserved' ? 'Ask about this vehicle' : 'Inquire / Reserve'}</button>
           )}

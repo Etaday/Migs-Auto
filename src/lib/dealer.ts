@@ -26,3 +26,19 @@ export function dealerStats(vehicles: Vehicle[], inquiries: Inquiry[], now: Date
 
 /** Whole days a vehicle has been in stock. */
 export const daysInStock = (v: Vehicle, now: Date) => Math.max(0, Math.floor((now.getTime() - new Date(v.created_at).getTime()) / 864e5))
+
+export type CategorySales = { category: string; count: number; revenue: number; profit: number }
+
+/** Sold vehicles grouped by body style: how many, how much, how much profit (a sale with no cost entered adds no profit). Biggest revenue first. */
+export function salesByCategory(vehicles: Vehicle[]): CategorySales[] {
+  const map = new Map<string, CategorySales>()
+  for (const v of vehicles) {
+    if (v.status !== 'sold') continue
+    const row = map.get(v.category) ?? { category: v.category, count: 0, revenue: 0, profit: 0 }
+    row.count += 1
+    row.revenue += v.sold_price ?? 0
+    row.profit += profitOf(v)
+    map.set(v.category, row)
+  }
+  return [...map.values()].sort((a, b) => b.revenue - a.revenue || b.count - a.count)
+}

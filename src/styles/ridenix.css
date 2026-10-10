@@ -258,3 +258,12 @@ html.is-intro .rx-hero__actions { opacity: 0; transform: translateY(14px); }
 .rx-hero__bike.is-photo { width: auto; max-width: 100%; max-height: min(640px, 74vh); object-fit: contain; margin-right: 0; filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.55)); }
 .rx-cta__bike.is-photo { transform: none; max-height: 340px; width: auto; max-width: 100%; justify-self: center; object-fit: contain; filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.5)); }
 @media (max-width: 899px) { .rx-hero__bike.is-photo { max-height: 420px; } }
+
+/* ---------- Categories: style chips ---------- */
+.rx-styles { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.rx-styles a { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 2px; background: var(--paper); color: var(--navy); text-decoration: none; font: 600 14px/1 var(--rx-font); letter-spacing: 0.08em; text-transform: uppercase; }
+.rx-styles a:hover { border-color: var(--orange); color: var(--orange-ink); }
+.rx-styles small, .shell .mchip small { color: var(--muted); font-size: 12px; letter-spacing: 0; }
+.shell .mchip.is-on small { color: rgba(255, 255, 255, 0.85); }
+.shell .mfilters--styles { margin-top: -6px; }
+.shell .mchip--sm { padding: 0 14px; min-height: 34px; font-size: 14px; }

@@ -6,6 +6,7 @@ import { formatPeso } from '@/lib/inventory'
 import type { Product } from '@/types/product'
 import InquiryForm from '@/components/forms/InquiryForm'
 import VideoPlayer from '@/components/VideoPlayer'
+import { categoryLabel } from '@/lib/categories'
 import { PLACEHOLDER } from './AccessoriesView'
 
 export default function ProductDetail() {
@@ -31,7 +32,7 @@ export default function ProductDetail() {
   }
   const photos = p.photos.length ? p.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
-    ['Category', p.category === 'mags' ? 'Mags (wheels)' : 'Accessory'], ['Brand', p.brand], ['Size', p.size], ['Fits', p.fits],
+    ['Category', p.subcategory ? categoryLabel(p.subcategory) : p.category === 'mags' ? 'Mags (wheels)' : 'Accessory'], ['Brand', p.brand], ['Size', p.size], ['Fits', p.fits],
     ['Condition', p.condition === 'new' ? 'Brand new' : 'Used'], ['Availability', stockLabel(p.stock)],
   ]
   return (
@@ -53,7 +54,7 @@ export default function ProductDetail() {
           {p.description && <p>{p.description}</p>}
           <VideoPlayer videos={p.videos} title={p.name} />
           {open ? (
-            <InquiryForm kind="inquiry" details={{ product: p.name, product_id: p.id }} heading={`Ask about the ${p.name}`} submitLabel="Send inquiry" />
+            <InquiryForm kind="inquiry" category={p.subcategory} details={{ product: p.name, product_id: p.id }} heading={`Ask about the ${p.name}`} submitLabel="Send inquiry" />
           ) : (
             <button type="button" className="mbtn" onClick={() => setOpen(true)}>{p.stock > 0 ? 'Inquire / Reserve' : 'Ask when it is back in stock'}</button>
           )}

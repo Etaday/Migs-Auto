@@ -34,8 +34,8 @@ export function validateDocument(d: SaleDocument): string | null {
 }
 
 /** The vehicle part of a new document, copied from the listing. */
-export function draftFromVehicle(v: Vehicle): Pick<SaleDocument, 'vehicle_id' | 'vehicle_title' | 'vin' | 'color' | 'engine' | 'mileage' | 'price'> {
-  return { vehicle_id: v.id, vehicle_title: `${v.year} ${v.brand} ${v.model}`, vin: v.vin, color: v.color, engine: v.engine, mileage: v.mileage, price: v.sold_price ?? v.price }
+export function draftFromVehicle(v: Vehicle): Pick<SaleDocument, 'vehicle_id' | 'vehicle_title' | 'category' | 'vin' | 'color' | 'engine' | 'mileage' | 'price'> {
+  return { vehicle_id: v.id, category: v.category, vehicle_title: `${v.year} ${v.brand} ${v.model}`, vin: v.vin, color: v.color, engine: v.engine, mileage: v.mileage, price: v.sold_price ?? v.price }
 }
 
 /** Everything paid for this sale up to and including this document. Records saved before `paid_before` existed count as 0. */

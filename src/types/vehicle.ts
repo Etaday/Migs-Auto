@@ -24,6 +24,8 @@ export type Vehicle = {
   vin: string
   engine: string
   body: string
+  /** Body style id from lib/categories (blank until chosen). */
+  category: string
   /** Aftermarket or dealer modifications, one per entry. */
   modifications: string[]
   /** What Migs paid for it; admin only. */
@@ -41,6 +43,8 @@ export type Inquiry = {
   phone: string
   email: string
   message: string
+  /** What it was about: a vehicle body style or a shop group (blank for general questions). */
+  category: string
   details: Record<string, unknown>
   status: InquiryStatus
   created_at: string

@@ -47,6 +47,8 @@ create table if not exists public.vehicles (
 );
 -- Walk-around videos (uploaded files or links).
 alter table public.vehicles add column if not exists videos text[] not null default '{}';
+-- Body style (sedan, suv, scooter...), see src/lib/categories.ts.
+alter table public.vehicles add column if not exists category text not null default '';
 alter table public.vehicles enable row level security;
 drop policy if exists "admin all vehicles" on public.vehicles;
 create policy "admin all vehicles" on public.vehicles for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -54,7 +56,7 @@ drop policy if exists "visitor reads listed vehicles" on public.vehicles;
 create policy "visitor reads listed vehicles" on public.vehicles for select to anon using (status <> 'sold');
 -- Visitors may read only the public columns: never cost, sold_price or sold_at.
 revoke select on public.vehicles from anon;
-grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, videos, status, featured, vin, engine, body, modifications) on public.vehicles to anon;
+grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, videos, status, featured, vin, engine, body, category, modifications) on public.vehicles to anon;
 create index if not exists vehicles_status_idx on public.vehicles (status);
 
 -- ---------- Inquiries (inquiry, trade-in, financing, test drive) ----------
@@ -125,6 +127,8 @@ create table if not exists public.products (
   listed boolean not null default true
 );
 alter table public.products add column if not exists videos text[] not null default '{}';
+-- Group inside the shop (car-mags, electronics, interior...).
+alter table public.products add column if not exists subcategory text not null default '';
 alter table public.products enable row level security;
 drop policy if exists "admin all products" on public.products;
 create policy "admin all products" on public.products for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -172,3 +176,42 @@ drop policy if exists "owner uploads vehicle videos" on storage.objects;
 create policy "owner uploads vehicle videos" on storage.objects for insert to authenticated with check (bucket_id = 'vehicle-videos' and public.is_admin());
 drop policy if exists "owner removes vehicle videos" on storage.objects;
 create policy "owner removes vehicle videos" on storage.objects for delete to authenticated using (bucket_id = 'vehicle-videos' and public.is_admin());
+
+-- ---------- Categories on inquiries and invoices, and filling in what already exists ----------
+-- An inquiry or a document keeps the category it was about, so reports stay right if a listing changes later.
+alter table public.inquiries add column if not exists category text not null default '';
+alter table public.documents add column if not exists category text not null default '';
+
+-- Fill blank vehicle categories from the body style the VIN lookup stored. Anything unclear stays blank for the owner to choose.
+update public.vehicles set category = case
+  when type = 'car' and body ~* 'sedan|saloon' then 'sedan'
+  when type = 'car' and body ~* 'hatch' then 'hatchback'
+  when type = 'car' and body ~* 'sport utility|suv|crossover' then 'suv'
+  when type = 'car' and body ~* 'pickup|truck' then 'pickup'
+  when type = 'car' and body ~* '(^|[^a-z])van([^a-z]|$)|minivan|mpv|multi-purpose' then 'van'
+  when type = 'car' and body ~* 'coupe|convertible|roadster|cabriolet' then 'coupe'
+  when type = 'motorcycle' and body ~* 'scooter|moped' then 'scooter'
+  when type = 'motorcycle' and body ~* 'underbone|step-through' then 'underbone'
+  when type = 'motorcycle' and body ~* 'cruiser|chopper' then 'cruiser'
+  when type = 'motorcycle' and body ~* 'dual|adventure|touring' then 'adventure'
+  when type = 'motorcycle' and body ~* 'off.?road|motocross|enduro|trail' then 'offroad'
+  when type = 'motorcycle' and body ~* 'naked|standard|street|roadster' then 'naked'
+  when type = 'motorcycle' and body ~* 'sport|race|fairing' then 'sport'
+  else '' end
+where category = '';
+
+-- Mags are car or motorcycle mags; the sample accessories get their groups.
+update public.products set subcategory = case when name ilike '%motorcycle%' then 'motorcycle-mags' else 'car-mags' end where category = 'mags' and subcategory = '';
+update public.products set subcategory = case photos[1]
+  when '/samples/acc-dashcam.svg' then 'electronics' when '/samples/acc-phone.svg' then 'electronics'
+  when '/samples/acc-seat.svg' then 'interior' when '/samples/acc-mats.svg' then 'interior'
+  when '/samples/acc-led.svg' then 'exterior-lighting'
+  when '/samples/acc-helmet.svg' then 'safety-gear'
+  when '/samples/acc-inflator.svg' then 'tools-care' when '/samples/acc-cover.svg' then 'tools-care'
+  else '' end
+where category = 'accessories' and subcategory = '' and photos[1] like '/samples/%';
+
+-- Carry the category onto existing inquiries and documents.
+update public.inquiries i set category = v.category from public.vehicles v where i.vehicle_id = v.id and i.category = '';
+update public.inquiries i set category = p.subcategory from public.products p where i.category = '' and i.details ->> 'product_id' = p.id::text;
+update public.documents d set category = v.category from public.vehicles v where d.vehicle_id = v.id and d.category = '';

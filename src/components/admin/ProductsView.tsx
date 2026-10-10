@@ -6,16 +6,17 @@ import { formatPeso } from '@/lib/inventory'
 import { enhanceProductDescription, filterProducts, stockLabel } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types/product'
 import PhotoPicker from './PhotoPicker'
+import { PRODUCT_GROUPS, categoryLabel, groupsForCategory } from '@/lib/categories'
 import VideoPicker from './VideoPicker'
 import MoneyInput from '@/components/MoneyInput'
 
 type Draft = Omit<Product, 'id' | 'created_at' | 'price' | 'stock'> & { id?: string; price: string; stock: string }
-const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', price: '', stock: '1', description: '', photos: [], videos: [], listed: true })
+const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', price: '', stock: '1', description: '', photos: [], videos: [], subcategory: '', listed: true })
 const toDraft = (p: Product): Draft => ({ ...p, price: String(p.price), stock: String(p.stock) })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 const row = (d: Draft): Omit<Product, 'id' | 'created_at'> => ({
   category: d.category, name: d.name.trim(), brand: d.brand.trim(), size: d.size.trim(), fits: d.fits.trim(), condition: d.condition, price: n(d.price),
-  stock: Math.max(0, Math.floor(n(d.stock))), description: d.description.trim(), photos: d.photos, videos: d.videos, listed: d.listed,
+  stock: Math.max(0, Math.floor(n(d.stock))), description: d.description.trim(), photos: d.photos, videos: d.videos, subcategory: d.subcategory, listed: d.listed,
 })
 
 function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }) {
@@ -51,7 +52,8 @@ function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }
     <form className="adm-panel adm-vform" onSubmit={save} noValidate>
       <h2>{d.id ? 'Edit item' : 'Add a mag set or accessory'}</h2>
       <div className="adm-vform__grid">
-        <label className="adm-field"><span>Category</span><select value={d.category} onChange={f('category')}><option value="mags">Mags (wheels)</option><option value="accessories">Accessory</option></select></label>
+        <label className="adm-field"><span>Category</span><select value={d.category} onChange={(e) => { const c = e.target.value as ProductCategory; setD((x) => ({ ...x, category: c, subcategory: groupsForCategory(c).some((g) => g.id === x.subcategory) ? x.subcategory : '' })) }}><option value="mags">Mags (wheels)</option><option value="accessories">Accessory</option></select></label>
+        <label className="adm-field"><span>Group</span><select value={d.subcategory} onChange={f('subcategory')}><option value="">Choose...</option>{groupsForCategory(d.category).map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></label>
         <label className="adm-field"><span>Name</span><input value={d.name} onChange={f('name')} placeholder='e.g. Enkei 17" Mags (set of 4)' /></label>
         <label className="adm-field"><span>Brand</span><input value={d.brand} onChange={f('brand')} /></label>
         <label className="adm-field"><span>Size / specs</span><input value={d.size} onChange={f('size')} placeholder="e.g. 17 inch, 5x114.3" /></label>
@@ -85,10 +87,11 @@ export default function ProductsView() {
   const { data, patch, remove } = useData()
   const [q, setQ] = useState('')
   const [cat, setCat] = useState<'all' | ProductCategory>('all')
+  const [group, setGroup] = useState('')
   const [editing, setEditing] = useState<Draft | null>(null)
   if (editing) return <ProductForm key={editing.id ?? 'new'} initial={editing} onDone={() => setEditing(null)} />
 
-  const list = filterProducts(data.products, { category: cat === 'all' ? undefined : cat, query: q, includeUnlisted: true })
+  const list = filterProducts(data.products, { category: cat === 'all' ? undefined : cat, subcategory: group && group !== '__none' ? group : undefined, query: q, includeUnlisted: true }).filter((p) => group !== '__none' || !p.subcategory)
   const count = (c: ProductCategory) => data.products.filter((p) => p.category === c).length
   const setStock = (p: Product, delta: number) => patch('products', p.id, { stock: Math.max(0, p.stock + delta) })
 
@@ -96,13 +99,18 @@ export default function ProductsView() {
     <div className="adm-stack">
       <div className="adm-toolbar">
         <label className="adm-search"><MagnifyingGlass size={16} aria-hidden="true" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, brand, size or fits" aria-label="Search mags and accessories" /></label>
+        <select className="adm-select" aria-label="Filter by group" value={group} onChange={(e) => setGroup(e.target.value)}>
+          <option value="">All groups</option>
+          {(['mags', 'accessories'] as const).map((c) => <optgroup key={c} label={c === 'mags' ? 'Mags' : 'Accessories'}>{PRODUCT_GROUPS[c].map((g) => <option key={g.id} value={g.id}>{g.label} ({data.products.filter((p) => p.subcategory === g.id).length})</option>)}</optgroup>)}
+          <option value="__none">Uncategorized ({data.products.filter((p) => !p.subcategory).length})</option>
+        </select>
         <div className="adm-chips">
           {(['all', 'mags', 'accessories'] as const).map((c) => (
             <button key={c} type="button" className={cat === c ? 'is-on' : ''} onClick={() => setCat(c)}>{c === 'all' ? 'All' : c === 'mags' ? 'Mags' : 'Accessories'} <small>{c === 'all' ? data.products.length : count(c)}</small></button>
           ))}
         </div>
         <button type="button" className="adm-btn" onClick={() => setEditing(blank())}><Plus size={15} weight="bold" aria-hidden="true" /> Add item</button>
-        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-mags-accessories.csv', [['Category', 'Name', 'Brand', 'Size', 'Fits', 'Condition', 'Price', 'Stock', 'Listed'], ...data.products.map((p) => [p.category, p.name, p.brand, p.size, p.fits, p.condition, p.price, p.stock, p.listed])])}>Export CSV</button>
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-mags-accessories.csv', [['Category', 'Group', 'Name', 'Brand', 'Size', 'Fits', 'Condition', 'Price', 'Stock', 'Listed'], ...data.products.map((p) => [p.category, categoryLabel(p.subcategory), p.name, p.brand, p.size, p.fits, p.condition, p.price, p.stock, p.listed])])}>Export CSV</button>
       </div>
       {list.length === 0 ? <p className="adm-empty">Nothing here yet. Add your first mag set or accessory with the button above.</p> : (
         <div className="adm-tablewrap">
@@ -111,7 +119,7 @@ export default function ProductsView() {
             <tbody>{list.map((p) => (
               <tr key={p.id}>
                 <td><span className="adm-vcell"><img src={p.photos[0] || '/vehicle-placeholder.svg'} alt="" width={64} height={44} />
-                  <span><b>{p.name}</b><small>{[p.category === 'mags' ? 'Mags' : 'Accessory', p.brand, p.size, p.condition === 'new' ? 'New' : 'Used'].filter(Boolean).join(' · ')}</small>{p.fits && <small>Fits: {p.fits}</small>}</span></span></td>
+                  <span><b>{p.name}</b><small>{[p.subcategory ? categoryLabel(p.subcategory) : p.category === 'mags' ? 'Mags' : 'Accessory', p.brand, p.size, p.condition === 'new' ? 'New' : 'Used'].filter(Boolean).join(' · ')}</small>{p.fits && <small>Fits: {p.fits}</small>}</span></span></td>
                 <td>{formatPeso(p.price)}</td>
                 <td><span className="adm-stock">
                   <button type="button" className="adm-icon-btn" aria-label={`One less ${p.name}`} onClick={() => void setStock(p, -1)} disabled={p.stock <= 0}>−</button>

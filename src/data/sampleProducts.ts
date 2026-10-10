@@ -15,7 +15,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-enkei.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "car-mags"
   },
   {
     "category": "mags",
@@ -30,7 +31,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-bbs.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "car-mags"
   },
   {
     "category": "mags",
@@ -45,7 +47,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-te37.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "car-mags"
   },
   {
     "category": "mags",
@@ -60,7 +63,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-15.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "car-mags"
   },
   {
     "category": "mags",
@@ -75,7 +79,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-20.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "car-mags"
   },
   {
     "category": "mags",
@@ -90,7 +95,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/mag-bike.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "motorcycle-mags"
   },
   {
     "category": "accessories",
@@ -105,7 +111,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-dashcam.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "electronics"
   },
   {
     "category": "accessories",
@@ -120,7 +127,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-seat.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "interior"
   },
   {
     "category": "accessories",
@@ -135,7 +143,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-mats.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "interior"
   },
   {
     "category": "accessories",
@@ -150,7 +159,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-led.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "exterior-lighting"
   },
   {
     "category": "accessories",
@@ -165,7 +175,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-phone.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "electronics"
   },
   {
     "category": "accessories",
@@ -180,7 +191,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-helmet.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "safety-gear"
   },
   {
     "category": "accessories",
@@ -195,7 +207,8 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-inflator.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "tools-care"
   },
   {
     "category": "accessories",
@@ -210,6 +223,7 @@ export const SAMPLE_PRODUCTS: Omit<Product, 'id' | 'created_at' | 'videos'>[] = 
     "photos": [
       "/samples/acc-cover.svg"
     ],
-    "listed": true
+    "listed": true,
+    "subcategory": "tools-care"
   }
 ]

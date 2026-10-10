@@ -2,7 +2,7 @@ import { cleanNotes } from './enhance'
 import { formatPeso } from './inventory'
 import type { Product, ProductCategory } from '../types/product'
 
-export type ProductFilter = { category?: ProductCategory; query?: string; inStockOnly?: boolean; includeUnlisted?: boolean }
+export type ProductFilter = { category?: ProductCategory; subcategory?: string; query?: string; inStockOnly?: boolean; includeUnlisted?: boolean }
 
 export function filterProducts(list: Product[], f: ProductFilter): Product[] {
   const q = (f.query ?? '').trim().toLowerCase()
@@ -10,6 +10,7 @@ export function filterProducts(list: Product[], f: ProductFilter): Product[] {
     (p) =>
       (f.includeUnlisted || p.listed) &&
       (!f.category || p.category === f.category) &&
+      (!f.subcategory || p.subcategory === f.subcategory) &&
       (!f.inStockOnly || p.stock > 0) &&
       (!q || `${p.name} ${p.brand} ${p.size} ${p.fits}`.toLowerCase().includes(q)),
   )
@@ -23,7 +24,7 @@ export function stockLabel(stock: number): string {
 /** Gives a stored product every field, so a record from an older version never crashes a screen. */
 export function productWithDefaults(p: Partial<Product>): Product {
   return {
-    id: '', created_at: '', category: 'accessories', name: '', brand: '', size: '', fits: '', condition: 'new', price: 0, stock: 0, description: '', listed: true,
+    id: '', created_at: '', category: 'accessories', subcategory: '', name: '', brand: '', size: '', fits: '', condition: 'new', price: 0, stock: 0, description: '', listed: true,
     ...p,
     photos: Array.isArray(p.photos) ? p.photos : [],
     videos: Array.isArray(p.videos) ? p.videos : [],

@@ -6,6 +6,8 @@ export type Product = {
   id: string
   created_at: string
   category: ProductCategory
+  /** Group inside the category (lib/categories), blank until chosen. */
+  subcategory: string
   name: string
   brand: string
   /** e.g. 17 inch, 5x114.3 */

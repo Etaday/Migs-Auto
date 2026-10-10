@@ -509,3 +509,8 @@ code { font-size: 12.5px; }
 .adm-video--add, .adm-video--busy { display: grid; place-items: center; align-content: center; gap: 4px; border-style: dashed; color: var(--a-muted); cursor: pointer; font-size: 14px; text-align: center; padding: 8px; }
 .adm-video--add:hover { border-color: var(--a-pink); color: var(--a-ink); }
 .adm-video--add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.adm-select { min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--a-glass-line); background: var(--a-glass-soft); color: var(--a-ink); font: inherit; }
+
+.adm-bar { display: inline-block; vertical-align: middle; width: 110px; height: 8px; border-radius: 4px; background: var(--a-glass-line); overflow: hidden; }
+.adm-bar i { display: block; height: 100%; background: var(--a-pink); }

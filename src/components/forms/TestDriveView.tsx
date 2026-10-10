@@ -18,7 +18,7 @@ export default function TestDriveView() {
   return (
     <section className="mpage">
       <h1 className="mpage__title">Book a test drive</h1>
-      <InquiryForm kind="test_drive" vehicleId={vehicleId || undefined} details={{ date, time }} submitLabel="Book test drive">
+      <InquiryForm kind="test_drive" vehicleId={vehicleId || undefined} category={list.find((v) => v.id === vehicleId)?.category ?? ''} details={{ date, time }} submitLabel="Book test drive">
         <label>Vehicle
           <select value={vehicleId} onChange={(e) => setVehicleId(e.target.value)}>
             <option value="">Not sure yet</option>

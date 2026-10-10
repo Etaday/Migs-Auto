@@ -13,6 +13,8 @@ export type SaleDocument = {
   issued_on: string
   vehicle_id: string | null
   vehicle_title: string
+  /** The vehicle's body style when the document was made. */
+  category?: string
   vin: string
   color: string
   engine: string

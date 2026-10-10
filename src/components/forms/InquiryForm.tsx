@@ -6,6 +6,8 @@ import type { InquiryKind } from '@/types/vehicle'
 type Props = {
   kind?: InquiryKind
   vehicleId?: string
+  /** The category of what the inquiry is about (body style or shop group), stored with it for reports. */
+  category?: string
   heading?: string
   /** Extra fields, rendered above the message box. */
   children?: ReactNode
@@ -15,7 +17,7 @@ type Props = {
   messageRequired?: boolean
 }
 
-export default function InquiryForm({ kind = 'inquiry', vehicleId, heading, children, details = {}, submitLabel = 'Send', messageRequired = false }: Props) {
+export default function InquiryForm({ kind = 'inquiry', vehicleId, category = '', heading, children, details = {}, submitLabel = 'Send', messageRequired = false }: Props) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -36,6 +38,7 @@ export default function InquiryForm({ kind = 'inquiry', vehicleId, heading, chil
       await submitPublic('inquiries', {
         kind,
         vehicle_id: vehicleId ?? null,
+        category,
         name: sanitize(name.trim()).slice(0, 100),
         phone: sanitize(phone.trim()).slice(0, 40),
         email: sanitize(email.trim()).slice(0, 254),

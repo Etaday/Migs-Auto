@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { listProducts } from '@/lib/db'
 import { filterProducts, stockLabel } from '@/lib/products'
+import { groupsForCategory } from '@/lib/categories'
 import { formatPeso } from '@/lib/inventory'
 import type { Product, ProductCategory } from '@/types/product'
 
@@ -44,7 +45,16 @@ export default function AccessoriesView() {
     listProducts().then((l) => live && setAll(l)).catch(() => live && setAll([]))
     return () => { live = false }
   }, [])
-  const shown = useMemo(() => filterProducts(all ?? [], { category, query }), [all, category, query])
+  const group = params.get('group') ?? ''
+  const groups = useMemo(() => {
+    const pool = (all ?? []).filter((p) => !category || p.category === category)
+    const n = new Map<string, number>()
+    pool.forEach((p) => p.subcategory && n.set(p.subcategory, (n.get(p.subcategory) ?? 0) + 1))
+    const order = category ? groupsForCategory(category) : [...groupsForCategory('mags'), ...groupsForCategory('accessories')]
+    return order.filter((g) => n.has(g.id)).map((g) => ({ ...g, n: n.get(g.id) ?? 0 }))
+  }, [all, category])
+  const setGroup = (id: string) => { const next = new URLSearchParams(params); if (id) next.set('group', id); else next.delete('group'); setParams(next) }
+  const shown = useMemo(() => filterProducts(all ?? [], { category, subcategory: group || undefined, query }), [all, category, group, query])
 
   return (
     <section className="mpage">
@@ -55,6 +65,12 @@ export default function AccessoriesView() {
         ))}
         <input aria-label="Search" placeholder="Search brand, size or what it fits" value={query} onChange={(e) => setQuery(e.target.value)} style={{ width: 'min(320px, 100%)' }} />
       </div>
+      {groups.length > 0 && (
+        <div className="mfilters mfilters--styles" role="group" aria-label="Filter by group">
+          <button type="button" className={`mchip mchip--sm${group === '' ? ' is-on' : ''}`} onClick={() => setGroup('')}>All groups</button>
+          {groups.map((g) => <button key={g.id} type="button" className={`mchip mchip--sm${group === g.id ? ' is-on' : ''}`} onClick={() => setGroup(g.id)}>{g.label} <small>{g.n}</small></button>)}
+        </div>
+      )}
       {all === null ? <p className="mpage__note">Loading...</p> : shown.length === 0 ? (
         <p className="mpage__note">Nothing matches. <button type="button" className="mlink" onClick={() => { setParams({}); setQuery('') }}>Clear filters</button></p>
       ) : (

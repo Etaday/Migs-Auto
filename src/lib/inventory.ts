@@ -6,6 +6,7 @@ export type VehicleFilter = {
   minPrice?: number
   maxPrice?: number
   minYear?: number
+  category?: string
   includeSold?: boolean
 }
 
@@ -14,6 +15,7 @@ export function filterVehicles(list: Vehicle[], f: VehicleFilter): Vehicle[] {
     (v) =>
       (f.includeSold || v.status !== 'sold') &&
       (!f.type || v.type === f.type) &&
+      (!f.category || v.category === f.category) &&
       (!f.brand || v.brand === f.brand) &&
       (f.minPrice == null || v.price >= f.minPrice) &&
       (f.maxPrice == null || v.price <= f.maxPrice) &&
@@ -31,7 +33,7 @@ export function formatPeso(n: number): string {
 export function withDefaults(v: Partial<Vehicle>): Vehicle {
   return {
     id: '', type: 'car', brand: '', model: '', year: new Date().getFullYear(), price: 0, mileage: 0, transmission: '', fuel: '', color: '',
-    description: '', status: 'available', featured: false, vin: '', engine: '', body: '', cost: 0, sold_price: null, sold_at: null, created_at: '',
+    description: '', status: 'available', featured: false, vin: '', engine: '', body: '', category: '', cost: 0, sold_price: null, sold_at: null, created_at: '',
     ...v,
     photos: Array.isArray(v.photos) ? v.photos : [],
     videos: Array.isArray(v.videos) ? v.videos : [],

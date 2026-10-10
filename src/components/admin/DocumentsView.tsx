@@ -7,6 +7,7 @@ import { draftFromVehicle, mailtoLink, nextNumber, paidToDate, receiptDraft, sha
 import { SITE_URL } from '@/data/profile'
 import { sanitize } from '@/lib/contact'
 import { parseMoneyInput } from '@/lib/money'
+import { categoryLabel } from '@/lib/categories'
 import MoneyInput from '@/components/MoneyInput'
 import type { DocKind, SaleDocument } from '@/types/document'
 import DocumentPaper from './DocumentPaper'
@@ -15,7 +16,7 @@ const METHODS = ['Cash', 'Bank transfer', 'GCash', 'Check']
 type Draft = Omit<SaleDocument, 'id' | 'created_at' | 'number'>
 
 const blank = (kind: DocKind): Draft => ({
-  kind, issued_on: todayIso(), vehicle_id: null, vehicle_title: '', vin: '', color: '', engine: '', mileage: 0, buyer_name: '', buyer_phone: '', buyer_email: '',
+  kind, issued_on: todayIso(), vehicle_id: null, vehicle_title: '', category: '', vin: '', color: '', engine: '', mileage: 0, buyer_name: '', buyer_phone: '', buyer_email: '',
   buyer_address: '', price: 0, discount: 0, paid_before: 0, amount_paid: 0, method: 'Cash', notes: '',
 })
 
@@ -49,6 +50,7 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
   const [viewing, setViewing] = useState<SaleDocument | null>(null)
   const [err, setErr] = useState('')
   const [kindFilter, setKindFilter] = useState<'all' | DocKind>('all')
+  const [category, setCategory] = useState('')
   const now = useMemo(() => new Date(), [])
 
   useEffect(() => {
@@ -135,7 +137,8 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
     )
   }
 
-  const list = data.documents.filter((d) => kindFilter === 'all' || d.kind === kindFilter)
+  const cats = [...new Set(data.documents.map((d) => d.category ?? '').filter(Boolean))]
+  const list = data.documents.filter((d) => (kindFilter === 'all' || d.kind === kindFilter) && (!category || (category === '__none' ? !d.category : d.category === category)))
   return (
     <div className="adm-stack">
       <div className="adm-toolbar">
@@ -144,20 +147,26 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
             <button key={k} type="button" className={kindFilter === k ? 'is-on' : ''} onClick={() => setKindFilter(k)}>{k === 'all' ? 'All' : k === 'invoice' ? 'Invoices' : 'Receipts'} <small>{k === 'all' ? data.documents.length : data.documents.filter((d) => d.kind === k).length}</small></button>
           ))}
         </div>
+        <select className="adm-select" aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {cats.map((c) => <option key={c} value={c}>{categoryLabel(c)} ({data.documents.filter((d) => d.category === c).length})</option>)}
+          <option value="__none">Uncategorized ({data.documents.filter((d) => !d.category).length})</option>
+        </select>
         <button type="button" className="adm-btn" onClick={() => setDraft(blank('invoice'))}><Plus size={15} weight="bold" aria-hidden="true" /> New invoice</button>
         <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setDraft(blank('receipt'))}><ReceiptIcon size={15} aria-hidden="true" /> New receipt</button>
-        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-documents.csv', [['Number', 'Type', 'Date', 'Buyer', 'Vehicle', 'Total', 'Paid', 'Balance'], ...data.documents.map((d) => { const x = totals(d.price, d.discount, paidToDate(d)); return [d.number, d.kind, d.issued_on, d.buyer_name, d.vehicle_title, x.total, x.paid, x.balance] })])}>Export CSV</button>
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-documents.csv', [['Number', 'Type', 'Date', 'Buyer', 'Vehicle', 'Category', 'Total', 'Paid', 'Balance'], ...data.documents.map((d) => { const x = totals(d.price, d.discount, paidToDate(d)); return [d.number, d.kind, d.issued_on, d.buyer_name, d.vehicle_title, categoryLabel(d.category ?? ''), x.total, x.paid, x.balance] })])}>Export CSV</button>
       </div>
       {list.length === 0 ? <p className="adm-empty">No documents yet. Create an invoice when a buyer commits, then a receipt when payment arrives.</p> : (
         <div className="adm-tablewrap">
           <table className="adm-table">
-            <thead><tr><th>Number</th><th>Date</th><th>Buyer</th><th>Vehicle</th><th>Total</th><th>Balance</th><th><span className="sr-only">Actions</span></th></tr></thead>
+            <thead><tr><th>Number</th><th>Date</th><th>Buyer</th><th>Vehicle</th><th>Category</th><th>Total</th><th>Balance</th><th><span className="sr-only">Actions</span></th></tr></thead>
             <tbody>{list.map((d) => { const x = totals(d.price, d.discount, paidToDate(d)); return (
               <tr key={d.id}>
                 <td><b>{d.number}</b><small>{d.kind === 'invoice' ? 'Invoice' : 'Receipt'}</small></td>
                 <td>{shortDate(d.issued_on)}</td>
                 <td>{d.buyer_name}<small>{d.buyer_phone}</small></td>
                 <td>{d.vehicle_title}</td>
+                <td>{d.category ? categoryLabel(d.category) : <small>-</small>}</td>
                 <td>{formatPeso(x.total)}</td>
                 <td>{x.balance === 0 ? <span className="adm-pill adm-pill--confirmed">paid</span> : formatPeso(x.balance)}</td>
                 <td className="adm-actions-cell">

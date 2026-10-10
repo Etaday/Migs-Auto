@@ -108,18 +108,18 @@ type Demo = { [T in Table]: Rows[T][] }
 
 const dv = (n: number, o: Partial<Vehicle>): Vehicle => ({
   id: `demo-v${n}`, type: 'car', brand: '', model: '', year: 2020, price: 0, mileage: 0, transmission: 'Automatic',
-  fuel: 'Gasoline', color: '', description: 'Sample listing. Replace it from the dashboard.', photos: [], videos: [], status: 'available',
+  fuel: 'Gasoline', color: '', description: 'Sample listing. Replace it from the dashboard.', photos: [], videos: [], category: '', status: 'available',
   featured: false, vin: '', engine: '', body: '', modifications: [], cost: 0, sold_price: null, sold_at: null,
   created_at: new Date(Date.now() - n * 864e5).toISOString(), ...o,
 })
 function demoVehicles(): Vehicle[] {
   return [
-    dv(1, { brand: 'Toyota', model: 'Vios 1.3 E', year: 2021, price: 640000, cost: 560000, mileage: 28000, color: 'White', featured: true, body: 'Sedan', engine: '1.3L 4-cyl', modifications: ['Dash cam', 'Tinted windows'] }),
-    dv(2, { brand: 'Honda', model: 'City RS', year: 2022, price: 820000, cost: 730000, mileage: 15000, color: 'Silver', featured: true, body: 'Sedan', engine: '1.5L 4-cyl' }),
-    dv(3, { brand: 'Mitsubishi', model: 'Xpander GLS', year: 2020, price: 780000, mileage: 41000, color: 'Gray', transmission: 'Manual', fuel: 'Diesel', status: 'reserved' }),
-    dv(4, { type: 'motorcycle', brand: 'Honda', model: 'Click 160', year: 2023, price: 118000, cost: 98000, mileage: 4000, color: 'Red', transmission: 'CVT', featured: true, engine: '157cc 1-cyl', modifications: ['Aftermarket exhaust', 'Phone mount'] }),
-    dv(5, { type: 'motorcycle', brand: 'Yamaha', model: 'NMAX 155', year: 2022, price: 135000, mileage: 9000, color: 'Black', transmission: 'CVT' }),
-    dv(6, { type: 'motorcycle', brand: 'Kawasaki', model: 'Ninja 400', year: 2021, price: 330000, mileage: 12000, color: 'Green', transmission: 'Manual', status: 'sold', cost: 285000, sold_price: 320000, sold_at: new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10), engine: '399cc 2-cyl' }),
+    dv(1, { brand: 'Toyota', model: 'Vios 1.3 E', year: 2021, price: 640000, cost: 560000, mileage: 28000, color: 'White', featured: true, body: 'Sedan', category: 'sedan', engine: '1.3L 4-cyl', modifications: ['Dash cam', 'Tinted windows'] }),
+    dv(2, { brand: 'Honda', model: 'City RS', year: 2022, price: 820000, cost: 730000, mileage: 15000, color: 'Silver', featured: true, body: 'Sedan', category: 'sedan', engine: '1.5L 4-cyl' }),
+    dv(3, { brand: 'Mitsubishi', model: 'Xpander GLS', year: 2020, price: 780000, mileage: 41000, color: 'Gray', transmission: 'Manual', fuel: 'Diesel', status: 'reserved', category: 'van' }),
+    dv(4, { type: 'motorcycle', brand: 'Honda', model: 'Click 160', year: 2023, price: 118000, cost: 98000, mileage: 4000, color: 'Red', transmission: 'CVT', featured: true, engine: '157cc 1-cyl', category: 'scooter', modifications: ['Aftermarket exhaust', 'Phone mount'] }),
+    dv(5, { type: 'motorcycle', brand: 'Yamaha', model: 'NMAX 155', year: 2022, price: 135000, mileage: 9000, color: 'Black', transmission: 'CVT', category: 'scooter' }),
+    dv(6, { type: 'motorcycle', brand: 'Kawasaki', model: 'Ninja 400', year: 2021, price: 330000, mileage: 12000, color: 'Green', transmission: 'Manual', status: 'sold', category: 'sport', cost: 285000, sold_price: 320000, sold_at: new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10), engine: '399cc 2-cyl' }),
   ]
 }
 
@@ -291,7 +291,7 @@ export async function sharedDocument(token: string): Promise<SaleDocument | null
 }
 
 /** The columns visitors may read (matches the grant in supabase/schema.sql). */
-const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileage,transmission,fuel,color,description,photos,videos,status,featured,vin,engine,body,modifications'
+const PUBLIC_VEHICLE_COLUMNS = 'id,created_at,type,brand,model,year,price,mileage,transmission,fuel,color,description,photos,videos,status,featured,vin,engine,body,category,modifications'
 
 /** Mags and accessories shown on the website: listed items only. */
 export async function listProducts(): Promise<Product[]> {

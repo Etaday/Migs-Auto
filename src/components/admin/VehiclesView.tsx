@@ -9,22 +9,23 @@ import VideoPicker from './VideoPicker'
 import { enhanceDescriptionText, enhanceModificationList, type EnhanceVehicle } from '@/lib/enhance'
 import { formatPeso } from '@/lib/inventory'
 import { daysInStock } from '@/lib/dealer'
+import { categoriesForType, categoryLabel, isValidVehicleCategory, suggestVehicleCategory } from '@/lib/categories'
 import type { Vehicle, VehicleStatus, VehicleType } from '@/types/vehicle'
 import MoneyInput from '@/components/MoneyInput'
 
 type Draft = {
   id?: string; vin: string; type: VehicleType; brand: string; model: string; year: string; price: string; cost: string; mileage: string
-  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]; videos: string[]
+  transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]; videos: string[]; category: string
   modifications: string[]; status: VehicleStatus; featured: boolean; sold_price: string; sold_at: string
 }
 
 const blank = (): Draft => ({
   vin: '', type: 'car', brand: '', model: '', year: String(new Date().getFullYear()), price: '', cost: '', mileage: '0', transmission: '', fuel: '',
-  color: '', body: '', engine: '', description: '', photos: [], videos: [], modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
+  color: '', body: '', engine: '', description: '', photos: [], videos: [], category: '', modifications: [], status: 'available', featured: false, sold_price: '', sold_at: '',
 })
 const toDraft = (v: Vehicle): Draft => ({
   id: v.id, vin: v.vin, type: v.type, brand: v.brand, model: v.model, year: String(v.year), price: String(v.price), cost: String(v.cost), mileage: String(v.mileage),
-  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos, videos: v.videos,
+  transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos, videos: v.videos, category: v.category,
   modifications: v.modifications, status: v.status, featured: v.featured, sold_price: v.sold_price == null ? '' : String(v.sold_price), sold_at: v.sold_at ?? '',
 })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
@@ -34,7 +35,7 @@ function toRow(d: Draft): Omit<Vehicle, 'id' | 'created_at'> {
   return {
     vin: d.vin.trim().toUpperCase(), type: d.type, brand: d.brand.trim(), model: d.model.trim(), year: n(d.year), price: n(d.price), cost: n(d.cost), mileage: n(d.mileage),
     transmission: d.transmission.trim(), fuel: d.fuel.trim(), color: d.color.trim(), body: d.body.trim(), engine: d.engine.trim(), description: d.description.trim(),
-    photos: d.photos, videos: d.videos, modifications: d.modifications, status: d.status, featured: d.featured,
+    photos: d.photos, videos: d.videos, category: d.category, modifications: d.modifications, status: d.status, featured: d.featured,
     sold_price: sold ? n(d.sold_price) || n(d.price) : null, sold_at: sold ? d.sold_at || todayIso() : null,
   }
 }
@@ -67,7 +68,12 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
       const r = await decodeVin(d.vin)
       if (!r) setNote('That VIN was not found in the US database. Fill the specs in by hand.')
       else {
-        setD((x) => ({ ...x, ...Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'number' ? String(v) : v])) as Partial<Draft> }))
+        setD((x) => {
+          const merged = { ...x, ...Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'number' ? String(v) : v])) as Partial<Draft> } as Draft
+          // Suggest a category from the body style, but never overwrite one the owner already chose.
+          const guess = suggestVehicleCategory(merged.type, merged.body)
+          return { ...merged, category: x.category && isValidVehicleCategory(merged.type, x.category) ? x.category : guess }
+        })
         setNote('Real specs filled in from the NHTSA vehicle database. Check them, then add the price.')
       }
     } catch (e) { setErr(e instanceof Error ? e.message : 'Lookup failed.') } finally { setBusy(false) }
@@ -121,7 +127,8 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
       </div>
       {note && <p className="adm-note" role="status">{note}</p>}
       <div className="adm-vform__grid">
-        <label className="adm-field"><span>Type</span><select value={d.type} onChange={f('type')}><option value="car">Car</option><option value="motorcycle">Motorcycle</option></select></label>
+        <label className="adm-field"><span>Type</span><select value={d.type} onChange={(e) => { const t = e.target.value as VehicleType; setD((x) => ({ ...x, type: t, category: isValidVehicleCategory(t, x.category) ? x.category : '' })) }}><option value="car">Car</option><option value="motorcycle">Motorcycle</option></select></label>
+        <label className="adm-field"><span>Category (body style)</span><select value={d.category} onChange={f('category')}><option value="">Choose...</option>{categoriesForType(d.type).map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
         <label className="adm-field"><span>Brand</span><input value={d.brand} onChange={f('brand')} /></label>
         <label className="adm-field"><span>Model</span><input value={d.model} onChange={f('model')} /></label>
         <label className="adm-field"><span>Year</span><input value={d.year} onChange={f('year')} inputMode="numeric" maxLength={4} /></label>
@@ -181,10 +188,11 @@ export default function VehiclesView() {
   const { data, remove } = useData()
   const [q, setQ] = useState('')
   const [status, setStatus] = useState<'all' | VehicleStatus>('all')
+  const [category, setCategory] = useState('')
   const [editing, setEditing] = useState<Draft | null>(null)
   const now = useMemo(() => new Date(), [])
 
-  const list = data.vehicles.filter((v) => (status === 'all' || v.status === status) &&
+  const list = data.vehicles.filter((v) => (status === 'all' || v.status === status) && (!category || (category === '__none' ? !v.category : v.category === category)) &&
     `${v.year} ${v.brand} ${v.model} ${v.vin} ${v.color}`.toLowerCase().includes(q.trim().toLowerCase()))
   const count = (s: VehicleStatus) => data.vehicles.filter((v) => v.status === s).length
 
@@ -194,6 +202,11 @@ export default function VehiclesView() {
     <div className="adm-stack">
       <div className="adm-toolbar">
         <label className="adm-search"><MagnifyingGlass size={16} aria-hidden="true" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search brand, model, VIN or color" aria-label="Search inventory" /></label>
+        <select className="adm-select" aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {(['car', 'motorcycle'] as const).map((t) => <optgroup key={t} label={t === 'car' ? 'Cars' : 'Motorcycles'}>{categoriesForType(t).map((c) => <option key={c.id} value={c.id}>{c.label} ({data.vehicles.filter((v) => v.category === c.id).length})</option>)}</optgroup>)}
+          <option value="__none">Uncategorized ({data.vehicles.filter((v) => !v.category).length})</option>
+        </select>
         <div className="adm-chips">
           {(['all', 'available', 'reserved', 'sold'] as const).map((s) => (
             <button key={s} type="button" className={status === s ? 'is-on' : ''} onClick={() => setStatus(s)}>{s === 'all' ? 'All' : s[0].toUpperCase() + s.slice(1)} <small>{s === 'all' ? data.vehicles.length : count(s)}</small></button>
@@ -214,7 +227,7 @@ export default function VehiclesView() {
                     <span className="adm-vcell">
                       <img src={v.photos[0] || '/vehicle-placeholder.svg'} alt="" width={64} height={44} />
                       <span><b>{v.featured && <Star size={13} weight="fill" aria-label="Featured" />} {v.year} {v.brand} {v.model}</b>
-                        <small>{v.type === 'car' ? 'Car' : 'Motorcycle'} · {v.mileage.toLocaleString('en-PH')} km{v.engine ? ` · ${v.engine}` : ''}</small>
+                        <small>{v.category ? categoryLabel(v.category) : v.type === 'car' ? 'Car' : 'Motorcycle'} · {v.mileage.toLocaleString('en-PH')} km{v.engine ? ` · ${v.engine}` : ''}</small>
                         {v.modifications.length > 0 && <small>Mods: {v.modifications.join(', ')}</small>}</span>
                     </span>
                   </td>
