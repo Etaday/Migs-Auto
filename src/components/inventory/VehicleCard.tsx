@@ -8,7 +8,6 @@ export const PLACEHOLDER = '/vehicle-placeholder.svg'
 export default function VehicleCard({ v }: { v: Vehicle }) {
   const specs: [string, string][] = [
     ['Condition', v.condition === 'new' ? 'Brand new' : 'Used'],
-    ['Location', v.location],
     ['Engine', v.engine],
     ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`],
     ['Transmission', v.transmission],
@@ -23,6 +22,7 @@ export default function VehicleCard({ v }: { v: Vehicle }) {
       </span>
       <span className="vcard__body">
         <span className="vcard__row"><span className="vcard__title">{v.brand} {v.model}</span><span className="vcard__price">{formatPeso(v.price)}</span></span>
+        {v.location && <span className="vcard__loc">&#128205; {v.location}</span>}
         <span className="vcard__specs">
           {specs.filter(([, val]) => val).map(([k, val]) => <span key={k}><i>{k}</i><b>{val}</b></span>)}
         </span>

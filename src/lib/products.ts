@@ -24,7 +24,7 @@ export function stockLabel(stock: number): string {
 /** Gives a stored product every field, so a record from an older version never crashes a screen. */
 export function productWithDefaults(p: Partial<Product>): Product {
   return {
-    id: '', created_at: '', category: 'accessories', subcategory: '', name: '', brand: '', size: '', fits: '', condition: 'new', price: 0, stock: 0, description: '', listed: true,
+    id: '', created_at: '', category: 'accessories', subcategory: '', name: '', brand: '', size: '', fits: '', condition: 'new', location: '', price: 0, stock: 0, description: '', listed: true,
     ...p,
     photos: Array.isArray(p.photos) ? p.photos : [],
     videos: Array.isArray(p.videos) ? p.videos : [],

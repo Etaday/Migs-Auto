@@ -15,6 +15,8 @@ export type Product = {
   /** What it fits, e.g. "Honda City, Civic" */
   fits: string
   condition: ProductCondition
+  /** Where the item is, shown only when filled in. */
+  location: string
   price: number
   stock: number
   description: string

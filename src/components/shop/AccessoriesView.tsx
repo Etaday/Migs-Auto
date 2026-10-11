@@ -24,6 +24,7 @@ export function ProductCard({ p }: { p: Product }) {
       </span>
       <span className="vcard__body">
         <span className="vcard__row"><span className="vcard__title">{p.name}</span><span className="vcard__price">{formatPeso(p.price)}</span></span>
+        {p.location && <span className="vcard__loc">&#128205; {p.location}</span>}
         <span className="vcard__specs">
           {specs.map(([k, val]) => <span key={k}><i>{k}</i><b>{val}</b></span>)}
         </span>
@@ -64,7 +65,7 @@ export default function AccessoriesView() {
         {([['', 'All'], ['mags', 'Mags'], ['accessories', 'Accessories']] as const).map(([k, label]) => (
           <button key={k} type="button" className={`mchip${(category ?? '') === k ? ' is-on' : ''}`} onClick={() => setParams(k ? { category: k } : {})}>{label}</button>
         ))}
-        <input aria-label="Search" placeholder="Search brand, size or what it fits" value={query} onChange={(e) => setQuery(e.target.value)} style={{ width: 'min(320px, 100%)' }} />
+        <input aria-label="Search" placeholder="Search brand, size or what it fits" value={query} onChange={(e) => setQuery(e.target.value)} style={{ width: 'min(320px, 100%)', flex: '1 1 220px', maxWidth: 420 }} />
       </div>
       {groups.length > 0 && (
         <div className="mfilters mfilters--styles" role="group" aria-label="Filter by group">
@@ -72,7 +73,7 @@ export default function AccessoriesView() {
           {groups.map((g) => <button key={g.id} type="button" className={`mchip mchip--sm${group === g.id ? ' is-on' : ''}`} onClick={() => setGroup(g.id)}>{g.label} <small>{g.n}</small></button>)}
         </div>
       )}
-      {all === null ? <p className="mpage__note">Loading...</p> : shown.length === 0 ? (
+      {all === null ? <ul className="vgrid" role="list" aria-busy="true" aria-label="Loading">{[0, 1, 2].map((k) => <li key={k}><span className="vcard vcard--skel" aria-hidden="true"><span className="vcard__media" /><span className="vcard__body"><i /><i /><i /></span></span></li>)}</ul> : shown.length === 0 ? (
         <p className="mpage__note">Nothing matches. <button type="button" className="mlink" onClick={() => { setParams({}); setQuery('') }}>Clear filters</button></p>
       ) : (
         <ul className="vgrid" role="list">{shown.map((p) => <li key={p.id}><ProductCard p={p} /></li>)}</ul>

@@ -11,11 +11,11 @@ import VideoPicker from './VideoPicker'
 import MoneyInput from '@/components/MoneyInput'
 
 type Draft = Omit<Product, 'id' | 'created_at' | 'price' | 'stock'> & { id?: string; price: string; stock: string }
-const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', price: '', stock: '1', description: '', photos: [], videos: [], subcategory: '', listed: true })
+const blank = (): Draft => ({ category: 'mags', name: '', brand: '', size: '', fits: '', condition: 'new', location: '', price: '', stock: '1', description: '', photos: [], videos: [], subcategory: '', listed: true })
 const toDraft = (p: Product): Draft => ({ ...p, price: String(p.price), stock: String(p.stock) })
 const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 const row = (d: Draft): Omit<Product, 'id' | 'created_at'> => ({
-  category: d.category, name: d.name.trim(), brand: d.brand.trim(), size: d.size.trim(), fits: d.fits.trim(), condition: d.condition, price: n(d.price),
+  category: d.category, name: d.name.trim(), brand: d.brand.trim(), size: d.size.trim(), fits: d.fits.trim(), condition: d.condition, location: d.location.trim(), price: n(d.price),
   stock: Math.max(0, Math.floor(n(d.stock))), description: d.description.trim(), photos: d.photos, videos: d.videos, subcategory: d.subcategory, listed: d.listed,
 })
 
@@ -58,6 +58,7 @@ function ProductForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         <label className="adm-field"><span>Brand</span><input value={d.brand} onChange={f('brand')} /></label>
         <label className="adm-field"><span>Size / specs</span><input value={d.size} onChange={f('size')} placeholder="e.g. 17 inch, 5x114.3" /></label>
         <label className="adm-field"><span>Fits</span><input value={d.fits} onChange={f('fits')} placeholder="e.g. Honda Civic, Accord" /></label>
+        <label className="adm-field"><span>Location (optional)</span><input value={d.location} onChange={f('location')} maxLength={120} placeholder="e.g. Quezon City" /></label>
         <label className="adm-field"><span>Condition</span><select value={d.condition} onChange={f('condition')}><option value="new">Brand new</option><option value="used">Used</option></select></label>
         <label className="adm-field"><span>Price (₱)</span><MoneyInput value={d.price} onChange={(v) => set('price', v)} /></label>
         <label className="adm-field"><span>Quantity in stock</span><input value={d.stock} onChange={f('stock')} inputMode="numeric" /></label>
@@ -110,7 +111,7 @@ export default function ProductsView() {
           ))}
         </div>
         <button type="button" className="adm-btn" onClick={() => setEditing(blank())}><Plus size={15} weight="bold" aria-hidden="true" /> Add item</button>
-        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-mags-accessories.csv', [['Category', 'Group', 'Name', 'Brand', 'Size', 'Fits', 'Condition', 'Price', 'Stock', 'Listed'], ...data.products.map((p) => [p.category, categoryLabel(p.subcategory), p.name, p.brand, p.size, p.fits, p.condition, p.price, p.stock, p.listed])])}>Export CSV</button>
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-mags-accessories.csv', [['Category', 'Group', 'Name', 'Brand', 'Size', 'Fits', 'Location', 'Condition', 'Price', 'Stock', 'Listed'], ...data.products.map((p) => [p.category, categoryLabel(p.subcategory), p.name, p.brand, p.size, p.fits, p.location, p.condition, p.price, p.stock, p.listed])])}>Export CSV</button>
       </div>
       {list.length === 0 ? <p className="adm-empty">Nothing here yet. Add your first mag set or accessory with the button above.</p> : (
         <div className="adm-tablewrap">

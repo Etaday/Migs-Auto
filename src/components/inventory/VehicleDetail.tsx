@@ -34,7 +34,7 @@ export default function VehicleDetail() {
   const photos = v.photos.length ? v.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
     ['Category', v.category ? categoryLabel(v.category) : ''], ['Condition', v.condition === 'new' ? 'Brand new' : 'Used'], ['Location', v.location], ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
-    ['Fuel', v.fuel], ['Color', v.color], ['Status', v.status],
+    ['Fuel', v.fuel], ['Color', v.color], ['Status', v.status.charAt(0).toUpperCase() + v.status.slice(1)],
   ]
   return (
     <section className="mpage vdetail">

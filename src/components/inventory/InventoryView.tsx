@@ -70,7 +70,7 @@ export default function InventoryView() {
         </div>
       )}
       {all === null ? (
-        <p className="mpage__note">Loading inventory...</p>
+        <ul className="vgrid" role="list" aria-busy="true" aria-label="Loading">{[0, 1, 2].map((k) => <li key={k}><span className="vcard vcard--skel" aria-hidden="true"><span className="vcard__media" /><span className="vcard__body"><i /><i /><i /></span></span></li>)}</ul>
       ) : shown.length === 0 ? (
         <p className="mpage__note">No vehicles match. <button type="button" className="mlink" onClick={clear}>Clear filters</button></p>
       ) : (

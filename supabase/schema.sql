@@ -133,6 +133,8 @@ create table if not exists public.products (
   photos text[] not null default '{}',
   listed boolean not null default true
 );
+-- Where the item is (blank = not shown on the site).
+alter table public.products add column if not exists location text not null default '';
 alter table public.products add column if not exists videos text[] not null default '{}';
 -- Group inside the shop (car-mags, electronics, interior...).
 alter table public.products add column if not exists subcategory text not null default '';

@@ -32,7 +32,7 @@ export default function ProductDetail() {
   }
   const photos = p.photos.length ? p.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
-    ['Category', p.subcategory ? categoryLabel(p.subcategory) : p.category === 'mags' ? 'Mags (wheels)' : 'Accessory'], ['Brand', p.brand], ['Size', p.size], ['Fits', p.fits],
+    ['Category', p.subcategory ? categoryLabel(p.subcategory) : p.category === 'mags' ? 'Mags (wheels)' : 'Accessory'], ['Location', p.location], ['Brand', p.brand], ['Size', p.size], ['Fits', p.fits],
     ['Condition', p.condition === 'new' ? 'Brand new' : 'Used'], ['Availability', stockLabel(p.stock)],
   ]
   return (
