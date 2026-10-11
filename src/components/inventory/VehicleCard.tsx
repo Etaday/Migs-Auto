@@ -7,6 +7,7 @@ export const PLACEHOLDER = '/vehicle-placeholder.svg'
 /** A listing card: photo on a dark panel, name and price, four spec rows and a button. */
 export default function VehicleCard({ v }: { v: Vehicle }) {
   const specs: [string, string][] = [
+    ['Condition', v.condition === 'new' ? 'Brand new' : 'Used'],
     ['Engine', v.engine || '—'],
     ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`],
     ['Transmission', v.transmission || '—'],
@@ -16,6 +17,7 @@ export default function VehicleCard({ v }: { v: Vehicle }) {
     <Link to={`/inventory/${v.id}`} className="vcard">
       <span className="vcard__media">
         <img src={v.photos[0] || PLACEHOLDER} alt={`${v.year} ${v.brand} ${v.model}`} loading="lazy" />
+        <img className="brandmark" src="/emblem.png" alt="" aria-hidden="true" />
         {v.status !== 'available' && <span className={`vcard__tag vcard__tag--${v.status}`}>{v.status}</span>}
       </span>
       <span className="vcard__body">

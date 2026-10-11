@@ -267,3 +267,9 @@ html.is-intro .rx-hero__actions { opacity: 0; transform: translateY(14px); }
 .shell .mchip.is-on small { color: rgba(255, 255, 255, 0.85); }
 .shell .mfilters--styles { margin-top: -6px; }
 .shell .mchip--sm { padding: 0 14px; min-height: 34px; font-size: 14px; }
+
+/* The intro always plays on the dark hero look, even in light mode: the headline is white, so the backdrop and the road must be dark. */
+html.is-intro, html.is-intro body { background: var(--rx-black); }
+.boot__canvas { --n8n-node: #414244; --n8n-border: #5E5F63; --n8n-cable: #6B6D73; --n8n-ok: #3DBA74; --n8n-ink: #FAF7F2; }
+.boot__status { color: rgba(255, 255, 255, 0.7); }
+.boot__status.is-done { color: #3DBA74; }

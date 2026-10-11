@@ -5,14 +5,15 @@ import { formatPeso } from '@/lib/inventory'
 import type { Vehicle } from '@/types/vehicle'
 import { PLACEHOLDER } from './VehicleCard'
 import InquiryForm from '@/components/forms/InquiryForm'
+import PhotoGallery from '@/components/PhotoGallery'
 import VideoPlayer from '@/components/VideoPlayer'
+import { videoKind } from '@/lib/video'
 import { categoryLabel } from '@/lib/categories'
 import { FINANCING_AVAILABLE } from '@/data/profile'
 
 export default function VehicleDetail() {
   const { id } = useParams()
   const [list, setList] = useState<Vehicle[] | null>(null)
-  const [photo, setPhoto] = useState(0)
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function VehicleDetail() {
   }
   const photos = v.photos.length ? v.photos : [PLACEHOLDER]
   const specs: [string, string][] = [
-    ['Category', v.category ? categoryLabel(v.category) : ''], ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
+    ['Category', v.category ? categoryLabel(v.category) : ''], ['Condition', v.condition === 'new' ? 'Brand new' : 'Used'], ['Year', String(v.year)], ['Body', v.body], ['Engine', v.engine], ['Mileage', `${v.mileage.toLocaleString('en-PH')} km`], ['Transmission', v.transmission],
     ['Fuel', v.fuel], ['Color', v.color], ['Status', v.status],
   ]
   return (
@@ -41,14 +42,7 @@ export default function VehicleDetail() {
       <Link className="mlink" to="/inventory">&larr; Inventory</Link>
       <div className="vdetail__grid">
         <div className="vdetail__gallery">
-          <img className="vdetail__main" src={photos[Math.min(photo, photos.length - 1)]} alt={`${v.year} ${v.brand} ${v.model}`} />
-          {photos.length > 1 && (
-            <div className="vdetail__thumbs">
-              {photos.map((p, i) => (
-                <button key={p} type="button" className={i === photo ? 'is-on' : ''} onClick={() => setPhoto(i)} aria-label={`Photo ${i + 1}`}><img src={p} alt="" /></button>
-              ))}
-            </div>
-          )}
+          <PhotoGallery photos={photos} videos={v.videos} alt={`${v.year} ${v.brand} ${v.model}`} />
         </div>
         <div className="vdetail__info">
           <h1 className="mpage__title">{v.year} {v.brand} {v.model}</h1>
@@ -57,7 +51,7 @@ export default function VehicleDetail() {
             {specs.map(([k, val]) => val && <div key={k}><dt>{k}</dt><dd>{val}</dd></div>)}
           </dl>
           {v.description && <p>{v.description}</p>}
-          <VideoPlayer videos={v.videos} title={`${v.year} ${v.brand} ${v.model}`} />
+          <VideoPlayer videos={v.videos.filter((s) => videoKind(s).kind === 'link')} title={`${v.year} ${v.brand} ${v.model}`} />
           {v.modifications.length > 0 && (
             <div>
               <h2 className="mpage__sub">Modifications</h2>

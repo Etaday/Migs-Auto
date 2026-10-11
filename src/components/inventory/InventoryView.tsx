@@ -17,6 +17,7 @@ export default function InventoryView() {
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [minYear, setMinYear] = useState('')
+  const [condition, setCondition] = useState<'' | 'new' | 'used'>('')
   const t = params.get('type')
   const type: VehicleType | undefined = t === 'car' || t === 'motorcycle' ? t : undefined
   const category = params.get('category') ?? ''
@@ -37,10 +38,10 @@ export default function InventoryView() {
   }, [all, type])
   const setStyle = (id: string) => { const next = new URLSearchParams(params); if (id) next.set('category', id); else next.delete('category'); setParams(next) }
   const shown = useMemo(
-    () => filterVehicles(all ?? [], { type, category: category || undefined, brand: brand || undefined, minPrice: num(minPrice), maxPrice: num(maxPrice), minYear: num(minYear) }),
-    [all, type, category, brand, minPrice, maxPrice, minYear],
+    () => filterVehicles(all ?? [], { type, category: category || undefined, condition: condition || undefined, brand: brand || undefined, minPrice: num(minPrice), maxPrice: num(maxPrice), minYear: num(minYear) }),
+    [all, type, category, condition, brand, minPrice, maxPrice, minYear],
   )
-  const clear = () => { setParams({}); setBrand(''); setMinPrice(''); setMaxPrice(''); setMinYear('') }
+  const clear = () => { setParams({}); setBrand(''); setMinPrice(''); setMaxPrice(''); setMinYear(''); setCondition('') }
 
   return (
     <section className="mpage">
@@ -49,6 +50,11 @@ export default function InventoryView() {
         {([['', 'All'], ['car', 'Cars'], ['motorcycle', 'Motorcycles']] as const).map(([k, label]) => (
           <button key={k} type="button" className={`mchip${(type ?? '') === k ? ' is-on' : ''}`} onClick={() => setParams(k ? { type: k } : {})}>{label}</button>
         ))}
+        <select aria-label="Condition" value={condition} onChange={(e) => setCondition(e.target.value as '' | 'new' | 'used')}>
+          <option value="">New &amp; used</option>
+          <option value="new">Brand new</option>
+          <option value="used">Used</option>
+        </select>
         <select aria-label="Brand" value={brand} onChange={(e) => setBrand(e.target.value)}>
           <option value="">All brands</option>
           {brands.map((b) => <option key={b}>{b}</option>)}

@@ -19,6 +19,7 @@ export function ProductCard({ p }: { p: Product }) {
     <Link to={`/accessories/${p.id}`} className="vcard">
       <span className="vcard__media">
         <img src={p.photos[0] || PLACEHOLDER} alt={p.name} loading="lazy" />
+        <img className="brandmark" src="/emblem.png" alt="" aria-hidden="true" />
         {p.stock <= 0 && <span className="vcard__tag vcard__tag--sold">Out of stock</span>}
       </span>
       <span className="vcard__body">

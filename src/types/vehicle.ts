@@ -1,4 +1,5 @@
 export type VehicleType = 'car' | 'motorcycle'
+export type VehicleCondition = 'new' | 'used'
 export type VehicleStatus = 'available' | 'reserved' | 'sold'
 export type InquiryKind = 'inquiry' | 'trade_in' | 'financing' | 'test_drive'
 export type InquiryStatus = 'new' | 'contacted' | 'closed'
@@ -18,6 +19,8 @@ export type Vehicle = {
   photos: string[]
   /** Walk-around videos: uploaded files or YouTube / other links. */
   videos: string[]
+  /** Brand new from the dealer, or pre-owned. */
+  condition: VehicleCondition
   status: VehicleStatus
   featured: boolean
   /** 17-character VIN, empty when unknown. */

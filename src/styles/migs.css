@@ -79,3 +79,63 @@
 /* Listing videos */
 .vvideos { display: grid; gap: 12px; }
 .vvideos__frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-card); background: #000; }
+
+/* Brand mark, small, top right of every photo and video. Never blocks taps or the player controls. */
+.brandmark { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; padding: 3px; object-fit: contain; border-radius: 8px; background: rgba(0, 0, 0, 0.55); pointer-events: none; z-index: 2; }
+.vcard__media .brandmark { width: 26px; height: 26px; }
+.vdetail__stage { position: relative; touch-action: pan-y; user-select: none; }
+.vdetail__stage .vdetail__main { display: block; }
+.vdetail__arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, 0.5); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 2; }
+.vdetail__arrow--prev { left: 8px; }
+.vdetail__arrow--next { right: 8px; }
+.vvideos__wrap { position: relative; }
+.vvideos__wrap .brandmark { top: 8px; }
+@media (pointer: coarse) { .vdetail__arrow { display: none; } }
+
+/* Gallery polish and the full-screen photo viewer */
+.vdetail__stage { cursor: zoom-in; border-radius: var(--radius-card); overflow: hidden; background: var(--panel-dark); outline-offset: 3px; }
+.vdetail__stage:focus-visible { outline: 2px solid var(--orange); }
+.vdetail__main--inr { animation: mslide-r 0.28s var(--ease-out, ease-out); }
+.vdetail__main--inl { animation: mslide-l 0.28s var(--ease-out, ease-out); }
+@keyframes mslide-r { from { opacity: 0; transform: translateX(24px); } }
+@keyframes mslide-l { from { opacity: 0; transform: translateX(-24px); } }
+.vdetail__count { position: absolute; left: 8px; bottom: 8px; padding: 4px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 12px; z-index: 2; pointer-events: none; }
+.vdetail__expand { position: absolute; right: 8px; bottom: 8px; width: 34px; height: 34px; border-radius: 8px; border: 0; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 18px; cursor: pointer; z-index: 2; transition: background 0.15s; }
+.vdetail__expand:hover, .vdetail__arrow:hover { background: var(--orange); }
+.vdetail__thumbs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: thin; padding-bottom: 4px; }
+.vdetail__thumbs button { flex: none; opacity: 0.7; transition: opacity 0.15s, border-color 0.15s; }
+.vdetail__thumbs button:hover, .vdetail__thumbs button.is-on { opacity: 1; }
+
+.mbox { position: fixed; inset: 0; z-index: 2147483000; background: rgba(0, 0, 0, 0.95); animation: mfade 0.18s ease-out; overscroll-behavior: contain; }
+@keyframes mfade { from { opacity: 0; } }
+.mbox__stage { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+.mbox__stage img { max-width: 100vw; max-height: 100dvh; object-fit: contain; opacity: 0; transition: transform 0.16s ease-out, opacity 0.2s; will-change: transform; }
+.mbox__stage img.is-loaded { opacity: 1; }
+.mbox__spin { position: absolute; width: 38px; height: 38px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.2); border-top-color: var(--orange, #d7191f); animation: mspin 0.8s linear infinite; }
+@keyframes mspin { to { transform: rotate(360deg); } }
+.mbox__btn { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; backdrop-filter: blur(6px); transition: background 0.15s, opacity 0.15s; }
+.mbox__btn:hover:not(:disabled) { background: rgba(215, 25, 31, 0.8); }
+.mbox__btn:focus-visible, .mbox__pct:focus-visible, .mbox__strip button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.mbox__btn:disabled { opacity: 0.35; cursor: default; }
+.mbox__close { top: calc(14px + env(safe-area-inset-top)); right: calc(14px + env(safe-area-inset-right)); width: auto; padding: 0 16px; border-radius: 22px; font-size: 16px; grid-auto-flow: column; gap: 6px; background: rgba(215, 25, 31, 0.85); }
+.mbox__prev { left: 14px; top: 50%; transform: translateY(-50%); }
+.mbox__next { right: 14px; top: 50%; transform: translateY(-50%); }
+.mbox__zoom { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; z-index: 3; }
+.mbox__zoom .mbox__btn { position: static; width: 40px; height: 40px; }
+.mbox__pct { min-width: 56px; height: 32px; border: 0; border-radius: 16px; background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 13px; cursor: pointer; }
+.mbox__pct:disabled { cursor: default; opacity: 0.6; }
+.mbox__strip { position: absolute; left: 0; right: 0; bottom: calc(34px + env(safe-area-inset-bottom)); display: flex; gap: 8px; justify-content: safe center; padding: 0 14px; overflow-x: auto; z-index: 3; scrollbar-width: none; }
+.mbox__strip button { flex: none; width: 64px; height: 46px; padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; background: none; cursor: pointer; opacity: 0.6; transition: opacity 0.15s, border-color 0.15s; }
+.mbox__strip button.is-on { border-color: var(--orange, #d7191f); opacity: 1; }
+.mbox__strip img { width: 100%; height: 100%; object-fit: cover; }
+.mbox__hint { position: absolute; left: 0; right: 0; bottom: calc(10px + env(safe-area-inset-bottom)); text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 12px; z-index: 3; pointer-events: none; }
+.brandmark--big { top: calc(16px + env(safe-area-inset-top)); right: auto; left: calc(16px + env(safe-area-inset-left)); width: 44px; height: 44px; z-index: 3; }
+@media (pointer: coarse) { .vdetail__arrow, .mbox__prev, .mbox__next { display: none; } }
+@media (max-width: 520px) { .mbox__zoom { top: auto; bottom: calc(96px + env(safe-area-inset-bottom)); } }
+@media (prefers-reduced-motion: reduce) { .mbox, .vdetail__main--inr, .vdetail__main--inl, .mbox__spin { animation: none; } .mbox__stage img { transition: none; } }
+
+/* Video slides in the gallery */
+.vdetail__main--video { width: 100%; aspect-ratio: 16 / 10; border: 0; background: #000; object-fit: contain; }
+.vdetail__stage:has(.vdetail__main--video) { cursor: default; }
+.vdetail__stage:has(.vdetail__main--video) .vdetail__count { bottom: auto; top: 8px; }
+.vdetail__thumbs button.is-video { display: grid; place-items: center; background: #000; color: #fff; font-size: 18px; }
