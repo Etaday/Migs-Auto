@@ -14,17 +14,17 @@ import type { Vehicle, VehicleCondition, VehicleStatus, VehicleType } from '@/ty
 import MoneyInput from '@/components/MoneyInput'
 
 type Draft = {
-  id?: string; vin: string; type: VehicleType; brand: string; model: string; year: string; price: string; cost: string; mileage: string
+  id?: string; location: string; vin: string; type: VehicleType; brand: string; model: string; year: string; price: string; cost: string; mileage: string
   transmission: string; fuel: string; color: string; body: string; engine: string; description: string; photos: string[]; videos: string[]; category: string
   modifications: string[]; condition: VehicleCondition; status: VehicleStatus; featured: boolean; sold_price: string; sold_at: string
 }
 
 const blank = (): Draft => ({
-  vin: '', type: 'car', brand: '', model: '', year: String(new Date().getFullYear()), price: '', cost: '', mileage: '0', transmission: '', fuel: '',
+  location: '', vin: '', type: 'car', brand: '', model: '', year: String(new Date().getFullYear()), price: '', cost: '', mileage: '0', transmission: '', fuel: '',
   color: '', body: '', engine: '', description: '', photos: [], videos: [], category: '', modifications: [], condition: 'used', status: 'available', featured: false, sold_price: '', sold_at: '',
 })
 const toDraft = (v: Vehicle): Draft => ({
-  id: v.id, vin: v.vin, type: v.type, brand: v.brand, model: v.model, year: String(v.year), price: String(v.price), cost: String(v.cost), mileage: String(v.mileage),
+  id: v.id, location: v.location, vin: v.vin, type: v.type, brand: v.brand, model: v.model, year: String(v.year), price: String(v.price), cost: String(v.cost), mileage: String(v.mileage),
   transmission: v.transmission, fuel: v.fuel, color: v.color, body: v.body, engine: v.engine, description: v.description, photos: v.photos, videos: v.videos, category: v.category,
   modifications: v.modifications, condition: v.condition, status: v.status, featured: v.featured, sold_price: v.sold_price == null ? '' : String(v.sold_price), sold_at: v.sold_at ?? '',
 })
@@ -33,7 +33,7 @@ const n = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 function toRow(d: Draft): Omit<Vehicle, 'id' | 'created_at'> {
   const sold = d.status === 'sold'
   return {
-    vin: d.vin.trim().toUpperCase(), type: d.type, brand: d.brand.trim(), model: d.model.trim(), year: n(d.year), price: n(d.price), cost: n(d.cost), mileage: n(d.mileage),
+    location: d.location.trim(), vin: d.vin.trim().toUpperCase(), type: d.type, brand: d.brand.trim(), model: d.model.trim(), year: n(d.year), price: n(d.price), cost: n(d.cost), mileage: n(d.mileage),
     transmission: d.transmission.trim(), fuel: d.fuel.trim(), color: d.color.trim(), body: d.body.trim(), engine: d.engine.trim(), description: d.description.trim(),
     photos: d.photos, videos: d.videos, category: d.category, modifications: d.modifications, condition: d.condition, status: d.status, featured: d.featured,
     sold_price: sold ? n(d.sold_price) || n(d.price) : null, sold_at: sold ? d.sold_at || todayIso() : null,
@@ -140,6 +140,7 @@ function VehicleForm({ initial, onDone }: { initial: Draft; onDone: () => void }
         <label className="adm-field"><span>Mileage (km)</span><input value={d.mileage} onChange={f('mileage')} inputMode="numeric" /></label>
         <label className="adm-field"><span>Asking price (₱)</span><MoneyInput value={d.price} onChange={(v) => set('price', v)} /></label>
         <label className="adm-field"><span>Your cost (₱, private)</span><MoneyInput value={d.cost} onChange={(v) => set('cost', v)} /></label>
+        <label className="adm-field"><span>Location (optional)</span><input value={d.location} onChange={f('location')} maxLength={120} placeholder="e.g. Quezon City" /></label>
         <label className="adm-field"><span>Condition</span><select value={d.condition} onChange={f('condition')}><option value="new">Brand new</option><option value="used">Used</option></select></label>
         <label className="adm-field"><span>Status</span><select value={d.status} onChange={f('status')}><option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option></select></label>
         {d.status === 'sold' && <>
@@ -214,7 +215,7 @@ export default function VehiclesView() {
           ))}
         </div>
         <button type="button" className="adm-btn" onClick={() => setEditing(blank())}><Plus size={15} weight="bold" aria-hidden="true" /> Add listing</button>
-        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-inventory.csv', [['Year', 'Brand', 'Model', 'VIN', 'Type', 'Condition', 'Mileage', 'Price', 'Cost', 'Status', 'Modifications'], ...data.vehicles.map((v) => [v.year, v.brand, v.model, v.vin, v.type, v.condition, v.mileage, v.price, v.cost, v.status, v.modifications.join('; ')])])}>Export CSV</button>
+        <button type="button" className="adm-btn adm-btn--ghost" onClick={() => downloadCsv('migs-auto-inventory.csv', [['Year', 'Brand', 'Model', 'VIN', 'Type', 'Location', 'Condition', 'Mileage', 'Price', 'Cost', 'Status', 'Modifications'], ...data.vehicles.map((v) => [v.year, v.brand, v.model, v.vin, v.type, v.location, v.condition, v.mileage, v.price, v.cost, v.status, v.modifications.join('; ')])])}>Export CSV</button>
       </div>
 
       {list.length === 0 ? <p className="adm-empty">No vehicles match. Add your first listing with the button above.</p> : (

@@ -49,6 +49,8 @@ create table if not exists public.vehicles (
 alter table public.vehicles add column if not exists videos text[] not null default '{}';
 -- Body style (sedan, suv, scooter...), see src/lib/categories.ts.
 alter table public.vehicles add column if not exists category text not null default '';
+-- Where the vehicle is (blank = not shown on the site).
+alter table public.vehicles add column if not exists location text not null default '';
 -- Brand new or used.
 alter table public.vehicles add column if not exists condition text not null default 'used';
 do $$ begin
@@ -61,7 +63,7 @@ drop policy if exists "visitor reads listed vehicles" on public.vehicles;
 create policy "visitor reads listed vehicles" on public.vehicles for select to anon using (status <> 'sold');
 -- Visitors may read only the public columns: never cost, sold_price or sold_at.
 revoke select on public.vehicles from anon;
-grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, videos, condition, status, featured, vin, engine, body, category, modifications) on public.vehicles to anon;
+grant select (id, created_at, type, brand, model, year, price, mileage, transmission, fuel, color, description, photos, videos, condition, location, status, featured, vin, engine, body, category, modifications) on public.vehicles to anon;
 create index if not exists vehicles_status_idx on public.vehicles (status);
 
 -- ---------- Inquiries (inquiry, trade-in, financing, test drive) ----------

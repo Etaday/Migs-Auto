@@ -23,6 +23,8 @@ export type Vehicle = {
   condition: VehicleCondition
   status: VehicleStatus
   featured: boolean
+  /** Where the vehicle is, shown only when filled in. */
+  location: string
   /** 17-character VIN, empty when unknown. */
   vin: string
   engine: string

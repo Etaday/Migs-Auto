@@ -1,58 +1,41 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { videoKind, youtubeEmbedUrl } from '@/lib/video'
 
 const MAX = 4
 const FALLBACK = '/vehicle-placeholder.svg'
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 const onBroken = (e: React.SyntheticEvent<HTMLImageElement>) => { if (!e.currentTarget.src.endsWith(FALLBACK)) e.currentTarget.src = FALLBACK }
 
-type Item = { kind: 'photo'; src: string } | { kind: 'file'; src: string } | { kind: 'youtube'; src: string; id: string }
-
-/** Photos first, then the listing's playable videos (uploaded files and YouTube) as the last slides. Plain links stay out. */
-function buildItems(photos: string[], videos: string[]): Item[] {
-  const out: Item[] = photos.map((src) => ({ kind: 'photo', src }))
-  for (const src of videos) {
-    const k = videoKind(src)
-    if (k.kind === 'file') out.push({ kind: 'file', src })
-    else if (k.kind === 'youtube') out.push({ kind: 'youtube', src, id: k.id })
-  }
-  return out
-}
-
-/** Main slide with swipe, arrows, counter and thumbnails. Tap a photo to open the full-screen viewer (zoom, pan, swipe, thumbnails). Videos are the last slides. */
-export default function PhotoGallery({ photos, videos = [], alt }: { photos: string[]; videos?: string[]; alt: string }) {
-  const items = buildItems(photos, videos)
+/** Main photo with swipe, arrows, counter and thumbnails. Tap to open the full-screen viewer (zoom, pan, swipe, thumbnails). */
+export default function PhotoGallery({ photos, alt }: { photos: string[]; alt: string }) {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [big, setBig] = useState(false)
-  const n = items.length
-  const np = photos.length
+  const n = photos.length
   const cur = Math.min(i, n - 1)
-  const item = items[cur]
-  const start = useRef<{ x: number; y: number; onVideo: boolean } | null>(null)
+  const start = useRef<{ x: number; y: number } | null>(null)
   const opener = useRef<HTMLElement | null>(null)
 
   const to = useCallback((k: number) => { setDir(k >= cur ? 1 : -1); setI(((k % n) + n) % n) }, [cur, n])
   const go = useCallback((d: number) => { setDir(d); setI((c) => (Math.min(c, n - 1) + d + n) % n) }, [n])
 
-  useEffect(() => { // warm the neighbouring photos so swiping never waits
+  useEffect(() => { // warm the neighbours so swiping never waits
     if (n < 2) return
-    for (const k of [cur + 1, cur - 1]) { const it = items[(k + n) % n]; if (it.kind === 'photo') new Image().src = it.src }
-  }, [cur, n, items])
+    for (const k of [cur + 1, cur - 1]) new Image().src = photos[(k + n) % n]
+  }, [cur, n, photos])
 
-  const open = () => { if (item.kind !== 'photo') return; opener.current = document.activeElement as HTMLElement | null; setBig(true) }
+  const open = () => { opener.current = document.activeElement as HTMLElement | null; setBig(true) }
   const close = () => { setBig(false); opener.current?.focus?.() }
 
   return (
     <>
       <div
         className="vdetail__stage"
-        onPointerDown={(e) => { start.current = { x: e.clientX, y: e.clientY, onVideo: (e.target as HTMLElement).tagName === 'VIDEO' } }}
+        onPointerDown={(e) => { start.current = { x: e.clientX, y: e.clientY } }}
         onPointerUp={(e) => {
           const s = start.current
           start.current = null
-          if (!s || s.onVideo) return
+          if (!s) return
           const dx = e.clientX - s.x
           const dy = e.clientY - s.y
           if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && n > 1) go(dx < 0 ? 1 : -1)
@@ -63,31 +46,27 @@ export default function PhotoGallery({ photos, videos = [], alt }: { photos: str
         tabIndex={0}
         role="group"
         aria-roledescription="carousel"
-        aria-label={`${alt} photos and videos`}
+        aria-label={`${alt} photos`}
       >
-        {item.kind === 'photo' && <img key={cur} className={`vdetail__main vdetail__main--in${dir > 0 ? 'r' : 'l'}`} src={item.src} alt={`${alt}, photo ${cur + 1} of ${np}`} draggable={false} onError={onBroken} decoding="async" />}
-        {item.kind === 'file' && <video key={cur} className="vdetail__main vdetail__main--video" src={`${item.src}#t=0.1`} controls preload="metadata" playsInline aria-label={`${alt} video`} />}
-        {item.kind === 'youtube' && <iframe key={cur} className="vdetail__main vdetail__main--video" src={youtubeEmbedUrl(item.id)} title={`${alt} video`} loading="lazy" allow="fullscreen; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />}
+        <img key={cur} className={`vdetail__main vdetail__main--in${dir > 0 ? 'r' : 'l'}`} src={photos[cur]} alt={`${alt}, photo ${cur + 1} of ${n}`} draggable={false} onError={onBroken} decoding="async" />
         <img className="brandmark" src="/emblem.png" alt="" aria-hidden="true" />
-        {n > 1 && <span className="vdetail__count" aria-hidden="true">{item.kind === 'photo' ? `${cur + 1} / ${n}` : `Video · ${cur + 1} / ${n}`}</span>}
-        {item.kind === 'photo' && <button type="button" className="vdetail__expand" onPointerUp={(e) => e.stopPropagation()} onClick={open} aria-label="Expand photo">&#x26F6;</button>}
+        {n > 1 && <span className="vdetail__count" aria-hidden="true">{cur + 1} / {n}</span>}
+        <button type="button" className="vdetail__expand" onPointerUp={(e) => e.stopPropagation()} onClick={open} aria-label="Expand photo">&#x26F6;</button>
         {n > 1 && (
           <>
-            <button type="button" className="vdetail__arrow vdetail__arrow--prev" onPointerUp={(e) => e.stopPropagation()} onClick={() => go(-1)} aria-label="Previous">&lsaquo;</button>
-            <button type="button" className="vdetail__arrow vdetail__arrow--next" onPointerUp={(e) => e.stopPropagation()} onClick={() => go(1)} aria-label="Next">&rsaquo;</button>
+            <button type="button" className="vdetail__arrow vdetail__arrow--prev" onPointerUp={(e) => e.stopPropagation()} onClick={() => go(-1)} aria-label="Previous photo">&lsaquo;</button>
+            <button type="button" className="vdetail__arrow vdetail__arrow--next" onPointerUp={(e) => e.stopPropagation()} onClick={() => go(1)} aria-label="Next photo">&rsaquo;</button>
           </>
         )}
       </div>
       {n > 1 && (
         <div className="vdetail__thumbs">
-          {items.map((it, k) => (
-            <button key={it.src.slice(-30) + k} type="button" className={`${k === cur ? 'is-on' : ''}${it.kind !== 'photo' ? ' is-video' : ''}`.trim()} onClick={() => to(k)} aria-label={it.kind === 'photo' ? `Photo ${k + 1}` : 'Video'} aria-current={k === cur}>
-              {it.kind === 'photo' ? <img src={it.src} alt="" loading="lazy" onError={onBroken} /> : <span aria-hidden="true">&#9654;</span>}
-            </button>
+          {photos.map((p, k) => (
+            <button key={p.slice(-30) + k} type="button" className={k === cur ? 'is-on' : ''} onClick={() => to(k)} aria-label={`Photo ${k + 1}`} aria-current={k === cur}><img src={p} alt="" loading="lazy" onError={onBroken} /></button>
           ))}
         </div>
       )}
-      {big && <Viewer photos={photos} index={Math.min(cur, np - 1)} alt={alt} to={(k) => to(((k % np) + np) % np)} close={close} />}
+      {big && <Viewer photos={photos} index={cur} alt={alt} to={to} close={close} />}
     </>
   )
 }

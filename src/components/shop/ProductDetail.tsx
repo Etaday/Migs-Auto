@@ -7,7 +7,6 @@ import type { Product } from '@/types/product'
 import InquiryForm from '@/components/forms/InquiryForm'
 import PhotoGallery from '@/components/PhotoGallery'
 import VideoPlayer from '@/components/VideoPlayer'
-import { videoKind } from '@/lib/video'
 import { categoryLabel } from '@/lib/categories'
 import { PLACEHOLDER } from './AccessoriesView'
 
@@ -41,14 +40,14 @@ export default function ProductDetail() {
       <Link className="mlink" to="/accessories">&larr; Mags &amp; Accessories</Link>
       <div className="vdetail__grid">
         <div className="vdetail__gallery">
-          <PhotoGallery photos={photos} videos={p.videos} alt={p.name} />
+          <PhotoGallery photos={photos} alt={p.name} />
+          <VideoPlayer videos={p.videos} title={p.name} />
         </div>
         <div className="vdetail__info">
           <h1 className="mpage__title">{p.name}</h1>
           <p className="vdetail__price">{formatPeso(p.price)}</p>
           <dl className="vdetail__specs">{specs.map(([k, v]) => v && <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
           {p.description && <p>{p.description}</p>}
-          <VideoPlayer videos={p.videos.filter((s) => videoKind(s).kind === 'link')} title={p.name} />
           {open ? (
             <InquiryForm kind="inquiry" category={p.subcategory} details={{ product: p.name, product_id: p.id }} heading={`Ask about the ${p.name}`} submitLabel="Send inquiry" />
           ) : (

@@ -35,7 +35,7 @@ export function formatPeso(n: number): string {
 export function withDefaults(v: Partial<Vehicle>): Vehicle {
   return {
     id: '', type: 'car', brand: '', model: '', year: new Date().getFullYear(), price: 0, mileage: 0, transmission: '', fuel: '', color: '',
-    description: '', condition: 'used', status: 'available', featured: false, vin: '', engine: '', body: '', category: '', cost: 0, sold_price: null, sold_at: null, created_at: '',
+    description: '', condition: 'used', status: 'available', featured: false, vin: '', location: '', engine: '', body: '', category: '', cost: 0, sold_price: null, sold_at: null, created_at: '',
     ...v,
     photos: Array.isArray(v.photos) ? v.photos : [],
     videos: Array.isArray(v.videos) ? v.videos : [],
