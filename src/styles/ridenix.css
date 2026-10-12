@@ -255,7 +255,7 @@ html.is-intro .rx-hero__actions { opacity: 0; transform: translateY(14px); }
 }
 
 /* ---------- A real photo on the hero (public/hero-bike.png) ---------- */
-.rx-hero__bike.is-photo { width: auto; max-width: 100%; max-height: min(640px, 74vh); object-fit: contain; margin-right: 0; filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.55)); }
+.rx-hero__bike.is-photo { border-radius: 10px; width: auto; max-width: 100%; max-height: min(640px, 74vh); object-fit: contain; margin-right: 0; filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.55)); }
 .rx-cta__bike.is-photo { transform: none; max-height: 340px; width: auto; max-width: 100%; justify-self: center; object-fit: contain; filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.5)); }
 @media (max-width: 899px) { .rx-hero__bike.is-photo { max-height: 420px; } }
 
@@ -273,3 +273,6 @@ html.is-intro, html.is-intro body { background: var(--rx-black); }
 .boot__canvas { --n8n-node: #414244; --n8n-border: #5E5F63; --n8n-cable: #6B6D73; --n8n-ok: #3DBA74; --n8n-ink: #FAF7F2; }
 .boot__status { color: rgba(255, 255, 255, 0.7); }
 .boot__status.is-done { color: #3DBA74; }
+.rx-hero__emblem { position: absolute; z-index: 0; left: 22%; top: 56%; width: min(680px, 70vw); height: auto; transform: translateY(-50%) rotate(-6deg); opacity: 0.16; pointer-events: none; -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent 100%); mask-image: radial-gradient(closest-side, #000 40%, transparent 100%); }
+.rx-hero__bike.is-photo { border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 14px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 90px rgba(200, 36, 44, 0.18); filter: none; }
+@media (max-width: 899px) { .rx-hero__emblem { left: 5%; width: 90vw; } .rx-hero__bike.is-photo { width: 100%; } .rx-hero > * { min-width: 0; } }

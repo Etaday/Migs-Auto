@@ -5,6 +5,7 @@ import { profile } from '@/data/profile'
 import { listProducts, listVehicles } from '@/lib/db'
 import type { Vehicle } from '@/types/vehicle'
 import type { Product } from '@/types/product'
+import ThemedImg from '@/components/ThemedImg'
 import VehicleCard from '@/components/inventory/VehicleCard'
 import { PRODUCT_GROUPS, VEHICLE_CATEGORIES } from '@/lib/categories'
 
@@ -81,6 +82,7 @@ export default function Home() {
             <Link className="rx-ghost" to="/test-drive">Book a test drive</Link>
           </div>
         </div>
+        <ThemedImg className="rx-hero__emblem" light="/emblem.png" dark="/emblem-dark.png" width={512} height={512} />
         <img className="rx-hero__bike is-photo" src={hero_.src} alt="Migs Auto" width={hero_.w} height={hero_.h} />
         <div className="rx-hero__dots" aria-hidden="true"><i /><i className="is-on" /><i /></div>
       </section>
