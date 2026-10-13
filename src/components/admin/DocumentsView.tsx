@@ -24,7 +24,8 @@ const blank = (kind: DocKind): Draft => ({
 export type DocRequest = { vehicleId: string; kind: DocKind } | null
 
 /** Send the document to the buyer: a private link by email or WhatsApp, or copy it. */
-function SendPanel({ doc }: { doc: SaleDocument }) {
+function SendPanel({ doc, onRenew }: { doc: SaleDocument; onRenew: () => Promise<string> }) {
+  const [renew, setRenew] = useState<'' | 'busy' | 'done' | 'fail'>('')
   const [copied, setCopied] = useState<'' | 'link' | 'message'>('')
   const link = doc.share_token ? `${SITE_URL}/d/${doc.share_token}` : ''
   const copy = async (what: 'link' | 'message') => {
@@ -37,15 +38,19 @@ function SendPanel({ doc }: { doc: SaleDocument }) {
         <a className="adm-btn" href={mailtoLink(doc, link)}><EnvelopeSimple size={15} aria-hidden="true" /> Email{doc.buyer_email ? '' : ' (add address)'}</a>
         <a className="adm-btn" href={whatsappShareLink(doc, link)} target="_blank" rel="noopener noreferrer"><WhatsappLogo size={15} aria-hidden="true" /> WhatsApp{doc.buyer_phone ? '' : ' (choose contact)'}</a>
         {link && <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void copy('link')}>{copied === 'link' ? <Check size={15} aria-hidden="true" /> : <LinkSimple size={15} aria-hidden="true" />} {copied === 'link' ? 'Link copied' : 'Copy link'}</button>}
+        {link && <button type="button" className="adm-btn adm-btn--ghost" disabled={renew === 'busy'} onClick={() => {
+          setRenew('busy')
+          onRenew().then(async (t) => { try { await navigator.clipboard.writeText(`${SITE_URL}/d/${t}`) } catch { /* clipboard blocked */ } setRenew('done'); window.setTimeout(() => setRenew(''), 4000) }).catch(() => setRenew('fail'))
+        }}>{renew === 'done' ? <Check size={15} aria-hidden="true" /> : <LinkSimple size={15} aria-hidden="true" />} {renew === 'busy' ? 'Making…' : renew === 'done' ? 'New link made and copied' : renew === 'fail' ? 'Failed, try again' : 'New link'}</button>}
         <button type="button" className="adm-btn adm-btn--ghost" onClick={() => void copy('message')}>{copied === 'message' ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />} {copied === 'message' ? 'Message copied' : 'Copy message'}</button>
       </div>
-      <p className="adm-note">{link ? `The buyer opens a private page with this ${doc.kind} and can print it or save it as a PDF. Only people with the link can see it.` : 'Private links are not switched on yet (the database update has not been applied). The message still has all the figures.'}</p>
+      <p className="adm-note">{link ? `The buyer opens a private page with this ${doc.kind} and can print it or save it as a PDF. Only people with the link can see it, and it works for 90 days. "New link" cancels the old one.` : 'Private links are not switched on yet (the database update has not been applied). The message still has all the figures.'}</p>
     </section>
   )
 }
 
 export default function DocumentsView({ request, clearRequest }: { request: DocRequest; clearRequest: () => void }) {
-  const { data, add, remove } = useData()
+  const { data, add, remove, patch } = useData()
   const [draft, setDraft] = useState<Draft | null>(null)
   const [viewing, setViewing] = useState<SaleDocument | null>(null)
   const [err, setErr] = useState('')
@@ -95,7 +100,12 @@ export default function DocumentsView({ request, clearRequest }: { request: DocR
           <button type="button" className="adm-btn" onClick={() => window.print()}><Printer size={15} aria-hidden="true" /> Print / save as PDF</button>
           <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setViewing(null)}><X size={15} aria-hidden="true" /> Close</button>
         </div>
-        <SendPanel doc={viewing} />
+        <SendPanel doc={viewing} onRenew={async () => {
+          const share_token = crypto.randomUUID(), share_expires_at = new Date(Date.now() + 90 * 864e5).toISOString()
+          await patch('documents', viewing.id, { share_token, share_expires_at })
+          setViewing({ ...viewing, share_token, share_expires_at })
+          return share_token
+        }} />
         <DocumentPaper doc={viewing} />
       </div>
     )

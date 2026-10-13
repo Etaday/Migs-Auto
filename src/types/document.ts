@@ -9,6 +9,7 @@ export type SaleDocument = {
   number: string
   /** Private, unguessable id for the link sent to the buyer. Empty on records made before links existed. */
   share_token?: string
+  share_expires_at?: string
   /** YYYY-MM-DD */
   issued_on: string
   vehicle_id: string | null

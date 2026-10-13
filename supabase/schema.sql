@@ -10,12 +10,16 @@
 -- ---------- Owners ----------
 create table if not exists public.admins (email text primary key);
 alter table public.admins enable row level security; -- no policies: it can only be read through is_admin()
-insert into public.admins (email) values ('elvistaday@gmail.com') on conflict do nothing;
--- Add another owner later with: insert into public.admins values ('name@example.com');
+-- First owner (the address stays out of the repo): insert into public.admins values ('you@example.com');
+-- Add another owner later the same way.
 
 create or replace function public.is_admin()
-returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.admins where lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+returns boolean language sql stable security definer set search_path = '' as $$
+  -- Reads the address from auth.users and requires it to be CONFIRMED, so nobody can sign up with an owner's address and become admin.
+  select exists (
+    select 1 from auth.users u join public.admins a on lower(a.email) = lower(u.email)
+    where u.id = auth.uid() and u.email_confirmed_at is not null
+  );
 $$;
 revoke execute on function public.is_admin() from public, anon;
 grant execute on function public.is_admin() to authenticated;
@@ -81,6 +85,21 @@ create table if not exists public.inquiries (
   check (phone <> '' or email <> ''),
   check (char_length(details::text) <= 4000)
 );
+do $$ begin
+  alter table public.inquiries add constraint inquiries_email_format check (email = '' or email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$') not valid;
+exception when duplicate_object then null; end $$;
+-- Flood guard: at most 30 new inquiries per 10 minutes in total (a CAPTCHA per visitor is the stronger fix, needs site keys).
+create or replace function public.limit_inquiry_rate()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if (select count(*) from public.inquiries where created_at > now() - interval '10 minutes') >= 30 then
+    raise exception 'Too many inquiries right now, please try again in a few minutes.';
+  end if;
+  return new;
+end $$;
+revoke execute on function public.limit_inquiry_rate() from public, anon, authenticated;
+drop trigger if exists inquiries_rate_limit on public.inquiries;
+create trigger inquiries_rate_limit before insert on public.inquiries for each row execute function public.limit_inquiry_rate();
 alter table public.inquiries enable row level security;
 drop policy if exists "admin all inquiries" on public.inquiries;
 create policy "admin all inquiries" on public.inquiries for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -169,9 +188,12 @@ grant select on public.products to anon;
 -- Each document gets an unguessable token. Whoever holds the link can open THAT one document and nothing else.
 alter table public.documents add column if not exists share_token uuid not null default gen_random_uuid();
 create unique index if not exists documents_share_token_idx on public.documents (share_token);
+-- Links expire after 90 days; the owner can issue a new link (new token + new expiry) from the dashboard.
+alter table public.documents add column if not exists share_expires_at timestamptz not null default now() + interval '90 days';
 create or replace function public.get_shared_document(p_token uuid)
-returns jsonb language sql stable security definer set search_path = public as $$
-  select to_jsonb(d) - 'id' - 'share_token' - 'vehicle_id' - 'created_at' from public.documents d where d.share_token = p_token limit 1;
+returns jsonb language sql stable security definer set search_path = '' as $$
+  select to_jsonb(d) - 'id' - 'share_token' - 'share_expires_at' - 'vehicle_id' - 'created_at'
+  from public.documents d where d.share_token = p_token and d.share_expires_at > now() limit 1;
 $$;
 revoke execute on function public.get_shared_document(uuid) from public;
 grant execute on function public.get_shared_document(uuid) to anon, authenticated;
