@@ -54,10 +54,20 @@ const STEPS = [
   { label: 'Drive home', trigger: false, d: 'M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9zM5 21v-7' },
 ] as const
 
+// The intro plays once per tab session; later visits to Home go straight to the page.
+function seenIntro() {
+  try {
+    if (sessionStorage.getItem('intro-seen')) return true
+    sessionStorage.setItem('intro-seen', '1')
+  } catch { /* storage blocked: play it */ }
+  return false
+}
+
 const shouldRun =
   typeof window !== 'undefined' &&
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-  window.location.pathname === '/'
+  window.location.pathname === '/' &&
+  !seenIntro()
 
 // Two classes, because the page and the headline are handed back at different
 // moments: `is-intro` holds the whole page, `is-intro-head` holds only the real

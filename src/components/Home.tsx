@@ -9,22 +9,8 @@ import ThemedImg from '@/components/ThemedImg'
 import VehicleCard from '@/components/inventory/VehicleCard'
 import { PRODUCT_GROUPS, VEHICLE_CATEGORIES } from '@/lib/categories'
 
-/**
- * The picture on the hero: the Migs Auto logo on the stripes. To feature a motorcycle photo instead
- * (a cut-out with a transparent background looks best), save it as public/hero-bike.png and it is used automatically.
- */
-const HERO_PHOTO = '/hero-bike.png'
-const HERO_LOGO = '/logo.png'
-
-function useHeroImage(): { src: string; w: number; h: number } {
-  const [photo, setPhoto] = useState<{ w: number; h: number } | null>(null)
-  useEffect(() => {
-    const img = new Image()
-    img.onload = () => img.naturalWidth > 0 && setPhoto({ w: img.naturalWidth, h: img.naturalHeight })
-    img.src = HERO_PHOTO
-  }, [])
-  return photo ? { src: HERO_PHOTO, ...photo } : { src: HERO_LOGO, w: 512, h: 512 }
-}
+/** The hero and closing-CTA photo, pre-sized to a 920px JPEG. */
+const HERO = { src: '/hero-bike.jpg', w: 920, h: 686 }
 
 /**
  * Home, in the Ridenix style: a dark hero with the big bike and diagonal stripes, a collection row,
@@ -36,7 +22,6 @@ export default function Home() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [tab, setTab] = useState<'all' | 'car' | 'motorcycle'>('all')
-  const hero_ = useHeroImage()
 
   useEffect(() => {
     let live = true
@@ -83,7 +68,7 @@ export default function Home() {
           </div>
         </div>
         <ThemedImg className="rx-hero__emblem" light="/emblem.png" dark="/emblem-dark.png" width={512} height={512} />
-        <img className="rx-hero__bike is-photo" src={hero_.src} alt="Migs Auto" width={hero_.w} height={hero_.h} />
+        <img className="rx-hero__bike is-photo" src={HERO.src} alt="Migs Auto" width={HERO.w} height={HERO.h} fetchPriority="high" decoding="async" />
         <div className="rx-hero__dots" aria-hidden="true"><i /><i className="is-on" /><i /></div>
       </section>
 
@@ -148,7 +133,7 @@ export default function Home() {
       </section>
 
       <section className="rx-section rx-cta" aria-labelledby="rx-cta">
-        <img className="rx-cta__bike is-photo" src={hero_.src} alt="" aria-hidden="true" width={Math.round(340 * hero_.w / hero_.h)} height={340} loading="lazy" />
+        <img className="rx-cta__bike is-photo" src={HERO.src} alt="" aria-hidden="true" width={Math.round(340 * HERO.w / HERO.h)} height={340} loading="lazy" />
         <div className="rx-cta__copy">
           <h2 className="rx-h2" id="rx-cta">Ready to Ride? Book a Test Drive</h2>
           <p>Pick a vehicle, choose a date and time, and we will confirm. Questions first? Message us and we will help you find the right fit.</p>
